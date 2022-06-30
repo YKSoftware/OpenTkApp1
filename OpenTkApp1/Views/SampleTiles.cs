@@ -13,7 +13,7 @@ public class SampleTiles : ITkGraphicsItem
     /// </summary>
     public void Render()
     {
-        GL.ClearColor(Color4.Black);
+        GL.ClearColor(Color4.Maroon);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         GL.PushMatrix();
