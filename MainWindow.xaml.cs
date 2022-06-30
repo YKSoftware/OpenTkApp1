@@ -41,7 +41,6 @@ namespace OpenTkApp1
         {
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.LoadIdentity();
 
             GL.PushMatrix();
             {
@@ -77,9 +76,9 @@ namespace OpenTkApp1
 
             GL.Begin(PrimitiveType.TriangleStrip);
             {
-                GL.Vertex2(side, side);
-                GL.Vertex2(-side, side);
-                GL.Vertex2(side, -side);
+                GL.Vertex2( side,  side);
+                GL.Vertex2(-side,  side);
+                GL.Vertex2( side, -side);
                 GL.Vertex2(-side, -side);
             }
             GL.End();
@@ -93,8 +92,6 @@ namespace OpenTkApp1
 
         private void SetProjection()
         {
-            return;
-
             // ビューポートの設定
             GL.Viewport(0, 0, (int)this.tkControl.ActualWidth, (int)this.tkControl.ActualHeight);
 
@@ -103,8 +100,7 @@ namespace OpenTkApp1
             {
                 var r = this.tkControl.ActualWidth / this.tkControl.ActualHeight;
                 float h = 6.0f, w = (float)(h * r);  //-3 <= y <= 3 に変更し、 (幅) = (高さ) × (アスペクト比) で歪みが出ないように
-                //Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 2.0f);
-                Matrix4 proj = Matrix4.CreateOrthographicOffCenter(-w / 2, w / 2, -h / 2, h / 2, 0.01f, 2.0f);
+                Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 2.0f);
                 GL.LoadMatrix(ref proj);
             }
             GL.MatrixMode(MatrixMode.Modelview);
