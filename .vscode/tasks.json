@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/OpenTkApp1.csproj",
+                "${workspaceFolder}/OpenTkApp1/OpenTkApp1.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/OpenTkApp1.csproj",
+                "${workspaceFolder}/OpenTkApp1/OpenTkApp1.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/OpenTkApp1.csproj"
+                "${workspaceFolder}/OpenTkApp1/OpenTkApp1.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
