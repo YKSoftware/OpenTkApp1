@@ -86,16 +86,22 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            var r = this.ActualWidth / this.ActualHeight;
-            Matrix4 proj = Matrix4.CreateOrthographic(ViewWidth, ViewHight, 0.01f, 1000.0f);
+            _actualAspectRatio = this.ActualWidth / this.ActualHeight;
+            Matrix4 proj = Matrix4.CreateOrthographic(Xrange, YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
 
-    static public float ViewHight { get { return _viewHight; } }
-    static private float _viewHight = 20.0f;
-    static public float ViewWidth {  get { return _viewWidth; } }
-    static private float _viewWidth = 2000.0f;
-    static public float AspectRatio { get { return _viewWidth / _viewHight; } }
+    // y座標の範囲
+    static public float YRange { get { return _yRange; } }
+    static private float _yRange = 20.0f;
+    // x座標の範囲
+    static public float Xrange {  get { return _xRange; } }
+    static private float _xRange = 2000.0f;
+    // xの範囲とyの範囲の比
+    static public float AspectRatio { get { return _xRange / _yRange; } }
+    // ビュー画面の比
+    static public double ActualAspectRatio { get { return _actualAspectRatio; } }
+    static private double _actualAspectRatio;
 }

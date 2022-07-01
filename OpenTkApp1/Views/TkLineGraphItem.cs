@@ -1,4 +1,5 @@
 using System.Windows;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using System.Linq;
@@ -97,7 +98,12 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             for (int i = 0; i <= (_dataNum - 2); i++)
             {
                 DrawGraph(i);
-
+                GL.PushMatrix();
+                {
+                    GL.Translate(_xdata[i], _ydata[i], 0);
+                    Drawplot();
+                }
+                GL.PopMatrix();
             }
             GL.PopMatrix();
         }
@@ -108,6 +114,8 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         {
             GL.Vertex2(_xdata[count], _ydata[count]);
             GL.Vertex2(_xdata[count+1], _ydata[count+1]);
+            
+            
         }
         GL.End();
     }
@@ -127,9 +135,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             //矢印描画
             GL.Begin(PrimitiveType.TriangleStrip);
             {
-                GL.Vertex2(x2, y1 + (2/TkGraphics.ViewHight));
-                GL.Vertex2(x2, y1 - (2/TkGraphics.ViewHight));
-                GL.Vertex2(x2 + TkGraphics.AspectRatio*(2/TkGraphics.ViewHight), y1);
+                GL.Vertex2(x2, y1 + (2/TkGraphics.YRange));
+                GL.Vertex2(x2, y1 - (2/TkGraphics.YRange));
+                GL.Vertex2((x2 + TkGraphics.AspectRatio*(2/TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y1);
             }
             GL.End();
         }
@@ -148,12 +156,30 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             //矢印描画
             GL.Begin(PrimitiveType.TriangleStrip);
             {
-                GL.Vertex2(x1 + TkGraphics.AspectRatio * (2 / TkGraphics.ViewHight), y2);
-                GL.Vertex2(x1 - TkGraphics.AspectRatio * (2 / TkGraphics.ViewHight), y2);
-                GL.Vertex2(x1 , y2 + (2 / TkGraphics.ViewHight));
+                GL.Vertex2(x1 + (TkGraphics.AspectRatio * (2 / TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y2);
+                GL.Vertex2(x1 - (TkGraphics.AspectRatio * (2 / TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y2);
+                GL.Vertex2(x1 , y2 + (2 / TkGraphics.YRange));
             }
             GL.End();
         }
+        GL.PopMatrix();
+    }
+
+    private void Drawplot()
+    {
+        // 点の半径
+        double radius = 0.05;
+        double delta = 2.0 * Math.PI / 100;
+        GL.PushMatrix();
+        // 点描画
+        GL.Begin(PrimitiveType.TriangleFan);
+        for(int i =0; i < 100; i++)
+        {
+            double x = ((radius * TkGraphics.AspectRatio)/TkGraphics.ActualAspectRatio) * Math.Cos(i * delta);
+            double y = radius * Math.Sin(i * delta);
+            GL.Vertex2(x, y);
+        }
+        GL.End();
         GL.PopMatrix();
     }
 
