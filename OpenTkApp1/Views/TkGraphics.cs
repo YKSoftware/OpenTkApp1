@@ -36,6 +36,7 @@ public class TkGraphics : GLWpfControl
         };
         Start(settings);
 
+        
         var look = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
         GL.LoadMatrix(ref look);
         GL.Enable(EnableCap.DepthTest);
@@ -86,10 +87,15 @@ public class TkGraphics : GLWpfControl
         GL.MatrixMode(MatrixMode.Projection);
         {
             var r = this.ActualWidth / this.ActualHeight;
-            float h = 6.0f, w = (float)(h * r);  //-3 <= y <= 3 に変更し、 (幅) = (高さ) × (アスペクト比) で歪みが出ないように
-            Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 2.0f);
+            Matrix4 proj = Matrix4.CreateOrthographic(ViewWidth, ViewHight, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
+
+    static public float ViewHight { get { return _viewHight; } }
+    static private float _viewHight = 20.0f;
+    static public float ViewWidth {  get { return _viewWidth; } }
+    static private float _viewWidth = 2000.0f;
+    static public float AspectRatio { get { return _viewWidth / _viewHight; } }
 }

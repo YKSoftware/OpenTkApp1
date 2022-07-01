@@ -7,16 +7,16 @@
         mc:Ignorable="d"
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
+        <!--<Grid.RowDefinitions>
             <RowDefinition Height="200" />
             <RowDefinition />
-        </Grid.RowDefinitions>
+        </Grid.RowDefinitions>-->
+
+        <!--<vw:TkGraphics>
+            <vw:SampleTiles />
+        </vw:TkGraphics>-->
 
         <vw:TkGraphics>
-            <vw:SampleTiles />
-        </vw:TkGraphics>
-
-        <vw:TkGraphics Grid.Row="1">
             <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" />
         </vw:TkGraphics>
     </Grid>

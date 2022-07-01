@@ -1,4 +1,8 @@
 using System.Windows;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using System.Linq;
+using System;
 
 namespace OpenTkApp1.Views;
 
@@ -66,11 +70,91 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
+
+    /// 後で修正する
+    private double[] _xdata = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
+    private double[] _ydata = Enumerable.Range(0, _dataNum).Select(x => 5.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
+    
+    private const int _dataNum = 1000;
     public void Render()
     {
-        if (this.XData is null) return;
-        if (this.YData is null) return;
+        //if (this.XData is null) return;
+        //if (this.YData is null) return;
 
         // ToDo: XData と YData を用いてグラフを描画する
+
+        GL.ClearColor(Color4.Black);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); 
+
+        GL.Color4(Color4.White);
+        GL.PushMatrix();
+        {
+            // 軸描画
+            DrawAxisLine(-(_dataNum / 2), (_dataNum/2), 1.5 * _ydata.Min(), 1.5 * _ydata.Max());
+
+            GL.Translate(-(_dataNum/2), 0, 0);
+            // グラフ描画
+            for (int i = 0; i <= (_dataNum - 2); i++)
+            {
+                DrawGraph(i);
+
+            }
+            GL.PopMatrix();
+        }
     }
+    private void DrawGraph(int count)
+    {
+        GL.Begin(PrimitiveType.Lines);
+        {
+            GL.Vertex2(_xdata[count], _ydata[count]);
+            GL.Vertex2(_xdata[count+1], _ydata[count+1]);
+        }
+        GL.End();
+    }
+
+    // (x1,y1)から(x2,y1)にx軸 (x1,y1)から(x1,y2)にy軸を引く
+    private void DrawAxisLine(double x1, double x2, double y1, double y2)
+    {
+        GL.PushMatrix();
+        {
+            // x軸描画
+            GL.Begin(PrimitiveType.Lines);
+            {
+                GL.Vertex2(x1, y1);
+                GL.Vertex2(x2, y1);
+            }
+            GL.End();
+            //矢印描画
+            GL.Begin(PrimitiveType.TriangleStrip);
+            {
+                GL.Vertex2(x2, y1 + (2/TkGraphics.ViewHight));
+                GL.Vertex2(x2, y1 - (2/TkGraphics.ViewHight));
+                GL.Vertex2(x2 + TkGraphics.AspectRatio*(2/TkGraphics.ViewHight), y1);
+            }
+            GL.End();
+        }
+        GL.PopMatrix();
+
+        GL.PushMatrix();
+        {
+            // y軸描画
+            GL.Begin(PrimitiveType.Lines);
+            {
+                GL.Vertex2(x1, y1);
+                GL.Vertex2(x1, y2);
+            }
+            GL.End();
+
+            //矢印描画
+            GL.Begin(PrimitiveType.TriangleStrip);
+            {
+                GL.Vertex2(x1 + TkGraphics.AspectRatio * (2 / TkGraphics.ViewHight), y2);
+                GL.Vertex2(x1 - TkGraphics.AspectRatio * (2 / TkGraphics.ViewHight), y2);
+                GL.Vertex2(x1 , y2 + (2 / TkGraphics.ViewHight));
+            }
+            GL.End();
+        }
+        GL.PopMatrix();
+    }
+
 }
