@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Markup;
+using System.Linq;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
@@ -58,6 +59,7 @@ public class TkGraphics : GLWpfControl
         };
         Start(settings);
 
+        
         var look = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
         GL.LoadMatrix(ref look);
         GL.Enable(EnableCap.DepthTest);
@@ -107,11 +109,29 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            var r = this.ActualWidth / this.ActualHeight;
-            float h = 6.0f, w = (float)(h * r);  //-3 <= y <= 3 に変更し、 (幅) = (高さ) × (アスペクト比) で歪みが出ないように
-            Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 2.0f);
+            _actualAspectRatio = this.ActualWidth / this.ActualHeight;
+            Matrix4 proj = Matrix4.CreateOrthographic(Xrange, YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
+
+    // y座標の範囲
+    public static float YRange { get { return _yRange; } }
+    // yの最小値の絶対値と最大値の絶対値を比べ、大きいほうを3倍したものをyの範囲とする。
+    private static double _yMax = Math.Max(Math.Abs(TkLineGraphItem._ydata.Max()), Math.Abs(TkLineGraphItem._ydata.Min())) * 3.0;
+
+    private static float _yRange = (float)_yMax;
+    // x座標の範囲
+    public static float Xrange {  get { return _xRange; } }
+
+    private static float _xRange = TkLineGraphItem._dataNum;
+    // xの範囲とyの範囲の比
+    public static float AspectRatio { get { return _xRange / _yRange; } }
+    // ビュー画面の比
+    public static double ActualAspectRatio { get { return _actualAspectRatio; } }
+
+    private static double _actualAspectRatio;
+
+    
 }
