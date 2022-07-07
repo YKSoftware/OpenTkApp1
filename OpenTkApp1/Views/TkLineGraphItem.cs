@@ -73,10 +73,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// </summary>
 
     /// 後で修正する
-    private double[] _xdata = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
-    private double[] _ydata = Enumerable.Range(0, _dataNum).Select(x => 5.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
+    public static double[] _xdata = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
+    public static double[] _ydata = Enumerable.Range(0, _dataNum).Select(x => 100.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
     
-    private const int _dataNum = 1000;
+    public const int _dataNum = 1000;
     public void Render()
     {
         //if (this.XData is null) return;
@@ -91,9 +91,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.PushMatrix();
         {
             // 軸描画
-            DrawAxisLine(-(_dataNum / 2), (_dataNum/2), 1.5 * _ydata.Min(), 1.5 * _ydata.Max());
+            DrawAxisLine(-(_dataNum/2)+1, (_dataNum/2 - 1), (-(TkGraphics.YRange) / 2.5), TkGraphics.YRange / 2.5);
 
-            GL.Translate(-(_dataNum/2), 0, 0);
+            GL.Translate(-(_dataNum/2)+1, 0, 0);
             // グラフ描画
             for (int i = 0; i <= (_dataNum - 2); i++)
             {
@@ -132,14 +132,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
                 GL.Vertex2(x2, y1);
             }
             GL.End();
-            //矢印描画
-            GL.Begin(PrimitiveType.TriangleStrip);
-            {
-                GL.Vertex2(x2, y1 + (2/TkGraphics.YRange));
-                GL.Vertex2(x2, y1 - (2/TkGraphics.YRange));
-                GL.Vertex2((x2 + TkGraphics.AspectRatio*(2/TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y1);
-            }
-            GL.End();
+            
         }
         GL.PopMatrix();
 
@@ -153,14 +146,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             }
             GL.End();
 
-            //矢印描画
-            GL.Begin(PrimitiveType.TriangleStrip);
-            {
-                GL.Vertex2(x1 + (TkGraphics.AspectRatio * (2 / TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y2);
-                GL.Vertex2(x1 - (TkGraphics.AspectRatio * (2 / TkGraphics.YRange)/TkGraphics.ActualAspectRatio), y2);
-                GL.Vertex2(x1 , y2 + (2 / TkGraphics.YRange));
-            }
-            GL.End();
         }
         GL.PopMatrix();
     }

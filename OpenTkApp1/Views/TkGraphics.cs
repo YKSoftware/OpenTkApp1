@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Markup;
+using System.Linq;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
@@ -94,14 +95,18 @@ public class TkGraphics : GLWpfControl
     }
 
     // y座標の範囲
-    static public float YRange { get { return _yRange; } }
-    static private float _yRange = 20.0f;
+    public static float YRange { get { return _yRange; } }
+    // yの最小値の絶対値と最大値の絶対値を比べ、大きいほうを3倍したものをyの範囲とする。
+    private static double _yMax = Math.Max(Math.Abs(TkLineGraphItem._ydata.Max()), Math.Abs(TkLineGraphItem._ydata.Min())) * 3.0;
+    private static float _yRange = (float)_yMax;
     // x座標の範囲
-    static public float Xrange {  get { return _xRange; } }
-    static private float _xRange = 2000.0f;
+    public static float Xrange {  get { return _xRange; } }
+    private static float _xRange = TkLineGraphItem._dataNum;
     // xの範囲とyの範囲の比
-    static public float AspectRatio { get { return _xRange / _yRange; } }
+    public static float AspectRatio { get { return _xRange / _yRange; } }
     // ビュー画面の比
-    static public double ActualAspectRatio { get { return _actualAspectRatio; } }
-    static private double _actualAspectRatio;
+    public static double ActualAspectRatio { get { return _actualAspectRatio; } }
+    private static double _actualAspectRatio;
+
+    
 }
