@@ -98,14 +98,17 @@ public class TkGraphics : GLWpfControl
     public static float YRange { get { return _yRange; } }
     // yの最小値の絶対値と最大値の絶対値を比べ、大きいほうを3倍したものをyの範囲とする。
     private static double _yMax = Math.Max(Math.Abs(TkLineGraphItem._ydata.Max()), Math.Abs(TkLineGraphItem._ydata.Min())) * 3.0;
+
     private static float _yRange = (float)_yMax;
     // x座標の範囲
     public static float Xrange {  get { return _xRange; } }
+
     private static float _xRange = TkLineGraphItem._dataNum;
     // xの範囲とyの範囲の比
     public static float AspectRatio { get { return _xRange / _yRange; } }
     // ビュー画面の比
     public static double ActualAspectRatio { get { return _actualAspectRatio; } }
+
     private static double _actualAspectRatio;
 
     

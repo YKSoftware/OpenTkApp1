@@ -76,7 +76,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     public static double[] _xdata = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
     public static double[] _ydata = Enumerable.Range(0, _dataNum).Select(x => 100.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
     
-    public const int _dataNum = 1000;
+    public const int _dataNum = 10000;
     public void Render()
     {
         //if (this.XData is null) return;
@@ -95,29 +95,21 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
             GL.Translate(-(_dataNum/2)+1, 0, 0);
             // グラフ描画
-            for (int i = 0; i <= (_dataNum - 2); i++)
-            {
-                DrawGraph(i);
-                GL.PushMatrix();
-                {
-                    GL.Translate(_xdata[i], _ydata[i], 0);
-                    Drawplot();
-                }
-                GL.PopMatrix();
-            }
-            GL.PopMatrix();
+            DrawGraph();
+
         }
+        GL.PopMatrix();
     }
-    private void DrawGraph(int count)
+    private void DrawGraph()
     {
-        GL.Begin(PrimitiveType.Lines);
+        GL.Begin(PrimitiveType.LineStrip);
         {
-            GL.Vertex2(_xdata[count], _ydata[count]);
-            GL.Vertex2(_xdata[count+1], _ydata[count+1]);
-            
+            for(int i = 0; i < _dataNum - 1; i++)
+            GL.Vertex2(_xdata[i], _ydata[i]);
             
         }
         GL.End();
+
     }
 
     // (x1,y1)から(x2,y1)にx軸 (x1,y1)から(x1,y2)にy軸を引く
@@ -150,22 +142,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.PopMatrix();
     }
 
-    private void Drawplot()
-    {
-        // 点の半径
-        double radius = 0.05;
-        double delta = 2.0 * Math.PI / 100;
-        GL.PushMatrix();
-        // 点描画
-        GL.Begin(PrimitiveType.TriangleFan);
-        for(int i =0; i < 100; i++)
-        {
-            double x = ((radius * TkGraphics.AspectRatio)/TkGraphics.ActualAspectRatio) * Math.Cos(i * delta);
-            double y = radius * Math.Sin(i * delta);
-            GL.Vertex2(x, y);
-        }
-        GL.End();
-        GL.PopMatrix();
-    }
+   
 
 }
