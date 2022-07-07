@@ -13,7 +13,7 @@ public class TkGraphics : GLWpfControl
     /// <summary>
     /// DrawingItem 依存関係プロパティの定義を表します。
     /// </summary>
-    public static readonly DependencyProperty DrawingItemProperty = DependencyProperty.Register("DrawingItem", typeof(ITkGraphicsItem), typeof(TkGraphics), new PropertyMetadata(null));
+    public static readonly DependencyProperty DrawingItemProperty = DependencyProperty.Register("DrawingItem", typeof(ITkGraphicsItem), typeof(TkGraphics), new PropertyMetadata(null, OnDrawingItemPropertyChanged));
 
     /// <summary>
     /// 描画内容を取得または設定します。
@@ -22,6 +22,28 @@ public class TkGraphics : GLWpfControl
     {
         get => (ITkGraphicsItem?)GetValue(DrawingItemProperty);
         set => SetValue(DrawingItemProperty, value);
+    }
+
+    /// <summary>
+    /// DrawingItem 依存関係プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
+    private static void OnDrawingItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var control = (TkGraphics)d;
+        control.OnDrawingItemPropertyChanged(e.OldValue, e.NewValue);
+    }
+
+    /// <summary>
+    /// DrawingItem 依存関係プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="oldItem">変更前の値</param>
+    /// <param name="newItem">変更後の値</param>
+    private void OnDrawingItemPropertyChanged(object oldItem, object newItem)
+    {
+        RemoveLogicalChild(oldItem);
+        AddLogicalChild(newItem);
     }
 
     /// <summary>
