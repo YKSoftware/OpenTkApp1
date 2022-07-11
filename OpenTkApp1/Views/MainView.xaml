@@ -8,37 +8,38 @@
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="650">
     <Grid Background="Black">
         <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="10*" />
-            <RowDefinition/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border BorderBrush="White" BorderThickness="0,0,1,0">
-            <Label Grid.Column="0" Grid.Row="0" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" >
+
+        <Border  Grid.Column="0" Grid.Row="1" BorderBrush="White" BorderThickness="0,0,1,0"></Border>
+        <Border  Grid.Column="1" Grid.Row="0" BorderBrush="White" BorderThickness="0,0,0,1"></Border>
+        <Border  Grid.Column="1" Grid.Row="2" BorderBrush="White" BorderThickness="0,1,0,0"></Border>
+        <Border  Grid.Column="2" Grid.Row="1" BorderBrush="White" BorderThickness="1,0,0,0"></Border>
+        
+        <Label Grid.Column="0" Grid.Row="1" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" >
             <Label.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
                 </TransformGroup>
             </Label.LayoutTransform>
-            </Label>
-        </Border>
+        </Label>
 
-
-        <StackPanel Grid.Column="1" Grid.Row="1">
-            <Border BorderBrush="White" BorderThickness="0,1,0,0">
-                <TextBlock Text="Time[ms]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Border>
-        </StackPanel>
+        <TextBlock Grid.Column="1" Grid.Row="2" Text="Time[ms]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         
         <!--<vw:TkGraphics>
             <vw:SampleTiles />
         </vw:TkGraphics>-->
 
-        <vw:TkGraphics Grid.Row="0" Grid.Column="1" >
+        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" >
            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" />
         </vw:TkGraphics>
 
