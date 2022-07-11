@@ -111,7 +111,10 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            Matrix4 proj = Matrix4.CreateOrthographic(1000, 300, 0.01f, 1000.0f);
+            // 座標の範囲を決める    -Range/2 <= x or y <= Range/2 
+            var xRange = 1000;
+            var yRange = 300;
+            Matrix4 proj = Matrix4.CreateOrthographic(xRange, yRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);

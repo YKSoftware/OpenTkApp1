@@ -8,7 +8,7 @@
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="650">
     <Grid Background="Black">
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*" />
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -17,21 +17,30 @@
             <ColumnDefinition Width="10*"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border BorderBrush="White" BorderThickness="0,0,1,0">
+            <Label Grid.Column="0" Grid.Row="0" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" >
             <Label.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
                 </TransformGroup>
             </Label.LayoutTransform>
-        </Label>
-        <TextBlock Grid.Column="1" Grid.Row="1" Text="Time[ms]" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Center" />
+            </Label>
+        </Border>
 
+
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <Border BorderBrush="White" BorderThickness="0,1,0,0">
+                <TextBlock Text="Time[ms]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+        </StackPanel>
+        
         <!--<vw:TkGraphics>
             <vw:SampleTiles />
         </vw:TkGraphics>-->
 
-        <vw:TkGraphics Grid.Row="0" Grid.Column="1">
-            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" />
+        <vw:TkGraphics Grid.Row="0" Grid.Column="1" >
+           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" />
         </vw:TkGraphics>
+
     </Grid>
 </Window>

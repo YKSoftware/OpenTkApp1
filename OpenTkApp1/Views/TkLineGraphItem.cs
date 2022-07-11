@@ -90,7 +90,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.PushMatrix();
         {
             // 軸描画
-            DrawAxisLine(-(XData.Length/2) + 1, (XData.Length/2 - 1), -(_yMax / 2.5), (_yMax / 2.5));
+            //DrawAxisLine(-(XData.Length/2) + 1, (XData.Length/2 - 1), -(_yMax / 2.5), (_yMax / 2.5));
 
             GL.Translate(-(XData.Length/2) + 1, 0, 0);
             // グラフ描画
