@@ -72,15 +72,14 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// 描画処理をおこないます。
     /// </summary>
 
-    /// 後で修正する
-    public static double[] _xdata = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
-    public static double[] _ydata = Enumerable.Range(0, _dataNum).Select(x => 100.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
-    
-    public const int _dataNum = 10000;
+ 
+
     public void Render()
     {
-        //if (this.XData is null) return;
-        //if (this.YData is null) return;
+        if (this.XData is null) return;
+        if (this.YData is null) return;
+        
+        double _yMax = Math.Max(Math.Abs(YData.Max()), Math.Abs(YData.Min())) * 3.0;
 
         // ToDo: XData と YData を用いてグラフを描画する
 
@@ -91,9 +90,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.PushMatrix();
         {
             // 軸描画
-            DrawAxisLine(-(_dataNum/2)+1, (_dataNum/2 - 1), (-(TkGraphics.YRange) / 2.5), TkGraphics.YRange / 2.5);
+            DrawAxisLine(-(XData.Length/2) + 1, (XData.Length/2 - 1), -(_yMax / 2.5), (_yMax / 2.5));
 
-            GL.Translate(-(_dataNum/2)+1, 0, 0);
+            GL.Translate(-(XData.Length/2) + 1, 0, 0);
             // グラフ描画
             DrawGraph();
 
@@ -104,12 +103,12 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     {
         GL.Begin(PrimitiveType.LineStrip);
         {
-            for(int i = 0; i < _dataNum - 1; i++)
-            GL.Vertex2(_xdata[i], _ydata[i]);
+            for(int i = 0; i < XData.Length; i++)
+            GL.Vertex2(XData[i], YData[i]);
             
         }
         GL.End();
-
+        
     }
 
     // (x1,y1)から(x2,y1)にx軸 (x1,y1)から(x1,y2)にy軸を引く
@@ -142,6 +141,5 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.PopMatrix();
     }
 
-   
 
 }

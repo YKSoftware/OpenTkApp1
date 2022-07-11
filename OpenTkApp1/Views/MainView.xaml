@@ -20,7 +20,7 @@
         <Label Grid.Column="0" Grid.Row="0" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Label.LayoutTransform>
                 <TransformGroup>
-                    <RotateTransform Angle="270"/>
+                    <RotateTransform Angle="-90"/>
                 </TransformGroup>
             </Label.LayoutTransform>
         </Label>

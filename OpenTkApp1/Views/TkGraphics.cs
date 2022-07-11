@@ -47,11 +47,13 @@ public class TkGraphics : GLWpfControl
         AddLogicalChild(newItem);
     }
 
+
     /// <summary>
     /// 新しいインスタンスを生成します。
     /// </summary>
     public TkGraphics()
     {
+
         var settings = new GLWpfControlSettings()
         {
             MajorVersion = 2,
@@ -109,29 +111,11 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            _actualAspectRatio = this.ActualWidth / this.ActualHeight;
-            Matrix4 proj = Matrix4.CreateOrthographic(Xrange, YRange, 0.01f, 1000.0f);
+            Matrix4 proj = Matrix4.CreateOrthographic(1000, 300, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
 
-    // y座標の範囲
-    public static float YRange { get { return _yRange; } }
-    // yの最小値の絶対値と最大値の絶対値を比べ、大きいほうを3倍したものをyの範囲とする。
-    private static double _yMax = Math.Max(Math.Abs(TkLineGraphItem._ydata.Max()), Math.Abs(TkLineGraphItem._ydata.Min())) * 3.0;
 
-    private static float _yRange = (float)_yMax;
-    // x座標の範囲
-    public static float Xrange {  get { return _xRange; } }
-
-    private static float _xRange = TkLineGraphItem._dataNum;
-    // xの範囲とyの範囲の比
-    public static float AspectRatio { get { return _xRange / _yRange; } }
-    // ビュー画面の比
-    public static double ActualAspectRatio { get { return _actualAspectRatio; } }
-
-    private static double _actualAspectRatio;
-
-    
 }

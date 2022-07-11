@@ -12,7 +12,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public double[] XData { get; } = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
 
-    public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 5.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
+    public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 100.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
 
     private const int _dataNum = 1000;
 
