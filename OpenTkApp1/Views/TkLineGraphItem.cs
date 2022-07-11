@@ -71,31 +71,33 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
+    /// 
+    // 後で修正する
+    private int _xScale = 100;
 
+    private int _yScale = 30;
  
 
     public void Render()
     {
         if (this.XData is null) return;
         if (this.YData is null) return;
-        
-        double _yMax = Math.Max(Math.Abs(YData.Max()), Math.Abs(YData.Min())) * 3.0;
 
         // ToDo: XData と YData を用いてグラフを描画する
 
         GL.ClearColor(Color4.Black);
+
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); 
 
         GL.Color4(Color4.White);
+
         GL.PushMatrix();
         {
-            // 軸描画
-            //DrawAxisLine(-(XData.Length/2) + 1, (XData.Length/2 - 1), -(_yMax / 2.5), (_yMax / 2.5));
-
-            GL.Translate(-(XData.Length/2) + 1, 0, 0);
+            GL.Translate(-(TkGraphics.XRange / 2), 0, 0);
             // グラフ描画
             DrawGraph();
-
+            // 目盛り線描画
+            DrawScale();
         }
         GL.PopMatrix();
     }
@@ -109,6 +111,36 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         }
         GL.End();
         
+    }
+    
+    private void DrawScale()
+    {
+        // 点線描画ON
+        GL.Enable(EnableCap.LineStipple);
+        // 破線の形状を決める
+        GL.LineStipple(1, 0xF0F0);
+        GL.Begin(PrimitiveType.Lines);
+        {
+            var _xCurrentPosition = _xScale;
+            var _yCurrentPosition = -TkGraphics.YRange;
+
+            while (_xCurrentPosition <= TkGraphics.XRange)
+            {
+                GL.Vertex2(_xCurrentPosition, -(TkGraphics.YRange));
+                GL.Vertex2(_xCurrentPosition, TkGraphics.YRange);
+                _xCurrentPosition += _xScale;
+            }
+
+            while (_yCurrentPosition <= TkGraphics.YRange)
+            {
+                GL.Vertex2(0, _yCurrentPosition);
+                GL.Vertex2(TkGraphics.XRange,_yCurrentPosition);
+                _yCurrentPosition += _yScale;
+            }
+        }
+        GL.End();
+        // 点線描画OFF ※これをしないと描画したもの全て点線になる
+        GL.Disable(EnableCap.LineStipple);
     }
 
     // (x1,y1)から(x2,y1)にx軸 (x1,y1)から(x1,y2)にy軸を引く

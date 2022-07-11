@@ -105,20 +105,25 @@ public class TkGraphics : GLWpfControl
     /// </summary>
     private void SetProjection()
     {
+
         // ビューポートの設定
         GL.Viewport(0, 0, (int)this.ActualWidth, (int)this.ActualHeight);
 
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            // 座標の範囲を決める    -Range/2 <= x or y <= Range/2 
-            var xRange = 1000;
-            var yRange = 300;
-            Matrix4 proj = Matrix4.CreateOrthographic(xRange, yRange, 0.01f, 1000.0f);
+
+            Matrix4 proj = Matrix4.CreateOrthographic(XRange, YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
+
     }
+
+    // 座標の範囲を決める    -Range/2 <= x or y <= Range/2 
+    public static int XRange = 1000;
+
+    public static int YRange = 300;
 
 
 }
