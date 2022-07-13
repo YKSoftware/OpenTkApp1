@@ -151,10 +151,5 @@ public class TkGraphics : GLWpfControl
 
     }
 
-    // 座標の範囲を決める    -Range/2 <= x or y <= Range/2 
-    //public static int XRange = 1000;
-
-    //public static int YRange = 300;
-
 
 }

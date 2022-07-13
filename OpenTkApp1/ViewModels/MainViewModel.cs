@@ -27,20 +27,23 @@ public class MainViewModel : INotifyPropertyChanged
     private double _xMax = 1000.0;
 
     // y軸目盛り幅
-    public double YScale { get; } = 30.0;
+    public double YScale { get; } = 20.0;
 
     // y座標最小値
     public double YMin { get { return _yMin; } }
 
-    private double _yMin = 50.0;
+    private double _yMin = -30.0;
 
     // y座標最大値
     public double YMax { get { return _yMax; } }
     
-    private double _yMax = 50.0;
+    private double _yMax = 20.0;
+
+    // y座標の中点
+    public double YCenter { get { return (_yMin + _yMax) / 2; } }
 
     // y座標の描画領域
-    public int YRange { get { return 2*(int)Math.Max(Math.Abs(_yMax), Math.Abs(_yMin)); } }
+    public int YRange { get { return (int)(_yMax - _yMin); } }
 
     private const int _dataNum = 1000;
 

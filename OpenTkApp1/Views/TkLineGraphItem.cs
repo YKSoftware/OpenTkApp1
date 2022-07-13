@@ -149,6 +149,22 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion YMin
 
+    #region YCenter
+    public static readonly DependencyProperty YCenterProperty = DependencyProperty.Register("YCenter", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYCenterPropertyChanged));
+
+    public double YCenter
+    {
+        get => (double)GetValue(YCenterProperty);
+        set => SetValue(YCenterProperty, value);
+    }
+
+    private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YCenter
+
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
@@ -159,9 +175,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         if (this.YData is null) return;            
         if (XScale == 0) return;
         if (YScale == 0) return;
-        if (XMax == 0) return;
-        if (YMax == 0) return;
-        if (YMin == 0) return;
 
         // ToDo: XData と YData を用いてグラフを描画する
 
@@ -183,10 +196,12 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     }
     private void DrawGraph()
     {
+
         GL.Begin(PrimitiveType.LineStrip);
         {
             for(int i = 0; i < XData.Length; i++)
-            GL.Vertex2(XData[i], YData[i]);
+            // 描画領域に合わせて平行移動する必要がある
+            GL.Vertex2(XData[i], YData[i] - YCenter);
             
         }
         GL.End();
@@ -202,16 +217,16 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         {
             double _xCurrentPosition = XScale;
             double _yCurrentPosition = 0;
-            double _yAbsMax = Math.Max(Math.Abs(YMin), Math.Abs(YMax));
 
             while (_xCurrentPosition <= XMax)
             {
-                GL.Vertex2(_xCurrentPosition, -_yAbsMax);
-                GL.Vertex2(_xCurrentPosition, _yAbsMax);
+                // 描画領域に合わせて平行移動する必要がある
+                GL.Vertex2(_xCurrentPosition, YMin - YCenter);
+                GL.Vertex2(_xCurrentPosition, YMax - YCenter);
                 _xCurrentPosition += XScale;
             }
 
-            while (_yCurrentPosition <= _yAbsMax)
+            while (_yCurrentPosition <= YMax - YCenter)
             {
                 GL.Vertex2(0, _yCurrentPosition);
                 GL.Vertex2(XMax,_yCurrentPosition);
@@ -219,7 +234,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             }
 
             _yCurrentPosition = 0;
-            while (_yCurrentPosition >= -_yAbsMax)
+            while (_yCurrentPosition >= YMin - YCenter)
             {
                 GL.Vertex2(0, _yCurrentPosition);
                 GL.Vertex2(XMax, _yCurrentPosition);

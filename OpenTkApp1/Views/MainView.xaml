@@ -34,7 +34,7 @@
 
         <Grid Grid.Column="0" Grid.Row="1" Margin="0,0,10,0">
             <TextBlock  Text="{Binding YMax}"  Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-            <TextBlock  Text="0.0"  Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <TextBlock  Text="{Binding YCenter}"  Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
             <TextBlock  Text="{Binding YMin}"  Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
         </Grid>
 
@@ -50,7 +50,8 @@
         </vw:TkGraphics>-->
 
         <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XMax}" YRange="{Binding YRange}">
-           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" YMax="{Binding YMax}" YMin="{Binding YMin}"/>
+           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" YMax="{Binding YMax}" YMin="{Binding YMin}"
+                               YCenter="{Binding YCenter}"/>
         </vw:TkGraphics>
 
     </Grid>
