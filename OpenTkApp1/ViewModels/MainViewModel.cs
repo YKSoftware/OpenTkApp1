@@ -10,9 +10,37 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public string Title { get; } = "OpenTK で折れ線グラフ";
 
+    // 表示データ
     public double[] XData { get; } = Enumerable.Range(0, _dataNum).Select(x => (double)x).ToArray();
 
-    public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 100.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
+    public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 50.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
+
+    // x軸目盛り幅
+    public double XScale { get; } = 100.0;
+
+    // x座標最小値
+    public double XMin { get; } = 0.0;
+
+    // x座標最大値
+    public double XMax { get { return _xMax; } }
+    
+    private double _xMax = 1000.0;
+
+    // y軸目盛り幅
+    public double YScale { get; } = 30.0;
+
+    // y座標最小値
+    public double YMin { get { return _yMin; } }
+
+    private double _yMin = 50.0;
+
+    // y座標最大値
+    public double YMax { get { return _yMax; } }
+    
+    private double _yMax = 50.0;
+
+    // y座標の描画領域
+    public int YRange { get { return 2*(int)Math.Max(Math.Abs(_yMax), Math.Abs(_yMin)); } }
 
     private const int _dataNum = 1000;
 

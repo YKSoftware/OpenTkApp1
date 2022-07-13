@@ -68,20 +68,100 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion YData
 
+    #region XScale
+    public static readonly DependencyProperty XScaleProperty = DependencyProperty.Register("XScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXScalePropertyChanged));
+
+    public double XScale
+    {
+        get => (double)GetValue(XScaleProperty);
+        set => SetValue(XScaleProperty, value);
+    }
+
+    private static void OnXScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XScale
+
+    #region YScale
+    public static readonly DependencyProperty YScaleProperty = DependencyProperty.Register("YScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYScalePropertyChanged));
+
+    public double YScale
+    {
+        get => (double)GetValue(YScaleProperty);
+        set => SetValue(YScaleProperty, value);
+    }
+
+    private static void OnYScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+
+    #endregion YScale
+
+    #region XMax
+    public static readonly DependencyProperty XMaxProperty = DependencyProperty.Register("XMax", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXMaxPropertyChanged));
+
+    public double XMax
+    {
+        get => (double)GetValue(XMaxProperty);
+        set => SetValue(XMaxProperty, value);
+    }
+
+    private static void OnXMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XMax
+
+    #region YMax
+    public static readonly DependencyProperty YMaxProperty = DependencyProperty.Register("YMax", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYMaxPropertyChanged));
+
+    public double YMax
+    {
+        get => (double)GetValue(YMaxProperty);
+        set => SetValue(YMaxProperty, value);
+    }
+
+    private static void OnYMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YMax
+
+    #region YMin
+    public static readonly DependencyProperty YMinProperty = DependencyProperty.Register("YMin", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYMinPropertyChanged));
+
+    public double YMin
+    {
+        get => (double)GetValue(YMinProperty);
+        set => SetValue(YMinProperty, value);
+    }
+
+    private static void OnYMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YMin
+
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
-    /// 
-    // 後で修正する
-    private int _xScale = 100;
-
-    private int _yScale = 30;
- 
 
     public void Render()
     {
         if (this.XData is null) return;
-        if (this.YData is null) return;
+        if (this.YData is null) return;            
+        if (XScale == 0) return;
+        if (YScale == 0) return;
+        if (XMax == 0) return;
+        if (YMax == 0) return;
+        if (YMin == 0) return;
 
         // ToDo: XData と YData を用いてグラフを描画する
 
@@ -93,7 +173,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
         GL.PushMatrix();
         {
-            GL.Translate(-(TkGraphics.XRange / 2), 0, 0);
+            GL.Translate(-( XMax / 2), 0, 0);
             // グラフ描画
             DrawGraph();
             // 目盛り線描画
@@ -112,7 +192,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
         
     }
-    
     private void DrawScale()
     {
         // 点線描画ON
@@ -121,57 +200,35 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.LineStipple(1, 0xF0F0);
         GL.Begin(PrimitiveType.Lines);
         {
-            var _xCurrentPosition = _xScale;
-            var _yCurrentPosition = -TkGraphics.YRange;
+            double _xCurrentPosition = XScale;
+            double _yCurrentPosition = 0;
+            double _yAbsMax = Math.Max(Math.Abs(YMin), Math.Abs(YMax));
 
-            while (_xCurrentPosition <= TkGraphics.XRange)
+            while (_xCurrentPosition <= XMax)
             {
-                GL.Vertex2(_xCurrentPosition, -(TkGraphics.YRange));
-                GL.Vertex2(_xCurrentPosition, TkGraphics.YRange);
-                _xCurrentPosition += _xScale;
+                GL.Vertex2(_xCurrentPosition, -_yAbsMax);
+                GL.Vertex2(_xCurrentPosition, _yAbsMax);
+                _xCurrentPosition += XScale;
             }
 
-            while (_yCurrentPosition <= TkGraphics.YRange)
+            while (_yCurrentPosition <= _yAbsMax)
             {
                 GL.Vertex2(0, _yCurrentPosition);
-                GL.Vertex2(TkGraphics.XRange,_yCurrentPosition);
-                _yCurrentPosition += _yScale;
+                GL.Vertex2(XMax,_yCurrentPosition);
+                _yCurrentPosition += YScale;
+            }
+
+            _yCurrentPosition = 0;
+            while (_yCurrentPosition >= -_yAbsMax)
+            {
+                GL.Vertex2(0, _yCurrentPosition);
+                GL.Vertex2(XMax, _yCurrentPosition);
+                _yCurrentPosition -= YScale;
             }
         }
         GL.End();
         // 点線描画OFF ※これをしないと描画したもの全て点線になる
         GL.Disable(EnableCap.LineStipple);
     }
-
-    // (x1,y1)から(x2,y1)にx軸 (x1,y1)から(x1,y2)にy軸を引く
-    private void DrawAxisLine(double x1, double x2, double y1, double y2)
-    {
-        GL.PushMatrix();
-        {
-            // x軸描画
-            GL.Begin(PrimitiveType.Lines);
-            {
-                GL.Vertex2(x1, y1);
-                GL.Vertex2(x2, y1);
-            }
-            GL.End();
-            
-        }
-        GL.PopMatrix();
-
-        GL.PushMatrix();
-        {
-            // y軸描画
-            GL.Begin(PrimitiveType.Lines);
-            {
-                GL.Vertex2(x1, y1);
-                GL.Vertex2(x1, y2);
-            }
-            GL.End();
-
-        }
-        GL.PopMatrix();
-    }
-
 
 }

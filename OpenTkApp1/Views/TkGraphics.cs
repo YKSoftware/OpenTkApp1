@@ -47,10 +47,41 @@ public class TkGraphics : GLWpfControl
         AddLogicalChild(newItem);
     }
 
-
     /// <summary>
     /// 新しいインスタンスを生成します。
     /// </summary>
+     #region XRange
+    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnXRangePropertyChanged));
+
+    public int XRange
+    {
+        get => (int)GetValue(XRangeProperty);
+        set => SetValue(XRangeProperty, value);
+    }
+
+    private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XRange
+
+     #region YRange
+    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnYRangePropertyChanged));
+
+    public int YRange
+    {
+        get => (int)GetValue(YRangeProperty);
+        set => SetValue(YRangeProperty, value);
+    }
+
+    private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YRange
+
     public TkGraphics()
     {
 
@@ -121,9 +152,9 @@ public class TkGraphics : GLWpfControl
     }
 
     // 座標の範囲を決める    -Range/2 <= x or y <= Range/2 
-    public static int XRange = 1000;
+    //public static int XRange = 1000;
 
-    public static int YRange = 300;
+    //public static int YRange = 300;
 
 
 }

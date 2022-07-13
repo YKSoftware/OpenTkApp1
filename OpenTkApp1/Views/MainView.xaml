@@ -8,24 +8,23 @@
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="650">
     <Grid Background="Black">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
+            <RowDefinition />
             <RowDefinition Height="10*" />
-            <RowDefinition Height="1*"/>
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition />
             <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-
 
         <Border  Grid.Column="0" Grid.Row="1" BorderBrush="White" BorderThickness="0,0,1,0"></Border>
         <Border  Grid.Column="1" Grid.Row="0" BorderBrush="White" BorderThickness="0,0,0,1"></Border>
         <Border  Grid.Column="1" Grid.Row="2" BorderBrush="White" BorderThickness="0,1,0,0"></Border>
         <Border  Grid.Column="2" Grid.Row="1" BorderBrush="White" BorderThickness="1,0,0,0"></Border>
-        
-        <Label Grid.Column="0" Grid.Row="1" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" >
+
+        <Label Grid.Column="0" Grid.Row="1" Content="Weight[g]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <Label.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
@@ -33,14 +32,25 @@
             </Label.LayoutTransform>
         </Label>
 
-        <TextBlock Grid.Column="1" Grid.Row="2" Text="Time[ms]" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Grid Grid.Column="0" Grid.Row="1" Margin="0,0,10,0">
+            <TextBlock  Text="{Binding YMax}"  Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+            <TextBlock  Text="0.0"  Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <TextBlock  Text="{Binding YMin}"  Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="2" Margin="0,0,0,0">
+            <TextBlock  Text="{Binding XMin}"  Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <TextBlock  Text="{Binding XMax}"  Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <TextBlock Grid.Column="1" Grid.Row="2" Text="Time[ms]" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
         
         <!--<vw:TkGraphics>
             <vw:SampleTiles />
         </vw:TkGraphics>-->
 
-        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" >
-           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" />
+        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XMax}" YRange="{Binding YRange}">
+           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" YMax="{Binding YMax}" YMin="{Binding YMin}"/>
         </vw:TkGraphics>
 
     </Grid>
