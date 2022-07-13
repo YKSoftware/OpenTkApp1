@@ -19,25 +19,31 @@ public class MainViewModel : INotifyPropertyChanged
     public double XScale { get; } = 100.0;
 
     // x座標最小値
-    public double XMin { get; } = 0.0;
+    public double XMin { get { return _xMin; } }
+
+    private double _xMin = 0.0;
 
     // x座標最大値
     public double XMax { get { return _xMax; } }
     
     private double _xMax = 1000.0;
 
+    // x座標の描画領域
+    public int XRange { get { return (int)(_xMax - _xMin); } }
+
     // y軸目盛り幅
-    public double YScale { get; } = 20.0;
+    public double YScale { get; } = 30.0;
+
 
     // y座標最小値
     public double YMin { get { return _yMin; } }
 
-    private double _yMin = -30.0;
+    private double _yMin = -60.0;
 
     // y座標最大値
     public double YMax { get { return _yMax; } }
     
-    private double _yMax = 20.0;
+    private double _yMax = 60.0;
 
     // y座標の中点
     public double YCenter { get { return (_yMin + _yMax) / 2; } }

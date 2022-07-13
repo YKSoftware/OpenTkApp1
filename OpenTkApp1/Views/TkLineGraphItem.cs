@@ -117,6 +117,22 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion XMax
 
+    #region XMin
+    public static readonly DependencyProperty XMinProperty = DependencyProperty.Register("XMin", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXMinPropertyChanged));
+
+    public double XMin
+    {
+        get => (double)GetValue(XMinProperty);
+        set => SetValue(XMinProperty, value);
+    }
+
+    private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XMin
+
     #region YMax
     public static readonly DependencyProperty YMaxProperty = DependencyProperty.Register("YMax", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYMaxPropertyChanged));
 
@@ -186,7 +202,8 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
         GL.PushMatrix();
         {
-            GL.Translate(-( XMax / 2), 0, 0);
+            // 左端から描画するために移動
+            GL.Translate(-((XMax - XMin)/2), 0, 0);
             // グラフ描画
             DrawGraph();
             // 目盛り線描画
@@ -201,7 +218,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         {
             for(int i = 0; i < XData.Length; i++)
             // 描画領域に合わせて平行移動する必要がある
-            GL.Vertex2(XData[i], YData[i] - YCenter);
+            GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
             
         }
         GL.End();
@@ -215,7 +232,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.LineStipple(1, 0xF0F0);
         GL.Begin(PrimitiveType.Lines);
         {
-            double _xCurrentPosition = XScale;
+            double _xCurrentPosition = 0;
             double _yCurrentPosition = 0;
 
             while (_xCurrentPosition <= XMax)
