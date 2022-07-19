@@ -16,12 +16,12 @@ public class MainViewModel : INotifyPropertyChanged
     public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 50.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
 
     // x軸目盛り幅
-    public double XScale { get; } = 100.0;
+    public double XScale { get; } = 10.0;
 
     // x座標最小値
     public double XMin { get { return _xMin; } }
 
-    private double _xMin = 0.0;
+    private double _xMin = 880.0;
 
     // x座標最大値
     public double XMax { get { return _xMax; } }

@@ -222,6 +222,17 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             
         }
         GL.End();
+
+        // 点描画
+        float _pointSize = 2.2f;
+        GL.PointSize(_pointSize);
+        GL.Begin(PrimitiveType.Points);
+        {
+            for (int i = 0; i < XData.Length; i++)
+            // 描画領域に合わせて平行移動する必要がある
+            GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
+        }
+        GL.End();
         
     }
     private void DrawScale()

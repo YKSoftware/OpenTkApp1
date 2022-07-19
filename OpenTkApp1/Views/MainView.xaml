@@ -49,6 +49,8 @@
             <vw:SampleTiles />
         </vw:TkGraphics>-->
 
+        <!--<Button Grid.Column="2" Grid.Row="1" Content="描画&#xa;設定" Height="45" Width="45" VerticalAlignment="Bottom" HorizontalAlignment="Center" Click="Button_Click"/>-->
+
         <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}">
            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}"
                                YCenter="{Binding YCenter}"/>
