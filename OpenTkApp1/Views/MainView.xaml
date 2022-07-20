@@ -53,7 +53,8 @@
 
         <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}">
            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}"
-                               YCenter="{Binding YCenter}"/>
+                               YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}"
+                               PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}"/>
         </vw:TkGraphics>
 
     </Grid>

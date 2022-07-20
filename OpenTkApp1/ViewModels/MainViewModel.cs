@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using OpenTK.Mathematics;
+using OpenTkApp1.Views;
 
 namespace OpenTkApp1.ViewModels;
 
@@ -16,12 +18,12 @@ public class MainViewModel : INotifyPropertyChanged
     public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 50.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
 
     // x軸目盛り幅
-    public double XScale { get; } = 10.0;
+    public double XScale { get; } = 100.0;
 
     // x座標最小値
     public double XMin { get { return _xMin; } }
 
-    private double _xMin = 880.0;
+    private double _xMin = 950.0;
 
     // x座標最大値
     public double XMax { get { return _xMax; } }
@@ -52,6 +54,24 @@ public class MainViewModel : INotifyPropertyChanged
     public int YRange { get { return (int)(_yMax - _yMin); } }
 
     private const int _dataNum = 1000;
+
+    // プロットのサイズ
+    public double PlotSize { get { return _plotSize; } }
+
+    private double _plotSize = 1.0;
+
+    //プロットのタイプ
+    public MarkerTypes PlotType { get { return _plotType; } }
+
+    private MarkerTypes _plotType = MarkerTypes.Triangle;
+
+    // プロットの色
+    public Color4 PlotColor { get { return _plotColor; } }
+    private Color4 _plotColor = Color4.Crimson;
+    //プロットの有無
+    public bool IsPlot { get { return _isPlot; } }
+
+    private bool _isPlot = true;
 
     #region INotifyPropertyChanged の実装
 

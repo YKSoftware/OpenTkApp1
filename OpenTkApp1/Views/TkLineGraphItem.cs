@@ -181,6 +181,102 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion YCenter
 
+    #region XRange
+    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(int), typeof(TkLineGraphItem), new PropertyMetadata(0, OnXRangePropertyChanged));
+
+    public int XRange
+    {
+        get => (int)GetValue(XRangeProperty);
+        set => SetValue(XRangeProperty, value);
+    }
+
+    private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XRange
+
+    #region YRange
+    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(int), typeof(TkLineGraphItem), new PropertyMetadata(0, OnYRangePropertyChanged));
+
+    public int YRange
+    {
+        get => (int)GetValue(YRangeProperty);
+        set => SetValue(YRangeProperty, value);
+    }
+
+    private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YRange
+
+    #region PlotSize
+    public static readonly DependencyProperty PlotSizeProperty = DependencyProperty.Register("PlotSize", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnPlotSizePropertyChanged));
+
+    public double PlotSize
+    {
+        get => (double)GetValue(PlotSizeProperty);
+        set => SetValue(PlotSizeProperty, value);
+    }
+
+    private static void OnPlotSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion PlotSize
+
+    #region PlotType
+    public static readonly DependencyProperty PlotTypeProperty = DependencyProperty.Register("PlotType", typeof(MarkerTypes), typeof(TkLineGraphItem), new PropertyMetadata(MarkerTypes.Ellipse, OnPlotTypePropertyChanged));
+
+    public MarkerTypes PlotType
+    {
+        get => (MarkerTypes)GetValue(PlotTypeProperty);
+        set => SetValue(PlotTypeProperty, value);
+    }
+
+    private static void OnPlotTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion PlotType
+
+    #region PlotColor
+    public static readonly DependencyProperty PlotColorProperty = DependencyProperty.Register("PlotColor", typeof(Color4), typeof(TkLineGraphItem), new PropertyMetadata(Color4.White, OnPlotColorPropertyChanged));
+
+    public Color4 PlotColor
+    {
+        get => (Color4)GetValue(PlotColorProperty);
+        set => SetValue(PlotColorProperty, value);
+    }
+
+    private static void OnPlotColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion PlotColor
+
+    #region ISPlot
+    public static readonly DependencyProperty IsPlotProperty = DependencyProperty.Register("IsPlot", typeof(bool), typeof(TkLineGraphItem), new PropertyMetadata(false, OnIsPlotPropertyChanged));
+
+    public bool IsPlot
+    {
+        get => (bool)GetValue(IsPlotProperty);
+        set => SetValue(IsPlotProperty, value);
+    }
+
+    private static void OnIsPlotPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion IsPlot
+
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
@@ -191,6 +287,8 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         if (this.YData is null) return;            
         if (XScale == 0) return;
         if (YScale == 0) return;
+        if (XRange == 0) return;
+        if (YRange == 0) return;
 
         // ToDo: XData と YData を用いてグラフを描画する
 
@@ -204,13 +302,17 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         {
             // 左端から描画するために移動
             GL.Translate(-((XMax - XMin)/2), 0, 0);
-            // グラフ描画
+            // グラフ点描画
+            DrawPlot(PlotSize, PlotType, PlotColor);
+            // グラフ線描画
             DrawGraph();
             // 目盛り線描画
             DrawScale();
         }
         GL.PopMatrix();
     }
+
+    //グラフ線描画
     private void DrawGraph()
     {
 
@@ -219,22 +321,135 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             for(int i = 0; i < XData.Length; i++)
             // 描画領域に合わせて平行移動する必要がある
             GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
-            
-        }
-        GL.End();
-
-        // 点描画
-        float _pointSize = 2.2f;
-        GL.PointSize(_pointSize);
-        GL.Begin(PrimitiveType.Points);
-        {
-            for (int i = 0; i < XData.Length; i++)
-            // 描画領域に合わせて平行移動する必要がある
-            GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
         }
         GL.End();
         
     }
+
+    private void DrawPlot(double size, MarkerTypes type, Color4 color)
+    {
+        if (IsPlot == false) return;
+
+        GL.Color4(color);
+
+        double halfsize = size / 2;
+
+        switch (type)
+        {
+            case MarkerTypes.Ellipse:
+                DrawEllipsePlot(size);
+                break;
+
+            case MarkerTypes.Triangle:
+                DrawTrianglePlot(halfsize);
+                break;
+
+            case MarkerTypes.Rectangle:
+                DrawRectanglePlot(halfsize);
+                break;
+
+            case MarkerTypes.InvertedTriangle:
+                DrawInvertedTrianglePlot(halfsize);
+                break;
+        }
+
+        GL.Color4(Color4.White);
+    }
+
+    // 丸形プロット
+    private void DrawEllipsePlot(double size)
+    {
+        // 分割数
+        int division = 40;
+        double delta = 2.0 * Math.PI / (double)division;
+        // プロットする図形に歪みが出ないようにアスペクト比をかける。
+        double aspectRatio = (double)XRange / YRange;
+        double xSize = size * aspectRatio;
+
+        GL.Begin(PrimitiveType.Triangles);
+        {
+            for (int i = 0; i < XData.Length; i++)
+            {
+                for (int j = 0; j <= division; j++)
+                {
+                    double x1 = XData[i] - XMin + (xSize * Math.Cos(delta * j));
+                    double y1 = YData[i] - YCenter + (size * Math.Sin(delta * j));
+                    double x2 = XData[i] - XMin + (xSize * Math.Cos(delta * j+1));
+                    double y2 = YData[i] - YCenter + (size * Math.Sin(delta * j+1));
+                    GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
+                    GL.Vertex2(x1, y1);
+                    GL.Vertex2(x2, y2);
+                }
+            }
+        }
+        GL.End();
+    }
+
+    // 三角形プロット
+    private void DrawTrianglePlot(double halfsize)
+    {
+        // プロットする図形に歪みが出ないようにアスペクト比をかける。
+        double aspectRatio = (double)XRange / YRange;
+        double halfXEdge = halfsize * aspectRatio;
+        double halfYEdge = halfsize * Math.Sqrt(3);
+
+        GL.Begin(PrimitiveType.Triangles);
+        {
+            for (int i = 0; i < XData.Length; i++)
+            // 描画領域に合わせて平行移動する必要がある
+            {
+                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter - halfYEdge);
+                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter - halfYEdge);
+                GL.Vertex2(XData[i] - XMin, YData[i] - YCenter + Math.Sqrt(3) * halfYEdge);
+            }
+        }
+        GL.End();
+    }
+
+    // 正方形プロット
+    private void DrawRectanglePlot(double halfsize)
+    {
+        // プロットする図形に歪みが出ないようにアスペクト比をかける。
+        double aspectRatio = (double)XRange / YRange;
+        double halfXEdge = halfsize * aspectRatio;
+        double halfYEdge = halfsize;
+
+        GL.Begin(PrimitiveType.Quads);
+        {
+            for (int i = 0; i < XData.Length; i++)
+            // 描画領域に合わせて平行移動する必要がある
+            {
+                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter - halfYEdge);
+                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter - halfYEdge);
+                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter + halfYEdge);
+                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter + halfYEdge);
+            }
+        }
+        GL.End();
+    }
+
+    // 逆三角形プロット
+    private void DrawInvertedTrianglePlot(double halfsize)
+    {
+        // プロットする図形に歪みが出ないようにアスペクト比をかける。
+        double aspectRatio = (double)XRange / YRange;
+        double halfXEdge = halfsize * aspectRatio;
+        double halfYEdge = halfsize * Math.Sqrt(3);
+
+        GL.Begin(PrimitiveType.Triangles);
+        {
+            for (int i = 0; i < XData.Length; i++)
+            // 描画領域に合わせて平行移動する必要がある
+            {
+                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter + halfYEdge);
+                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter + halfYEdge);
+                GL.Vertex2(XData[i] - XMin, YData[i] - YCenter - halfYEdge);
+            }
+        }
+        GL.End();
+    }
+
+    // 目盛り線描画
     private void DrawScale()
     {
         // 点線描画ON

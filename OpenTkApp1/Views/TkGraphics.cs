@@ -143,7 +143,6 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-
             Matrix4 proj = Matrix4.CreateOrthographic(XRange, YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
