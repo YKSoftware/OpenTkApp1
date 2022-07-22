@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
 using OpenTkApp1.Views;
@@ -23,7 +24,7 @@ public class MainViewModel : INotifyPropertyChanged
     // x座標最小値
     public double XMin { get { return _xMin; } }
 
-    private double _xMin = 950.0;
+    private double _xMin = 0.0;
 
     // x座標最大値
     public double XMax { get { return _xMax; } }
@@ -31,7 +32,7 @@ public class MainViewModel : INotifyPropertyChanged
     private double _xMax = 1000.0;
 
     // x座標の描画領域
-    public int XRange { get { return (int)(_xMax - _xMin); } }
+    public double XRange { get { return (_xMax - _xMin); } }
 
     // y軸目盛り幅
     public double YScale { get; } = 30.0;
@@ -40,18 +41,18 @@ public class MainViewModel : INotifyPropertyChanged
     // y座標最小値
     public double YMin { get { return _yMin; } }
 
-    private double _yMin = -60.0;
+    private double _yMin = -15.0;
 
     // y座標最大値
     public double YMax { get { return _yMax; } }
     
-    private double _yMax = 60.0;
+    private double _yMax = 22.0;
 
     // y座標の中点
     public double YCenter { get { return (_yMin + _yMax) / 2; } }
 
     // y座標の描画領域
-    public int YRange { get { return (int)(_yMax - _yMin); } }
+    public double YRange { get { return (_yMax - _yMin); } }
 
     private const int _dataNum = 1000;
 
@@ -63,15 +64,46 @@ public class MainViewModel : INotifyPropertyChanged
     //プロットのタイプ
     public MarkerTypes PlotType { get { return _plotType; } }
 
-    private MarkerTypes _plotType = MarkerTypes.Triangle;
+    private MarkerTypes _plotType = MarkerTypes.Ellipse;
 
     // プロットの色
     public Color4 PlotColor { get { return _plotColor; } }
-    private Color4 _plotColor = Color4.Crimson;
+    private Color4 _plotColor = Color4.YellowGreen;
     //プロットの有無
     public bool IsPlot { get { return _isPlot; } }
 
-    private bool _isPlot = true;
+    private bool _isPlot = false;
+
+    // マウス移動時
+    public Action<double,double> CallBackMouseMoved { get; set; }
+
+    //　現在のx座標
+    public double CurrentXPotition
+    {
+        get { return _currentXPotition; }
+        set { SetProperty(ref this._currentXPotition, value); }
+    }
+
+    private double _currentXPotition ;
+
+    // 現在のy座標
+    public double CurrentYPotition 
+    { 
+        get { return _currentYPotition; }
+        set { SetProperty (ref this._currentYPotition, value); }
+    }
+
+    private double _currentYPotition;
+    public void GetPotition(double x, double y)
+    {
+        CurrentXPotition = x;
+        CurrentYPotition = y;
+    }
+
+    public MainViewModel()
+    {
+        this.CallBackMouseMoved = GetPotition;
+    }
 
     #region INotifyPropertyChanged の実装
 

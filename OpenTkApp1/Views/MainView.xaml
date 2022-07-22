@@ -43,18 +43,20 @@
             <TextBlock  Text="{Binding XMax}"  Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Right"/>
         </Grid>
 
-        <TextBlock Grid.Column="1" Grid.Row="2" Text="Time[ms]" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
-        
+        <TextBlock  Grid.Column="1" Grid.Row="2" Text="Time[ms]" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+
         <!--<vw:TkGraphics>
             <vw:SampleTiles />
         </vw:TkGraphics>-->
 
-        <!--<Button Grid.Column="2" Grid.Row="1" Content="描画&#xa;設定" Height="45" Width="45" VerticalAlignment="Bottom" HorizontalAlignment="Center" Click="Button_Click"/>-->
+        <TextBlock Text="{Binding CurrentXPotition, StringFormat=x：{0}}" Grid.Column="0" Grid.Row="0" Height="25" Width="47" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+        <TextBlock Text="{Binding CurrentYPotition, StringFormat=y：{0}}" Grid.Column="0" Grid.Row="0" Height="15" Width="47" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="White" />
 
-        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}">
-           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}"
-                               YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}"
-                               PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}"/>
+        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}" XMin="{Binding XMin}" YCenter="{Binding YCenter}" 
+                        OnMouseMoved="{Binding CallBackMouseMoved}">
+           <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" 
+                               YMax="{Binding YMax}" YMin="{Binding YMin}" YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" 
+                               PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" />
         </vw:TkGraphics>
 
     </Grid>

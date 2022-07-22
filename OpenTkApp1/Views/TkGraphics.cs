@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Markup;
 using System.Linq;
+using System.Windows.Input;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
@@ -51,11 +52,11 @@ public class TkGraphics : GLWpfControl
     /// 新しいインスタンスを生成します。
     /// </summary>
      #region XRange
-    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnXRangePropertyChanged));
+    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXRangePropertyChanged));
 
-    public int XRange
+    public double XRange
     {
-        get => (int)GetValue(XRangeProperty);
+        get => (double)GetValue(XRangeProperty);
         set => SetValue(XRangeProperty, value);
     }
 
@@ -67,11 +68,11 @@ public class TkGraphics : GLWpfControl
     #endregion XRange
 
      #region YRange
-    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnYRangePropertyChanged));
+    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYRangePropertyChanged));
 
-    public int YRange
+    public double YRange
     {
-        get => (int)GetValue(YRangeProperty);
+        get => (double)GetValue(YRangeProperty);
         set => SetValue(YRangeProperty, value);
     }
 
@@ -81,6 +82,54 @@ public class TkGraphics : GLWpfControl
     }
 
     #endregion YRange
+
+     #region XMin
+    public static readonly DependencyProperty XMinProperty = DependencyProperty.Register("XMin", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXMinPropertyChanged));
+
+    public double XMin
+    {
+        get => (double)GetValue(XMinProperty);
+        set => SetValue(XMinProperty, value);
+    }
+
+    private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XMin
+
+     #region YCenter
+    public static readonly DependencyProperty YCenterProperty = DependencyProperty.Register("YCenter", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYCenterPropertyChanged));
+
+    public double YCenter
+    {
+        get => (double)GetValue(YCenterProperty);
+        set => SetValue(YCenterProperty, value);
+    }
+
+    private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YCenter
+
+     #region OnMouseMove
+    public static readonly DependencyProperty MouseMoveProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
+
+    public Action<double, double> OnMouseMoved
+    {
+        get => (Action<double,double>)GetValue(MouseMoveProperty);
+        set => SetValue(MouseMoveProperty, value);
+    }
+
+    private static void OnMouseMovedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion OnMouseMove
 
     public TkGraphics()
     {
@@ -100,6 +149,7 @@ public class TkGraphics : GLWpfControl
         this.Loaded += OnLoaded;
         this.SizeChanged += OnSizeChanged;
         this.Render += OnTkRender;
+        this.MouseMove += OnMouseMove;
     }
 
     /// <summary>
@@ -136,18 +186,29 @@ public class TkGraphics : GLWpfControl
     /// </summary>
     private void SetProjection()
     {
-
         // ビューポートの設定
         GL.Viewport(0, 0, (int)this.ActualWidth, (int)this.ActualHeight);
 
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            Matrix4 proj = Matrix4.CreateOrthographic(XRange, YRange, 0.01f, 1000.0f);
+            Matrix4 proj = Matrix4.CreateOrthographic((int)XRange, (int)YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);
-
+    }
+    
+    // マウスで座標取得
+    private void OnMouseMove(object sender,MouseEventArgs e )
+    {
+        Point point = e.GetPosition(this);
+        // x座標変換
+        var x = (point.X * XRange / ActualWidth + XMin);
+        //var x = Math.Round((point.X * XRange/ActualWidth + XMin),0);
+        // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
+        var y = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + YCenter;
+        //var y = Math.Round((-((point.Y) * YRange/ActualHeight)) + YRange / 2 + YCenter , 0);
+        this.OnMouseMoved(x,y);
     }
 
 

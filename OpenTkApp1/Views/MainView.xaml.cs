@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 namespace OpenTkApp1.Views
 {
@@ -13,6 +14,4 @@ namespace OpenTkApp1.Views
         }
 
     }
-
-    
 }

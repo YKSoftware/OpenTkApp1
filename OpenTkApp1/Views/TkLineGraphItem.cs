@@ -182,11 +182,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YCenter
 
     #region XRange
-    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(int), typeof(TkLineGraphItem), new PropertyMetadata(0, OnXRangePropertyChanged));
+    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXRangePropertyChanged));
 
-    public int XRange
+    public double XRange
     {
-        get => (int)GetValue(XRangeProperty);
+        get => (double)GetValue(XRangeProperty);
         set => SetValue(XRangeProperty, value);
     }
 
@@ -198,11 +198,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion XRange
 
     #region YRange
-    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(int), typeof(TkLineGraphItem), new PropertyMetadata(0, OnYRangePropertyChanged));
+    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYRangePropertyChanged));
 
-    public int YRange
+    public double YRange
     {
-        get => (int)GetValue(YRangeProperty);
+        get => (double)GetValue(YRangeProperty);
         set => SetValue(YRangeProperty, value);
     }
 
@@ -310,6 +310,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             DrawScale();
         }
         GL.PopMatrix();
+
     }
 
     //グラフ線描画
@@ -331,6 +332,16 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         if (IsPlot == false) return;
 
         GL.Color4(color);
+
+        //float _pointSize = 5.0f;
+        //GL.PointSize(_pointSize);
+        //GL.Begin(PrimitiveType.Points);
+        //{
+        //    for (int i = 0; i < XData.Length; i++)
+        //        // 描画領域に合わせて平行移動する必要がある
+        //        GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
+        //}
+        //GL.End();
 
         double halfsize = size / 2;
 
@@ -488,5 +499,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         // 点線描画OFF ※これをしないと描画したもの全て点線になる
         GL.Disable(EnableCap.LineStipple);
     }
+    
 
 }
