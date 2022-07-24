@@ -115,7 +115,23 @@ public class TkGraphics : GLWpfControl
 
     #endregion YCenter
 
-     #region OnMouseMove
+     #region CurrentXPotition
+    public static readonly DependencyProperty CurrentXPotitionProperty = DependencyProperty.Register("CurrentXPotition", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnCurrentXPotitionPropertyChanged));
+
+    public double CurrentXPotition
+    {
+        get => (double)GetValue(CurrentXPotitionProperty);
+        set => SetValue(CurrentXPotitionProperty, value);
+    }
+
+    private static void OnCurrentXPotitionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion CurrentXPotition
+
+   　#region OnMouseMove
     public static readonly DependencyProperty MouseMoveProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
 
     public Action<double, double> OnMouseMoved
@@ -150,6 +166,8 @@ public class TkGraphics : GLWpfControl
         this.SizeChanged += OnSizeChanged;
         this.Render += OnTkRender;
         this.MouseMove += OnMouseMove;
+        this.MouseLeftButtonDown += OnMouseLeftButtonDown;
+        this.MouseLeftButtonUp += OnMouseLeftButtonUp;
     }
 
     /// <summary>
@@ -198,7 +216,7 @@ public class TkGraphics : GLWpfControl
         GL.MatrixMode(MatrixMode.Modelview);
     }
     
-    // マウスで座標取得
+    // マウス移動で座標取得
     private void OnMouseMove(object sender,MouseEventArgs e )
     {
         Point point = e.GetPosition(this);
@@ -211,5 +229,15 @@ public class TkGraphics : GLWpfControl
         this.OnMouseMoved(x,y);
     }
 
+    // マウス左ボタン押した時
+    private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
+    {
+        var x = CurrentXPotition;
+    }
 
+    // マウス左ボタン離した時
+    private void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
+    {
+
+    }
 }
