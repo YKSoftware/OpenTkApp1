@@ -232,12 +232,12 @@ public class TkGraphics : GLWpfControl
     // マウス左ボタン押した時
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
     {
-        var x = CurrentXPotition;
+       
     }
 
     // マウス左ボタン離した時
     private void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
     {
-
+        
     }
 }
