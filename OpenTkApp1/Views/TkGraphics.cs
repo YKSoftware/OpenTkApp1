@@ -9,6 +9,7 @@ using OpenTK.Wpf;
 
 namespace OpenTkApp1.Views;
 
+
 [ContentProperty("DrawingItem")]
 public class TkGraphics : GLWpfControl
 {
@@ -132,12 +133,12 @@ public class TkGraphics : GLWpfControl
     #endregion CurrentXPotition
 
    　#region OnMouseMoved
-    public static readonly DependencyProperty MouseMoveProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
+    public static readonly DependencyProperty MouseMovedProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
 
     public Action<double, double> OnMouseMoved
     {
-        get => (Action<double,double>)GetValue(MouseMoveProperty);
-        set => SetValue(MouseMoveProperty, value);
+        get => (Action<double,double>)GetValue(MouseMovedProperty);
+        set => SetValue(MouseMovedProperty, value);
     }
 
     private static void OnMouseMovedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -231,9 +232,13 @@ public class TkGraphics : GLWpfControl
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
-    
-    // マウス移動で座標取得
-    private void OnMouseMove(object sender,MouseEventArgs e )
+
+    /// <summary>
+    /// マウスが移動した際に実行されるイベントハンドラです。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnMouseMove(object sender, MouseEventArgs e)
     {
         Point point = e.GetPosition(this);
         // x座標変換
@@ -242,21 +247,41 @@ public class TkGraphics : GLWpfControl
         // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
         var y = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + YCenter;
         //var y = Math.Round((-((point.Y) * YRange/ActualHeight)) + YRange / 2 + YCenter , 0);
-        this.OnMouseMoved(x,y);
+        this.OnMouseMoved(x, y);
+
+        if (_isDrag == true)
+        {
+            var xtranslate = point.X - _dragOffset.X;
+            var ytranslate = point.Y - _dragOffset.Y;
+            this.OnMouseLeftButtonDowned(xtranslate,ytranslate);
+        }
     }
 
     // マウス左ボタン押した時
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
     {
-        double x = -20;
-        double y = -20;
-        this.OnMouseLeftButtonDowned(x, y);
-
+        UIElement el = sender as UIElement;
+        if(el != null)
+        {
+            _isDrag = true;
+            _dragOffset = e.GetPosition(el);
+            el.CaptureMouse();
+        }
+        
     }
 
     // マウス左ボタン離した時
     private void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
     {
-        
+        if (_isDrag == true)
+        {
+            UIElement el = sender as UIElement;
+            el.ReleaseMouseCapture();
+            _isDrag = false;
+        }
     }
+
+    private bool _isDrag = false;
+
+    private Point _dragOffset;
 }

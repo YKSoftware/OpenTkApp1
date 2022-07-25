@@ -50,7 +50,13 @@ public class MainViewModel : INotifyPropertyChanged
     public double YMin 
     { 
         get { return _yMin; }
-        set{ SetProperty(ref this._yMin, value);}
+        set{ if(SetProperty(ref this._yMin, value))
+            {
+                RaisePropertyChanged(nameof(YCenter));
+
+            }
+        }
+
     }
 
     private double _yMin = 0.0;
@@ -59,13 +65,23 @@ public class MainViewModel : INotifyPropertyChanged
     public double YMax 
     { 
         get { return _yMax; } 
-        set { SetProperty(ref this._yMax, value); }
+        set 
+        {
+            if (SetProperty(ref this._yMax, value))
+            {
+                RaisePropertyChanged(nameof(YCenter));
+            }
+        }
     }
     
-    private double _yMax = 60.0;
+    private double _yMax = 30.0;
 
     // y座標の中点
-    public double YCenter { get { return (_yMin + _yMax) / 2; } }
+    public double YCenter 
+    { 
+        get { return (YMax + YMin) / 2; }
+    }
+
 
     // y座標の描画領域
     public double YRange { get { return (_yMax - _yMin); } }
@@ -84,17 +100,24 @@ public class MainViewModel : INotifyPropertyChanged
 
     // プロットの色
     public Color4 PlotColor { get { return _plotColor; } }
+
     private Color4 _plotColor = Color4.YellowGreen;
+
     //プロットの有無
     public bool IsPlot { get { return _isPlot; } }
 
     private bool _isPlot = false;
 
+    //グラフ線の色
+    public Color4 LineColor { get { return _lineColor; } }
+
+    private Color4 _lineColor = Color4.White;
+
     // マウス移動時
     public Action<double,double> CallBackMouseMoved { get; set; }
 
     // マウス左クリック時
-    public Action<double,double> CallBackMouseLeftButtonDowned { get; set; }
+    public Action<double,double> CallBackMouseLeftButtonDowning { get; set; }
 
     //　現在のx座標
     public double CurrentXPotition
@@ -133,7 +156,7 @@ public class MainViewModel : INotifyPropertyChanged
     public MainViewModel()
     {
         this.CallBackMouseMoved = GetPotition;
-        this.CallBackMouseLeftButtonDowned = ViewTranslate;
+        this.CallBackMouseLeftButtonDowning = ViewTranslate;
     }
 
     #region INotifyPropertyChanged の実装

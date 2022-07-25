@@ -277,6 +277,22 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion IsPlot
 
+    #region LineColor
+    public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register("LineColor", typeof(Color4), typeof(TkLineGraphItem), new PropertyMetadata(Color4.White, OnLineColorPropertyChanged));
+
+    public Color4 LineColor
+    {
+        get => (Color4)GetValue(LineColorProperty);
+        set => SetValue(LineColorProperty, value);
+    }
+
+    private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion LineColor
+
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
@@ -305,7 +321,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             // グラフ点描画
             DrawPlot(PlotSize, PlotType, PlotColor);
             // グラフ線描画
-            DrawGraph();
+            DrawGraph(LineColor);
             // 目盛り線描画
             DrawScale();
         }
@@ -314,8 +330,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     }
 
     //グラフ線描画
-    private void DrawGraph()
+    private void DrawGraph(Color4 color)
     {
+        GL.Color4(color);
 
         GL.Begin(PrimitiveType.LineStrip);
         {
@@ -324,7 +341,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
         }
         GL.End();
-        
+
+        GL.Color4(Color4.White);
+
     }
 
     private void DrawPlot(double size, MarkerTypes type, Color4 color)
@@ -332,16 +351,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         if (IsPlot == false) return;
 
         GL.Color4(color);
-
-        //float _pointSize = 5.0f;
-        //GL.PointSize(_pointSize);
-        //GL.Begin(PrimitiveType.Points);
-        //{
-        //    for (int i = 0; i < XData.Length; i++)
-        //        // 描画領域に合わせて平行移動する必要がある
-        //        GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
-        //}
-        //GL.End();
 
         double halfsize = size / 2;
 
