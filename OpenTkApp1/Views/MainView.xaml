@@ -53,7 +53,7 @@
         <TextBlock Text="{Binding CurrentYPotition, StringFormat=y：{0}}" Grid.Column="0" Grid.Row="0" Height="15" Width="47" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="White" />
 
         <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}" XMin="{Binding XMin}" YCenter="{Binding YCenter}" 
-                        OnMouseMoved="{Binding CallBackMouseMoved}" CurrentXPotition="{Binding CurrentXPotition}">
+                        OnMouseMoved="{Binding CallBackMouseMoved}" OnMouseLeftButtonDowned="{Binding CallBackMouseLeftButtonDowned}" CurrentXPotition="{Binding CurrentXPotition}">
            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" 
                                YMax="{Binding YMax}" YMin="{Binding YMin}" YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" 
                                PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" />

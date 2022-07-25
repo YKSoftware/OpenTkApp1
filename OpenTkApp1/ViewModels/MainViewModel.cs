@@ -22,12 +22,20 @@ public class MainViewModel : INotifyPropertyChanged
     public double XScale { get; } = 100.0;
 
     // x座標最小値
-    public double XMin { get { return _xMin; } }
+    public double XMin 
+    { 
+        get { return _xMin; }
+        set { SetProperty(ref this._xMin, value); }
+    }
 
-    private double _xMin = 0.0;
+    private double _xMin = 800.0;
 
     // x座標最大値
-    public double XMax { get { return _xMax; } }
+    public double XMax 
+    { 
+        get { return _xMax; }
+        set { SetProperty(ref this._xMax, value); }
+    }
     
     private double _xMax = 1000.0;
 
@@ -39,14 +47,22 @@ public class MainViewModel : INotifyPropertyChanged
 
 
     // y座標最小値
-    public double YMin { get { return _yMin; } }
+    public double YMin 
+    { 
+        get { return _yMin; }
+        set{ SetProperty(ref this._yMin, value);}
+    }
 
-    private double _yMin = -15.0;
+    private double _yMin = 0.0;
 
     // y座標最大値
-    public double YMax { get { return _yMax; } }
+    public double YMax 
+    { 
+        get { return _yMax; } 
+        set { SetProperty(ref this._yMax, value); }
+    }
     
-    private double _yMax = 22.0;
+    private double _yMax = 60.0;
 
     // y座標の中点
     public double YCenter { get { return (_yMin + _yMax) / 2; } }
@@ -77,6 +93,9 @@ public class MainViewModel : INotifyPropertyChanged
     // マウス移動時
     public Action<double,double> CallBackMouseMoved { get; set; }
 
+    // マウス左クリック時
+    public Action<double,double> CallBackMouseLeftButtonDowned { get; set; }
+
     //　現在のx座標
     public double CurrentXPotition
     {
@@ -94,15 +113,27 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     private double _currentYPotition;
-    public void GetPotition(double x, double y)
+
+    // 座標取得
+    private void GetPotition(double x, double y)
     {
         CurrentXPotition = x;
         CurrentYPotition = y;
     }
 
+    // 描画領域平行移動
+    private void ViewTranslate(double x, double y)
+    {
+        XMax = XMax + x;
+        XMin = XMin + x;
+        YMax = YMax + y;
+        YMin = YMin + y;
+    }
+
     public MainViewModel()
     {
         this.CallBackMouseMoved = GetPotition;
+        this.CallBackMouseLeftButtonDowned = ViewTranslate;
     }
 
     #region INotifyPropertyChanged の実装

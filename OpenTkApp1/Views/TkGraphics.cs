@@ -131,7 +131,7 @@ public class TkGraphics : GLWpfControl
 
     #endregion CurrentXPotition
 
-   　#region OnMouseMove
+   　#region OnMouseMoved
     public static readonly DependencyProperty MouseMoveProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
 
     public Action<double, double> OnMouseMoved
@@ -145,7 +145,23 @@ public class TkGraphics : GLWpfControl
         (d as TkLineGraphItem)?.Render();
     }
 
-    #endregion OnMouseMove
+    #endregion OnMouseMoved
+
+     #region OnMouseLeftButtonDowned
+    public static readonly DependencyProperty MouseLeftButtonDownedProperty = DependencyProperty.Register("OnMouseLeftButtonDowned", typeof(Action<double, double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseLeftButtonDownedPropertyChanged));
+
+    public Action<double, double> OnMouseLeftButtonDowned
+    {
+        get => (Action<double, double>)GetValue(MouseLeftButtonDownedProperty);
+        set => SetValue(MouseLeftButtonDownedProperty, value);
+    }
+
+    private static void OnMouseLeftButtonDownedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion OnMouseLeftButtonDowned
 
     public TkGraphics()
     {
@@ -232,7 +248,10 @@ public class TkGraphics : GLWpfControl
     // マウス左ボタン押した時
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
     {
-       
+        double x = -20;
+        double y = -20;
+        this.OnMouseLeftButtonDowned(x, y);
+
     }
 
     // マウス左ボタン離した時
