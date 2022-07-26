@@ -251,12 +251,16 @@ public class TkGraphics : GLWpfControl
 
         if (_isDrag == true)
         {
-            var xvector = point.X - _dragOffset.X;
-            var yvector = point.Y - _dragOffset.Y;
+            double _movedx = (point.X * XRange / ActualWidth + oldXMin);
+            //  ドラッグ量
+            double _xtranslate = _movedx - oldX;
+            this.oldX = _movedx;
 
-            this.OnMouseLeftButtonDowned(xvector, yvector);
+            this.OnMouseLeftButtonDowned(_xtranslate,0);
         }
     }
+    private double oldX;
+    private double oldXMin;
 
     // マウス左ボタン押した時
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
@@ -266,6 +270,10 @@ public class TkGraphics : GLWpfControl
         {
             _isDrag = true;
             _dragOffset = e.GetPosition(el);
+            _dragOffsetX = _dragOffset.X * XRange / ActualWidth + XMin;
+            oldX = _dragOffset.X * XRange / ActualWidth + XMin;
+            oldXMin = XMin;
+
             el.CaptureMouse();
         }
     }
@@ -284,4 +292,6 @@ public class TkGraphics : GLWpfControl
     private bool _isDrag = false;
 
     private Point _dragOffset;
+
+    private double _dragOffsetX;
 }

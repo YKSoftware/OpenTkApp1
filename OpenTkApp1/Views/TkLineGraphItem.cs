@@ -481,27 +481,42 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             double _xCurrentPosition = 0;
             double _yCurrentPosition = 0;
 
-            while (_xCurrentPosition <= XMax)
+            if (XMin < 0)
             {
-                // 描画領域に合わせて平行移動する必要がある
-                GL.Vertex2(_xCurrentPosition, YMin - YCenter);
-                GL.Vertex2(_xCurrentPosition, YMax - YCenter);
-                _xCurrentPosition += XScale;
+                while (_xCurrentPosition <= XMax - XMin)
+                {
+                    DrawXScale(ref _xCurrentPosition);
+                }
+
+                while (_yCurrentPosition <= YMax - YCenter)
+                {
+                    DrawUpperYScale(ref _yCurrentPosition, XMax - XMin);
+                }
+
+                _yCurrentPosition = 0;
+                while (_yCurrentPosition >= YMin - YCenter)
+                {
+                    DrawUnderYScale(ref _yCurrentPosition, XMax - XMin);
+                }
             }
 
-            while (_yCurrentPosition <= YMax - YCenter)
+            else
             {
-                GL.Vertex2(0, _yCurrentPosition);
-                GL.Vertex2(XMax,_yCurrentPosition);
-                _yCurrentPosition += YScale;
-            }
+                while (_xCurrentPosition <= XMax)
+                {
+                    DrawXScale(ref _xCurrentPosition);
+                }
 
-            _yCurrentPosition = 0;
-            while (_yCurrentPosition >= YMin - YCenter)
-            {
-                GL.Vertex2(0, _yCurrentPosition);
-                GL.Vertex2(XMax, _yCurrentPosition);
-                _yCurrentPosition -= YScale;
+                while (_yCurrentPosition <= YMax - YCenter)
+                {
+                    DrawUpperYScale(ref _yCurrentPosition, XMax);
+                }
+
+                _yCurrentPosition = 0;
+                while (_yCurrentPosition >= YMin - YCenter)
+                {
+                    DrawUnderYScale(ref _yCurrentPosition, XMax);
+                }
             }
         }
         GL.End();
@@ -509,5 +524,25 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.Disable(EnableCap.LineStipple);
     }
     
+    private void DrawXScale(ref double x)
+    {
+        // 描画領域に合わせて平行移動する必要がある
+        GL.Vertex2(x, YMin - YCenter);
+        GL.Vertex2(x, YMax - YCenter);
+        x += XScale;
+    }
 
+    private void DrawUpperYScale(ref double y, double xend)
+    {
+        GL.Vertex2(0, y);
+        GL.Vertex2(xend, y);
+        y += YScale;
+    }
+
+    private void DrawUnderYScale(ref double y, double xend)
+    {
+        GL.Vertex2(0, y);
+        GL.Vertex2(xend, y);
+        y -= YScale;
+    }
 }

@@ -18,8 +18,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 50.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
 
-    // x軸目盛り幅
-    public double XScale { get; } = 100.0;
+   
 
     public double XDataMax { get { return XData.Max(); } }
 
@@ -27,7 +26,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 800;
+    private double _settingXMax = 1800;
 
     public double SettingXMin { get { return _settingXMin; } }
 
@@ -40,6 +39,9 @@ public class MainViewModel : INotifyPropertyChanged
     public double SettingYMin { get { return _settingYMin; } }
 
     private double _settingYMin = -60;
+
+    // x軸目盛り幅
+    public double XScale { get; } = 100.0;
 
     /// <summary>
     /// x座標の最小値を取得または設定します。
@@ -67,7 +69,6 @@ public class MainViewModel : INotifyPropertyChanged
     // y軸目盛り幅
     public double YScale { get; } = 30.0;
 
-
     // y座標最小値
     public double YMin 
     { 
@@ -79,7 +80,6 @@ public class MainViewModel : INotifyPropertyChanged
                 RaisePropertyChanged(nameof(YCenter));
             }
         }
-
     }
 
     private double _yMin;
@@ -104,7 +104,6 @@ public class MainViewModel : INotifyPropertyChanged
     { 
         get { return (_yMax + _yMin) / 2; }
     }
-
 
     // y座標の描画領域
     public double YRange { get { return (_settingYMax - _settingYMin); } }
@@ -134,7 +133,7 @@ public class MainViewModel : INotifyPropertyChanged
     //グラフ線の色
     public Color4 LineColor { get { return _lineColor; } }
 
-    private Color4 _lineColor = Color4.White;
+    private Color4 _lineColor = Color4.Aqua;
 
     // マウス移動時
     public Action<double,double> CallBackMouseMoved { get; set; }
@@ -170,29 +169,36 @@ public class MainViewModel : INotifyPropertyChanged
     // 描画領域平行移動
     private void ViewTranslate(double x, double y)
     {
-        if (XMax <= XDataMax && XMin >= XDataMin)
+        if(SettingXMax <= XDataMax && SettingXMin >= XDataMin)
         {
-            XMax = XMax + x;
-            XMin = XMin + x;
+            if (XMax <= XDataMax && XMin >= XDataMin)
+            {
+                XMax = XMax - x;
+                XMin = XMin - x;
+            }
+
+            if (XMax >= XDataMax)
+            {
+                XMax = XDataMax;
+                XMin = XDataMax - XRange;
+            }
+
+            if (XMin <= XDataMin)
+            {
+                XMax = XDataMin + XRange;
+                XMin = XDataMin;
+            }
+
         }
 
-        if(XMax >= XDataMax)
+        else
         {
-            XMax = XDataMax;
-            XMin = XDataMax - XRange;
+            XMax = XMax - x;
+            XMin = XMin - x;
         }
-
-        if(XMin <= XDataMin)
-        {
-            XMax = XDataMin + XRange;
-            XMin = XDataMin;
-
-        }
-
-
+  
         //YMax = YMax + y;
         //YMin = YMin + y;
-
     }
 
     public MainViewModel()
