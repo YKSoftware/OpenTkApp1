@@ -21,26 +21,48 @@ public class MainViewModel : INotifyPropertyChanged
     // x軸目盛り幅
     public double XScale { get; } = 100.0;
 
-    // x座標最小値
-    public double XMin 
-    { 
+    public double XDataMax { get { return XData.Max(); } }
+
+    public double XDataMin { get { return XData.Min(); } }
+
+    public double SettingXMax { get { return _settingXMax; } }
+
+    private double _settingXMax = 800;
+
+    public double SettingXMin { get { return _settingXMin; } }
+
+    private double _settingXMin = 500;
+
+    public double SettingYMax { get { return _settingYMax; } }
+
+    private double _settingYMax = 60;
+
+    public double SettingYMin { get { return _settingYMin; } }
+
+    private double _settingYMin = -60;
+
+    /// <summary>
+    /// x座標の最小値を取得または設定します。
+    /// </summary>
+    public double XMin
+    {
         get { return _xMin; }
-        set { SetProperty(ref this._xMin, value); }
+        private set { SetProperty(ref this._xMin, value); }
     }
 
-    private double _xMin = 800.0;
+    private double _xMin;
 
     // x座標最大値
     public double XMax 
     { 
         get { return _xMax; }
-        set { SetProperty(ref this._xMax, value); }
+        private set { SetProperty(ref this._xMax, value); }
     }
     
-    private double _xMax = 1000.0;
+    private double _xMax;
 
     // x座標の描画領域
-    public double XRange { get { return (_xMax - _xMin); } }
+    public double XRange { get { return (_settingXMax - _settingXMin); } }
 
     // y軸目盛り幅
     public double YScale { get; } = 30.0;
@@ -50,22 +72,23 @@ public class MainViewModel : INotifyPropertyChanged
     public double YMin 
     { 
         get { return _yMin; }
-        set{ if(SetProperty(ref this._yMin, value))
+        private set
+        {
+            if(SetProperty(ref this._yMin, value))
             {
                 RaisePropertyChanged(nameof(YCenter));
-
             }
         }
 
     }
 
-    private double _yMin = 0.0;
+    private double _yMin;
 
     // y座標最大値
     public double YMax 
     { 
         get { return _yMax; } 
-        set 
+        private set 
         {
             if (SetProperty(ref this._yMax, value))
             {
@@ -74,17 +97,17 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
     
-    private double _yMax = 30.0;
+    private double _yMax;
 
     // y座標の中点
     public double YCenter 
     { 
-        get { return (YMax + YMin) / 2; }
+        get { return (_yMax + _yMin) / 2; }
     }
 
 
     // y座標の描画領域
-    public double YRange { get { return (_yMax - _yMin); } }
+    public double YRange { get { return (_settingYMax - _settingYMin); } }
 
     private const int _dataNum = 1000;
 
@@ -147,16 +170,39 @@ public class MainViewModel : INotifyPropertyChanged
     // 描画領域平行移動
     private void ViewTranslate(double x, double y)
     {
-        XMax = XMax + x;
-        XMin = XMin + x;
-        YMax = YMax + y;
-        YMin = YMin + y;
+        if (XMax <= XDataMax && XMin >= XDataMin)
+        {
+            XMax = XMax + x;
+            XMin = XMin + x;
+        }
+
+        if(XMax >= XDataMax)
+        {
+            XMax = XDataMax;
+            XMin = XDataMax - XRange;
+        }
+
+        if(XMin <= XDataMin)
+        {
+            XMax = XDataMin + XRange;
+            XMin = XDataMin;
+
+        }
+
+
+        //YMax = YMax + y;
+        //YMin = YMin + y;
+
     }
 
     public MainViewModel()
     {
         this.CallBackMouseMoved = GetPotition;
         this.CallBackMouseLeftButtonDowning = ViewTranslate;
+        this.XMax = SettingXMax;
+        this.XMin = SettingXMin;
+        this.YMax = SettingYMax;
+        this.YMin = SettingYMin;
     }
 
     #region INotifyPropertyChanged の実装

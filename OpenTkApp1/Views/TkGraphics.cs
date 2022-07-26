@@ -251,9 +251,10 @@ public class TkGraphics : GLWpfControl
 
         if (_isDrag == true)
         {
-            var xtranslate = point.X - _dragOffset.X;
-            var ytranslate = point.Y - _dragOffset.Y;
-            this.OnMouseLeftButtonDowned(xtranslate,ytranslate);
+            var xvector = point.X - _dragOffset.X;
+            var yvector = point.Y - _dragOffset.Y;
+
+            this.OnMouseLeftButtonDowned(xvector, yvector);
         }
     }
 
@@ -267,7 +268,6 @@ public class TkGraphics : GLWpfControl
             _dragOffset = e.GetPosition(el);
             el.CaptureMouse();
         }
-        
     }
 
     // マウス左ボタン離した時
