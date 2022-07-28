@@ -252,15 +252,20 @@ public class TkGraphics : GLWpfControl
         if (_isDrag == true)
         {
             double _movedx = (point.X * XRange / ActualWidth + oldXMin);
-            //  ドラッグ量
+            double _movedy = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + oldYCenter;
+            //  ドラッグ量 MouseMoveイベントは常に走り続けるため、1周期前の座標を現在の座標から引くことで変化量を求める。
             double _xtranslate = _movedx - oldX;
+            double _ytranslate = _movedy - oldY;
             this.oldX = _movedx;
+            this.oldY = _movedy;
 
-            this.OnMouseLeftButtonDowned(_xtranslate,0);
+            this.OnMouseLeftButtonDowned(_xtranslate,_ytranslate);
         }
     }
     private double oldX;
     private double oldXMin;
+    private double oldY;
+    private double oldYCenter;
 
     // マウス左ボタン押した時
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
@@ -270,9 +275,11 @@ public class TkGraphics : GLWpfControl
         {
             _isDrag = true;
             _dragOffset = e.GetPosition(el);
-            _dragOffsetX = _dragOffset.X * XRange / ActualWidth + XMin;
             oldX = _dragOffset.X * XRange / ActualWidth + XMin;
+            oldY = -(_dragOffset.Y * YRange / ActualHeight) + YRange / 2 + YCenter;
+
             oldXMin = XMin;
+            oldYCenter = YCenter;
 
             el.CaptureMouse();
         }
@@ -293,5 +300,4 @@ public class TkGraphics : GLWpfControl
 
     private Point _dragOffset;
 
-    private double _dragOffsetX;
 }

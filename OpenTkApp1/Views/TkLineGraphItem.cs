@@ -326,7 +326,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             DrawScale();
         }
         GL.PopMatrix();
-
     }
 
     //グラフ線描画

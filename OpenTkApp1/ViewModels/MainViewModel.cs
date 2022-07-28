@@ -26,7 +26,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 1800;
+    private double _settingXMax = 800;
 
     public double SettingXMin { get { return _settingXMin; } }
 
@@ -169,36 +169,32 @@ public class MainViewModel : INotifyPropertyChanged
     // 描画領域平行移動
     private void ViewTranslate(double x, double y)
     {
-        if(SettingXMax <= XDataMax && SettingXMin >= XDataMin)
-        {
-            if (XMax <= XDataMax && XMin >= XDataMin)
-            {
-                XMax = XMax - x;
-                XMin = XMin - x;
-            }
+        //if(SettingXMax <= XDataMax && SettingXMin >= XDataMin)
+        //{
+        //    if (XMax <= XDataMax && XMin >= XDataMin)
+        //    {
+        //        XMax = XMax - x;
+        //        XMin = XMin - x;
+        //    }
 
-            if (XMax >= XDataMax)
-            {
-                XMax = XDataMax;
-                XMin = XDataMax - XRange;
-            }
+        //    if (XMax >= XDataMax)
+        //    {
+        //        XMax = XDataMax;
+        //        XMin = XDataMax - XRange;
+        //    }
 
-            if (XMin <= XDataMin)
-            {
-                XMax = XDataMin + XRange;
-                XMin = XDataMin;
-            }
+        //    if (XMin <= XDataMin)
+        //    {
+        //        XMax = XDataMin + XRange;
+        //        XMin = XDataMin;
+        //    }
+        //}
 
-        }
-
-        else
-        {
             XMax = XMax - x;
             XMin = XMin - x;
-        }
   
-        //YMax = YMax + y;
-        //YMin = YMin + y;
+        YMax = YMax - y;
+        YMin = YMin - y;
     }
 
     public MainViewModel()
