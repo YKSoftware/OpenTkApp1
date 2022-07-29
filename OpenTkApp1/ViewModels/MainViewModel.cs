@@ -11,6 +11,20 @@ namespace OpenTkApp1.ViewModels;
 
 public class MainViewModel : INotifyPropertyChanged
 {
+
+    /// <summary>
+    /// 新しいインスタンスを生成します。
+    /// </summary>
+    public MainViewModel()
+    {
+        this.CallBackMouseMoved = GetPotition;
+        this.CallBackMouseLeftButtonDowning = ViewTranslate;
+        this.XMax = SettingXMax;
+        this.XMin = SettingXMin;
+        this.YMax = SettingYMax;
+        this.YMin = SettingYMin;
+    }
+
     public string Title { get; } = "OpenTK で折れ線グラフ";
 
     // 表示データ
@@ -18,33 +32,41 @@ public class MainViewModel : INotifyPropertyChanged
 
     public double[] YData { get; } = Enumerable.Range(0, _dataNum).Select(x => 50.0 * Math.Sin(2.0 * Math.PI * 4.0 * x / 1000.0)).ToArray();
 
-   
-
-    public double XDataMax { get { return XData.Max(); } }
-
-    public double XDataMin { get { return XData.Min(); } }
-
+    /// <summary>
+    /// 初めに設定するx座標の最大値を取得または設定します。
+    /// </summary>
     public double SettingXMax { get { return _settingXMax; } }
 
     private double _settingXMax = 800;
 
+    /// <summary>
+    /// 初めに設定するx座標の最小値を取得または設定します。
+    /// </summary>
     public double SettingXMin { get { return _settingXMin; } }
 
     private double _settingXMin = 500;
 
+    /// <summary>
+    /// 初めに設定するy座標の最大値を取得または設定します。
+    /// </summary>
     public double SettingYMax { get { return _settingYMax; } }
 
     private double _settingYMax = 60;
 
+    /// <summary>
+    /// 初めに設定y座標の最小値を取得または設定します。
+    /// </summary>
     public double SettingYMin { get { return _settingYMin; } }
 
     private double _settingYMin = -60;
 
-    // x軸目盛り幅
+    /// <summary>
+    /// x座標の目盛り幅を取得します。
+    /// </summary>
     public double XScale { get; } = 100.0;
 
     /// <summary>
-    /// x座標の最小値を取得または設定します。
+    /// 現在の範囲のx座標の最小値を取得または設定します。
     /// </summary>
     public double XMin
     {
@@ -54,7 +76,9 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _xMin;
 
-    // x座標最大値
+    /// <summary>
+    /// 現在の範囲のx座標の最大値を取得または設定します。
+    /// </summary>
     public double XMax 
     { 
         get { return _xMax; }
@@ -63,13 +87,19 @@ public class MainViewModel : INotifyPropertyChanged
     
     private double _xMax;
 
-    // x座標の描画領域
+    /// <summary>
+    /// 現在のx座標の範囲を取得します。
+    /// </summary>
     public double XRange { get { return (_settingXMax - _settingXMin); } }
 
-    // y軸目盛り幅
+    /// <summary>
+    /// 現在のy座標の目盛り幅を取得します。
+    /// </summary>
     public double YScale { get; } = 30.0;
 
-    // y座標最小値
+    /// <summary>
+    /// 現在の範囲のy座標の最小値を取得または設定します。
+    /// </summary>
     public double YMin 
     { 
         get { return _yMin; }
@@ -84,7 +114,9 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _yMin;
 
-    // y座標最大値
+    /// <summary>
+    /// 現在の範囲のy座標の最大値を取得または設定します。
+    /// </summary>
     public double YMax 
     { 
         get { return _yMax; } 
@@ -99,49 +131,72 @@ public class MainViewModel : INotifyPropertyChanged
     
     private double _yMax;
 
-    // y座標の中点
+    /// <summary>
+    /// 現在の範囲のy座標の中間値を取得します。
+    /// </summary>
     public double YCenter 
     { 
         get { return (_yMax + _yMin) / 2; }
     }
 
-    // y座標の描画領域
+    /// <summary>
+    /// y座標の範囲を取得します。
+    /// </summary>
     public double YRange { get { return (_settingYMax - _settingYMin); } }
 
+    /// <summary>
+    /// データの個数を表します。
+    /// </summary>
     private const int _dataNum = 1000;
 
-    // プロットのサイズ
+    /// <summary>
+    /// プロットのサイズを取得します。
+    /// </summary>
     public double PlotSize { get { return _plotSize; } }
 
     private double _plotSize = 1.0;
 
-    //プロットのタイプ
+    /// <summary>
+    /// プロットの形を取得します。
+    /// </summary>
     public MarkerTypes PlotType { get { return _plotType; } }
 
     private MarkerTypes _plotType = MarkerTypes.Ellipse;
 
-    // プロットの色
+    /// <summary>
+    /// プロットの色を取得します。
+    /// </summary>
     public Color4 PlotColor { get { return _plotColor; } }
 
     private Color4 _plotColor = Color4.YellowGreen;
 
-    //プロットの有無
+    /// <summary>
+    /// プロットの有無を取得します。
+    /// </summary>
     public bool IsPlot { get { return _isPlot; } }
 
     private bool _isPlot = false;
 
-    //グラフ線の色
+    /// <summary>
+    /// グラフの線の色を取得します。
+    /// </summary>
     public Color4 LineColor { get { return _lineColor; } }
 
     private Color4 _lineColor = Color4.Aqua;
 
-    // マウス移動時
+    /// <summary>
+    /// マウス移動時に呼びだされる関数を取得または設定します。
+    /// </summary>
     public Action<double,double> CallBackMouseMoved { get; set; }
 
-    // マウス左クリック時
+    /// <summary>
+    /// マウス左クリック時に呼びだされる関数を取得または設定します。
+    /// </summary>
     public Action<double,double> CallBackMouseLeftButtonDowning { get; set; }
 
-    //　現在のx座標
+    /// <summary>
+    /// マウスポインタのx座標を取得または設定します。
+    /// </summary>
     public double CurrentXPotition
     {
         get { return _currentXPotition; }
@@ -150,7 +205,9 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _currentXPotition ;
 
-    // 現在のy座標
+    /// <summary>
+    /// マウスポインタのy座標を取得または設定します。
+    /// </summary>
     public double CurrentYPotition 
     { 
         get { return _currentYPotition; }
@@ -159,52 +216,28 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _currentYPotition;
 
-    // 座標取得
+    /// <summary>
+    /// マウスポインタの座標を取得するメソッドです。
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     private void GetPotition(double x, double y)
     {
         CurrentXPotition = x;
         CurrentYPotition = y;
     }
 
-    // 描画領域平行移動
+    /// <summary>
+    /// 描画領域を移動するメソッドです。
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     private void ViewTranslate(double x, double y)
     {
-        //if(SettingXMax <= XDataMax && SettingXMin >= XDataMin)
-        //{
-        //    if (XMax <= XDataMax && XMin >= XDataMin)
-        //    {
-        //        XMax = XMax - x;
-        //        XMin = XMin - x;
-        //    }
-
-        //    if (XMax >= XDataMax)
-        //    {
-        //        XMax = XDataMax;
-        //        XMin = XDataMax - XRange;
-        //    }
-
-        //    if (XMin <= XDataMin)
-        //    {
-        //        XMax = XDataMin + XRange;
-        //        XMin = XDataMin;
-        //    }
-        //}
-
-            XMax = XMax - x;
-            XMin = XMin - x;
-  
+        XMax = XMax - x;
+        XMin = XMin - x;
         YMax = YMax - y;
         YMin = YMin - y;
-    }
-
-    public MainViewModel()
-    {
-        this.CallBackMouseMoved = GetPotition;
-        this.CallBackMouseLeftButtonDowning = ViewTranslate;
-        this.XMax = SettingXMax;
-        this.XMin = SettingXMin;
-        this.YMax = SettingYMax;
-        this.YMin = SettingYMin;
     }
 
     #region INotifyPropertyChanged の実装
