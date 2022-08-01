@@ -289,6 +289,30 @@ public class TkGraphics : GLWpfControl
 
     #endregion OnEscKeyDowned
 
+    #region DisplayDisits
+    /// <summary>
+    /// DisplayDisits依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty DisplayDisitsProperty = DependencyProperty.Register("DisplayDisits", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnDisplayDisitsPropertyChanged));
+
+    public int DisplayDisits
+    {
+        get => (int)GetValue(DisplayDisitsProperty);
+        set => SetValue(DisplayDisitsProperty, value);
+    }
+
+    /// <summary>
+    /// DisplayDisitsプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnDisplayDisitsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion DisplayDisits
+
     /// <summary>
     /// 新しいインスタンスを生成します。
     /// </summary>
@@ -370,21 +394,21 @@ public class TkGraphics : GLWpfControl
         Point point = e.GetPosition(this);
 
         // x座標変換
-        var x = (point.X * XRange / ActualWidth + XMin);
+        var x = CoordinateXTransformation(point.X, XMin, DisplayDisits);
         // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
-        var y = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + YCenter;
+        var y = CoordinateYTransformation(point.Y, YCenter, DisplayDisits);
 
         this.OnMouseMoved(x, y);
 
         if (_isDrag == true)
         {
             // マウス座標を更新します。 :　描画領域の変化に応じてXMin,YCenterが変化するので、ドラッグ開始時のXMin,YCenterを足してあげます。
-            double _movedx = (point.X * XRange / ActualWidth + _dragOffsetXMin);
-            double _movedy = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + _dragOffsetYCenter;
+            double _movedx = CoordinateXTransformation(point.X, _dragOffsetXMin, DisplayDisits);
+            double _movedy = CoordinateYTransformation(point.Y, _dragOffsetYCenter, DisplayDisits);
 
             // ドラッグ量 MouseMoveイベントは常に走り続けるため、1周期前の座標を現在の座標から引くことで変化量を求めます。
-            double _xTranslate = _movedx - _oldXPosition;
-            double _yTranslate = _movedy - _oldYPosition;
+            double _xTranslate = Math.Round(_movedx - _oldXPosition, DisplayDisits);
+            double _yTranslate = Math.Round(_movedy - _oldYPosition, DisplayDisits);
 
             // 前回のマウス座標を更新
             this._oldXPosition = _movedx;
@@ -409,8 +433,8 @@ public class TkGraphics : GLWpfControl
 
             // ドラッグ開始時の座標を取得します。
             _dragOffset = e.GetPosition(el);
-            _oldXPosition = _dragOffset.X * XRange / ActualWidth + XMin;
-            _oldYPosition = -(_dragOffset.Y * YRange / ActualHeight) + YRange / 2 + YCenter;
+            _oldXPosition = CoordinateXTransformation(_dragOffset.X, XMin, DisplayDisits);
+            _oldYPosition = CoordinateYTransformation(_dragOffset.Y, YCenter, DisplayDisits);
 
             // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
             _dragOffsetXMax = XMax;
@@ -419,6 +443,7 @@ public class TkGraphics : GLWpfControl
             _dragOffsetYMax = YMax;
             _dragOffsetYMin = YMin;
 
+            // EscKeyイベントを追加
             this.KeyDown += OnEscKeyDown;
 
             el.CaptureMouse();
@@ -439,6 +464,7 @@ public class TkGraphics : GLWpfControl
             el.ReleaseMouseCapture();
             _isDrag = false;
 
+            // EscKeyイベントを削除
             this.KeyDown -= OnEscKeyDown;
         }
     }
@@ -454,6 +480,30 @@ public class TkGraphics : GLWpfControl
         {
             OnEscKeyDowned(_dragOffsetXMax, _dragOffsetXMin, _dragOffsetYMax, _dragOffsetYMin);
         }
+    }
+
+    /// <summary>
+    /// windowのx座標を描画領域に合わせたx座標に変換するメソッドです。
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="XMin"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    private double CoordinateXTransformation(double x, double XMin, int n)
+    {
+        return Math.Round (x * XRange / ActualWidth + XMin , n);
+    }
+
+    /// <summary>
+    ///  windowのy座標を描画領域に合わせたx座標に変換するメソッドです。
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="YCenter"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    private double CoordinateYTransformation(double y, double YCenter, int n)
+    {
+        return Math.Round ((- y * YRange / ActualHeight) +YRange / 2 + YCenter, n);
     }
 
     /// <summary>

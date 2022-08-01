@@ -71,7 +71,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double XMin
     {
-        get { return _xMin; }
+        get { return Math.Round(_xMin, DisplayDigits); }
         private set { SetProperty(ref this._xMin, value); }
     }
 
@@ -82,7 +82,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double XMax 
     { 
-        get { return _xMax; }
+        get { return Math.Round(_xMax, DisplayDigits); }
         private set { SetProperty(ref this._xMax, value); }
     }
     
@@ -103,7 +103,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double YMin 
     { 
-        get { return _yMin; }
+        get { return Math.Round(_yMin, DisplayDigits); }
         private set
         {
             if(SetProperty(ref this._yMin, value))
@@ -120,7 +120,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double YMax 
     { 
-        get { return _yMax; } 
+        get { return Math.Round(_yMax, DisplayDigits); } 
         private set 
         {
             if (SetProperty(ref this._yMax, value))
@@ -137,13 +137,20 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double YCenter 
     { 
-        get { return (_yMax + _yMin) / 2; }
+        get { return Math.Round((_yMax + _yMin) / 2, DisplayDigits); }
     }
 
     /// <summary>
     /// y座標の範囲を取得します。
     /// </summary>
     public double YRange { get { return (_settingYMax - _settingYMin); } }
+
+    /// <summary>
+    /// グラフの表示桁数を取得または設定します。
+    /// </summary>
+    public int DisplayDigits { get { return _displayDigits; } }
+
+    private int _displayDigits = 1;
 
     /// <summary>
     /// データの個数を表します。
