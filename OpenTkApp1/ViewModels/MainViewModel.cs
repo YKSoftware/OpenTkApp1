@@ -18,7 +18,8 @@ public class MainViewModel : INotifyPropertyChanged
     public MainViewModel()
     {
         this.CallBackMouseMoved = GetPotition;
-        this.CallBackMouseLeftButtonDowning = ViewTranslate;
+        this.CallBackMouseLeftButtonDowning = TranslateView;
+        this.CallBackEscKeyDowned = TranslateDragPreviewView;
         this.XMax = SettingXMax;
         this.XMin = SettingXMin;
         this.YMax = SettingYMax;
@@ -195,6 +196,11 @@ public class MainViewModel : INotifyPropertyChanged
     public Action<double,double> CallBackMouseLeftButtonDowning { get; set; }
 
     /// <summary>
+    /// ドラッグ中にEsckeyが押された時に呼びだされる関数を取得または設定します。
+    /// </summary>
+    public Action<double, double, double, double> CallBackEscKeyDowned { get; set; }
+
+    /// <summary>
     /// マウスポインタのx座標を取得または設定します。
     /// </summary>
     public double CurrentXPotition
@@ -228,16 +234,24 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// 描画領域を移動するメソッドです。
+    /// x,yの最大・最小を変化させることで描画領域を移動するメソッドです。
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
-    private void ViewTranslate(double x, double y)
+    private void TranslateView(double x, double y)
     {
         XMax = XMax - x;
         XMin = XMin - x;
         YMax = YMax - y;
         YMin = YMin - y;
+    }
+
+    private void TranslateDragPreviewView(double oldXMax, double oldXMin, double oldyMax, double oldyMin)
+    {
+        XMax = oldXMax;
+        XMin = oldXMin;
+        YMax = oldyMax;
+        YMin = oldyMin;
     }
 
     #region INotifyPropertyChanged の実装
