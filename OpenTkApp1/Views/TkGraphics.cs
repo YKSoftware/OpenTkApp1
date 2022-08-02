@@ -9,6 +9,7 @@ using OpenTK.Wpf;
 
 namespace OpenTkApp1.Views;
 
+
 [ContentProperty("DrawingItem")]
 public class TkGraphics : GLWpfControl
 {
@@ -48,10 +49,10 @@ public class TkGraphics : GLWpfControl
         AddLogicalChild(newItem);
     }
 
+    #region XRange
     /// <summary>
-    /// 新しいインスタンスを生成します。
+    /// XRange 依存関係プロパティの定義を表します。
     /// </summary>
-     #region XRange
     public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXRangePropertyChanged));
 
     public double XRange
@@ -60,6 +61,11 @@ public class TkGraphics : GLWpfControl
         set => SetValue(XRangeProperty, value);
     }
 
+    /// <summary>
+    /// XRangeプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -67,7 +73,10 @@ public class TkGraphics : GLWpfControl
 
     #endregion XRange
 
-     #region YRange
+    #region YRange
+    /// <summary>
+    /// YRange 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYRangePropertyChanged));
 
     public double YRange
@@ -76,6 +85,11 @@ public class TkGraphics : GLWpfControl
         set => SetValue(YRangeProperty, value);
     }
 
+    /// <summary>
+    /// YRangeプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -83,7 +97,10 @@ public class TkGraphics : GLWpfControl
 
     #endregion YRange
 
-     #region XMin
+    #region XMin
+    /// <summary>
+    /// XMin 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty XMinProperty = DependencyProperty.Register("XMin", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXMinPropertyChanged));
 
     public double XMin
@@ -92,6 +109,11 @@ public class TkGraphics : GLWpfControl
         set => SetValue(XMinProperty, value);
     }
 
+    /// <summary>
+    /// XMinプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -99,7 +121,82 @@ public class TkGraphics : GLWpfControl
 
     #endregion XMin
 
-     #region YCenter
+    #region XMax
+    /// <summary>
+    /// XMin 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty XMaxProperty = DependencyProperty.Register("XMax", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXMaxPropertyChanged));
+
+    public double XMax
+    {
+        get => (double)GetValue(XMaxProperty);
+        set => SetValue(XMaxProperty, value);
+    }
+
+    /// <summary>
+    /// XMaxプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnXMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion XMax
+
+    #region YMin
+    /// <summary>
+    /// XMin 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty YMinProperty = DependencyProperty.Register("YMin", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYMinPropertyChanged));
+
+    public double YMin
+    {
+        get => (double)GetValue(YMinProperty);
+        set => SetValue(YMinProperty, value);
+    }
+
+    /// <summary>
+    /// YMinプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnYMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YMin
+
+    #region YMax
+    /// <summary>
+    /// XMin 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty YMaxProperty = DependencyProperty.Register("YMax", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYMaxPropertyChanged));
+
+    public double YMax
+    {
+        get => (double)GetValue(YMaxProperty);
+        set => SetValue(YMaxProperty, value);
+    }
+
+    /// <summary>
+    /// YMaxプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnYMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion YMax
+
+    #region YCenter
+    /// <summary>
+    /// YCenter 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YCenterProperty = DependencyProperty.Register("YCenter", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYCenterPropertyChanged));
 
     public double YCenter
@@ -108,6 +205,11 @@ public class TkGraphics : GLWpfControl
         set => SetValue(YCenterProperty, value);
     }
 
+    /// <summary>
+    /// YCenterプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -115,41 +217,107 @@ public class TkGraphics : GLWpfControl
 
     #endregion YCenter
 
-     #region CurrentXPotition
-    public static readonly DependencyProperty CurrentXPotitionProperty = DependencyProperty.Register("CurrentXPotition", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnCurrentXPotitionPropertyChanged));
-
-    public double CurrentXPotition
-    {
-        get => (double)GetValue(CurrentXPotitionProperty);
-        set => SetValue(CurrentXPotitionProperty, value);
-    }
-
-    private static void OnCurrentXPotitionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TkLineGraphItem)?.Render();
-    }
-
-    #endregion CurrentXPotition
-
-   　#region OnMouseMove
-    public static readonly DependencyProperty MouseMoveProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
+    #region OnMouseMoved
+    /// <summary>
+    /// OnMouseMoved 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty OnMouseMovedProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
 
     public Action<double, double> OnMouseMoved
     {
-        get => (Action<double,double>)GetValue(MouseMoveProperty);
-        set => SetValue(MouseMoveProperty, value);
+        get => (Action<double,double>)GetValue(OnMouseMovedProperty);
+        set => SetValue(OnMouseMovedProperty, value);
     }
 
+    /// <summary>
+    /// OnMouseMovedプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnMouseMovedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
     }
 
-    #endregion OnMouseMove
+    #endregion OnMouseMoved
 
+    #region OnMouseLeftButtonDowned
+    /// <summary>
+    /// OnMouseLeftButtonDowned 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty OnMouseLeftButtonDownedProperty = DependencyProperty.Register("OnMouseLeftButtonDowned", typeof(Action<double, double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseLeftButtonDownedPropertyChanged));
+
+    public Action<double, double> OnMouseLeftButtonDowned
+    {
+        get => (Action<double, double>)GetValue(OnMouseLeftButtonDownedProperty);
+        set => SetValue(OnMouseLeftButtonDownedProperty, value);
+    }
+
+    /// <summary>
+    /// OnMouseLeftButtonDownedプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnMouseLeftButtonDownedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion OnMouseLeftButtonDowned
+
+    #region OnEscKeyDowned
+    /// <summary>
+    /// OnEscKeyButtonDowned 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty OnEscKeyDownedProperty = DependencyProperty.Register("OnEscKeyDowned", typeof(Action<double, double, double, double>), typeof(TkGraphics), new PropertyMetadata(null, OnEscKeyDownedPropertyChanged));
+
+    public Action<double, double, double, double> OnEscKeyDowned
+    {
+        get => (Action<double, double, double, double>)GetValue(OnEscKeyDownedProperty);
+        set => SetValue(OnEscKeyDownedProperty, value);
+    }
+
+    /// <summary>
+    /// OnEscKeyDownedプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnEscKeyDownedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion OnEscKeyDowned
+
+    #region DisplayDisits
+    /// <summary>
+    /// DisplayDisits依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty DisplayDisitsProperty = DependencyProperty.Register("DisplayDisits", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnDisplayDisitsPropertyChanged));
+
+    public int DisplayDisits
+    {
+        get => (int)GetValue(DisplayDisitsProperty);
+        set => SetValue(DisplayDisitsProperty, value);
+    }
+
+    /// <summary>
+    /// DisplayDisitsプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
+    private static void OnDisplayDisitsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion DisplayDisits
+
+    /// <summary>
+    /// 新しいインスタンスを生成します。
+    /// </summary>
     public TkGraphics()
     {
-
         var settings = new GLWpfControlSettings()
         {
             MajorVersion = 2,
@@ -215,29 +383,172 @@ public class TkGraphics : GLWpfControl
         }
         GL.MatrixMode(MatrixMode.Modelview);
     }
-    
-    // マウス移動で座標取得
-    private void OnMouseMove(object sender,MouseEventArgs e )
+
+    /// <summary>
+    /// マウスが移動した際に実行されるイベントハンドラです。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnMouseMove(object sender, MouseEventArgs e)
     {
         Point point = e.GetPosition(this);
+
         // x座標変換
-        var x = (point.X * XRange / ActualWidth + XMin);
-        //var x = Math.Round((point.X * XRange/ActualWidth + XMin),0);
+        var x = CoordinateXTransformation(point.X, XMin, DisplayDisits);
         // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
-        var y = (-((point.Y) * YRange / ActualHeight)) + YRange / 2 + YCenter;
-        //var y = Math.Round((-((point.Y) * YRange/ActualHeight)) + YRange / 2 + YCenter , 0);
-        this.OnMouseMoved(x,y);
+        var y = CoordinateYTransformation(point.Y, YCenter, DisplayDisits);
+
+        this.OnMouseMoved(x, y);
+
+        if (_isDrag == true)
+        {
+            // マウス座標を更新します。 :　描画領域の変化に応じてXMin,YCenterが変化するので、ドラッグ開始時のXMin,YCenterを足してあげます。
+            double _movedx = CoordinateXTransformation(point.X, _dragOffsetXMin, DisplayDisits);
+            double _movedy = CoordinateYTransformation(point.Y, _dragOffsetYCenter, DisplayDisits);
+
+            // ドラッグ量 MouseMoveイベントは常に走り続けるため、1周期前の座標を現在の座標から引くことで変化量を求めます。
+            double _xTranslate = Math.Round(_movedx - _oldXPosition, DisplayDisits);
+            double _yTranslate = Math.Round(_movedy - _oldYPosition, DisplayDisits);
+
+            // 前回のマウス座標を更新
+            this._oldXPosition = _movedx;
+            this._oldYPosition = _movedy;
+
+            this.OnMouseLeftButtonDowned(_xTranslate,_yTranslate);
+        }
     }
 
-    // マウス左ボタン押した時
+    /// <summary>
+    /// マウスの左のボタンを押した際に実行されるイベントハンドラです。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
     {
-       
+        UIElement el = sender as UIElement;
+        if(el != null)
+        {
+            // ドラッグフラグをtrueにします。
+            _isDrag = true;
+
+            // ドラッグ開始時の座標を取得します。
+            _dragOffset = e.GetPosition(el);
+            _oldXPosition = CoordinateXTransformation(_dragOffset.X, XMin, DisplayDisits);
+            _oldYPosition = CoordinateYTransformation(_dragOffset.Y, YCenter, DisplayDisits);
+
+            // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
+            _dragOffsetXMax = XMax;
+            _dragOffsetXMin = XMin;
+            _dragOffsetYCenter = YCenter;
+            _dragOffsetYMax = YMax;
+            _dragOffsetYMin = YMin;
+
+            // EscKeyイベントを追加
+            this.KeyDown += OnEscKeyDown;
+
+            el.CaptureMouse();
+        }
     }
 
-    // マウス左ボタン離した時
+    /// <summary>
+    /// マウスの左ボタンを離した際に実行されるイベントハンドラです。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
     {
-        
+        if (_isDrag == true)
+        {
+            // ドラッグフラグをfalseにします。
+            UIElement el = sender as UIElement;
+            el.ReleaseMouseCapture();
+            _isDrag = false;
+
+            // EscKeyイベントを削除
+            this.KeyDown -= OnEscKeyDown;
+        }
     }
+
+    /// <summary>
+    /// キーボードのEscキーを押した際に実行されるイベントハンドラです。
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnEscKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            OnEscKeyDowned(_dragOffsetXMax, _dragOffsetXMin, _dragOffsetYMax, _dragOffsetYMin);
+        }
+    }
+
+    /// <summary>
+    /// windowのx座標を描画領域に合わせたx座標に変換するメソッドです。
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="XMin"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    private double CoordinateXTransformation(double x, double XMin, int n)
+    {
+        return Math.Round (x * XRange / ActualWidth + XMin , n);
+    }
+
+    /// <summary>
+    ///  windowのy座標を描画領域に合わせたx座標に変換するメソッドです。
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="YCenter"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    private double CoordinateYTransformation(double y, double YCenter, int n)
+    {
+        return Math.Round ((- y * YRange / ActualHeight) +YRange / 2 + YCenter, n);
+    }
+
+    /// <summary>
+    /// 現在のドラッグ状態を表します。
+    /// </summary>
+    private bool _isDrag = false;
+
+    /// <summary>
+    /// ドラッグ開始時の座標を表します。
+    /// </summary>
+    private Point _dragOffset;
+
+    /// <summary>
+    /// 1イベント前のx座標を表します。
+    /// </summary>
+    private double _oldXPosition;
+
+    /// <summary>
+    /// ドラッグ開始時のxの最小値を表します。
+    /// </summary>
+    private double _dragOffsetXMin;
+
+    /// <summary>
+    /// ドラッグ開始時のxの最大値を表します。
+    /// </summary>
+    private double _dragOffsetXMax;
+
+    /// <summary>
+    ///  1イベント前のy座標を表します。
+    /// </summary>
+    private double _oldYPosition;
+
+    /// <summary>
+    /// ドラッグ開始時のyの最小値を表します。
+    /// </summary>
+    private double _dragOffsetYMin;
+
+    /// <summary>
+    /// ドラッグ開始時のyの最大値を表します。
+    /// </summary>
+    private double _dragOffsetYMax;
+
+    /// <summary>
+    /// ドラッグ開始時のyの中間値を表します。
+    /// </summary>
+    private double _dragOffsetYCenter;
+
 }

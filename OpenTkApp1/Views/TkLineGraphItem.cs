@@ -69,6 +69,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YData
 
     #region XScale
+    /// <summary>
+    /// XScale 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty XScaleProperty = DependencyProperty.Register("XScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXScalePropertyChanged));
 
     public double XScale
@@ -77,6 +80,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(XScaleProperty, value);
     }
 
+    /// <summary>
+    /// XScale プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnXScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -85,6 +93,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion XScale
 
     #region YScale
+    /// <summary>
+    /// YScale 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YScaleProperty = DependencyProperty.Register("YScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYScalePropertyChanged));
 
     public double YScale
@@ -93,15 +104,22 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(YScaleProperty, value);
     }
 
+    /// <summary>
+    /// YScale プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnYScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
     }
 
-
     #endregion YScale
 
     #region XMax
+    /// <summary>
+    /// XMax 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty XMaxProperty = DependencyProperty.Register("XMax", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXMaxPropertyChanged));
 
     public double XMax
@@ -110,6 +128,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(XMaxProperty, value);
     }
 
+    /// <summary>
+    /// XMax プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnXMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -118,6 +141,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion XMax
 
     #region XMin
+    /// <summary>
+    /// XMin 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty XMinProperty = DependencyProperty.Register("XMin", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXMinPropertyChanged));
 
     public double XMin
@@ -125,7 +151,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         get => (double)GetValue(XMinProperty);
         set => SetValue(XMinProperty, value);
     }
-
+    /// <summary>
+    /// XMin プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -134,6 +164,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion XMin
 
     #region YMax
+    /// <summary>
+    /// YMax 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YMaxProperty = DependencyProperty.Register("YMax", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYMaxPropertyChanged));
 
     public double YMax
@@ -142,6 +175,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(YMaxProperty, value);
     }
 
+    /// <summary>
+    /// YMax プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnYMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -150,6 +188,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YMax
 
     #region YMin
+    /// <summary>
+    /// YMin 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YMinProperty = DependencyProperty.Register("YMin", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYMinPropertyChanged));
 
     public double YMin
@@ -158,6 +199,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(YMinProperty, value);
     }
 
+    /// <summary>
+    /// YMin プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnYMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -166,6 +212,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YMin
 
     #region YCenter
+    /// <summary>
+    /// YCenter 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YCenterProperty = DependencyProperty.Register("YCenter", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYCenterPropertyChanged));
 
     public double YCenter
@@ -174,6 +223,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(YCenterProperty, value);
     }
 
+    /// <summary>
+    /// YCenter プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -182,6 +236,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YCenter
 
     #region XRange
+    /// <summary>
+    /// XRange 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXRangePropertyChanged));
 
     public double XRange
@@ -190,6 +247,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(XRangeProperty, value);
     }
 
+    /// <summary>
+    /// XRangeプロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -198,6 +260,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion XRange
 
     #region YRange
+    /// <summary>
+    /// YRange 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYRangePropertyChanged));
 
     public double YRange
@@ -206,6 +271,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(YRangeProperty, value);
     }
 
+    /// <summary>
+    /// YRange プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -214,6 +284,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion YRange
 
     #region PlotSize
+    /// <summary>
+    /// PlotSize 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty PlotSizeProperty = DependencyProperty.Register("PlotSize", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnPlotSizePropertyChanged));
 
     public double PlotSize
@@ -222,6 +295,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(PlotSizeProperty, value);
     }
 
+    /// <summary>
+    /// PlotSize プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnPlotSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -230,6 +308,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion PlotSize
 
     #region PlotType
+    /// <summary>
+    /// PlotType 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty PlotTypeProperty = DependencyProperty.Register("PlotType", typeof(MarkerTypes), typeof(TkLineGraphItem), new PropertyMetadata(MarkerTypes.Ellipse, OnPlotTypePropertyChanged));
 
     public MarkerTypes PlotType
@@ -238,6 +319,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(PlotTypeProperty, value);
     }
 
+    /// <summary>
+    /// PlotType プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnPlotTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -246,6 +332,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion PlotType
 
     #region PlotColor
+    /// <summary>
+    /// PlotColor 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty PlotColorProperty = DependencyProperty.Register("PlotColor", typeof(Color4), typeof(TkLineGraphItem), new PropertyMetadata(Color4.White, OnPlotColorPropertyChanged));
 
     public Color4 PlotColor
@@ -254,6 +343,11 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(PlotColorProperty, value);
     }
 
+    /// <summary>
+    /// PlotColor プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param
     private static void OnPlotColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
@@ -262,6 +356,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     #endregion PlotColor
 
     #region ISPlot
+    /// <summary>
+    /// IsPlot 依存関係プロパティの定義を表します。
+    /// </summary>
     public static readonly DependencyProperty IsPlotProperty = DependencyProperty.Register("IsPlot", typeof(bool), typeof(TkLineGraphItem), new PropertyMetadata(false, OnIsPlotPropertyChanged));
 
     public bool IsPlot
@@ -270,12 +367,41 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         set => SetValue(IsPlotProperty, value);
     }
 
+    /// <summary>
+    /// IsPlot プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
     private static void OnIsPlotPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as TkLineGraphItem)?.Render();
     }
 
     #endregion IsPlot
+
+    #region LineColor
+    /// <summary>
+    /// LineColor 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register("LineColor", typeof(Color4), typeof(TkLineGraphItem), new PropertyMetadata(Color4.White, OnLineColorPropertyChanged));
+
+    public Color4 LineColor
+    {
+        get => (Color4)GetValue(LineColorProperty);
+        set => SetValue(LineColorProperty, value);
+    }
+
+    /// <summary>
+    /// LineColor プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
+    private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TkLineGraphItem)?.Render();
+    }
+
+    #endregion LineColor
 
     /// <summary>
     /// 描画処理をおこないます。
@@ -305,17 +431,20 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             // グラフ点描画
             DrawPlot(PlotSize, PlotType, PlotColor);
             // グラフ線描画
-            DrawGraph();
+            DrawGraph(LineColor);
             // 目盛り線描画
             DrawScale();
         }
         GL.PopMatrix();
-
     }
 
-    //グラフ線描画
-    private void DrawGraph()
+    /// <summary>
+    /// グラフの線を描画するメソッドです。
+    /// </summary>
+    /// <param name="color"></param>
+    private void DrawGraph(Color4 color)
     {
+        GL.Color4(color);
 
         GL.Begin(PrimitiveType.LineStrip);
         {
@@ -324,24 +453,22 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
         }
         GL.End();
-        
+
+        GL.Color4(Color4.White);
+
     }
 
+    /// <summary>
+    /// グラフの点を描画するメソッドです。
+    /// </summary>
+    /// <param name="size"></param>
+    /// <param name="type"></param>
+    /// <param name="color"></param>
     private void DrawPlot(double size, MarkerTypes type, Color4 color)
     {
         if (IsPlot == false) return;
 
         GL.Color4(color);
-
-        //float _pointSize = 5.0f;
-        //GL.PointSize(_pointSize);
-        //GL.Begin(PrimitiveType.Points);
-        //{
-        //    for (int i = 0; i < XData.Length; i++)
-        //        // 描画領域に合わせて平行移動する必要がある
-        //        GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
-        //}
-        //GL.End();
 
         double halfsize = size / 2;
 
@@ -367,7 +494,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.Color4(Color4.White);
     }
 
-    // 丸形プロット
+    /// <summary>
+    /// プロットを丸型に設定するメソッドです。
+    /// </summary>
+    /// <param name="size"></param>
     private void DrawEllipsePlot(double size)
     {
         // 分割数
@@ -396,7 +526,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
     }
 
-    // 三角形プロット
+    /// <summary>
+    /// プロットを三角形に設定するメソッドです。
+    /// </summary>
+    /// <param name="halfsize"></param>
     private void DrawTrianglePlot(double halfsize)
     {
         // プロットする図形に歪みが出ないようにアスペクト比をかける。
@@ -417,7 +550,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
     }
 
-    // 正方形プロット
+    /// <summary>
+    /// プロットを正方形に設定するメソッドです。
+    /// </summary>
+    /// <param name="halfsize"></param>
     private void DrawRectanglePlot(double halfsize)
     {
         // プロットする図形に歪みが出ないようにアスペクト比をかける。
@@ -439,7 +575,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
     }
 
-    // 逆三角形プロット
+    /// <summary>
+    /// プロットを逆三角形に設定するメソッドです。
+    /// </summary>
+    /// <param name="halfsize"></param>
     private void DrawInvertedTrianglePlot(double halfsize)
     {
         // プロットする図形に歪みが出ないようにアスペクト比をかける。
@@ -460,7 +599,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
     }
 
-    // 目盛り線描画
+    /// <summary>
+    /// 目盛り線を描画するメソッドです。
+    /// </summary>
     private void DrawScale()
     {
         // 点線描画ON
@@ -472,27 +613,42 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
             double _xCurrentPosition = 0;
             double _yCurrentPosition = 0;
 
-            while (_xCurrentPosition <= XMax)
+            if (XMin < 0)
             {
-                // 描画領域に合わせて平行移動する必要がある
-                GL.Vertex2(_xCurrentPosition, YMin - YCenter);
-                GL.Vertex2(_xCurrentPosition, YMax - YCenter);
-                _xCurrentPosition += XScale;
+                while (_xCurrentPosition <= XMax - XMin)
+                {
+                    DrawXScale(ref _xCurrentPosition);
+                }
+
+                while (_yCurrentPosition <= YMax - YCenter)
+                {
+                    DrawUpperYScale(ref _yCurrentPosition, XMax - XMin);
+                }
+
+                _yCurrentPosition = 0;
+                while (_yCurrentPosition >= YMin - YCenter)
+                {
+                    DrawUnderYScale(ref _yCurrentPosition, XMax - XMin);
+                }
             }
 
-            while (_yCurrentPosition <= YMax - YCenter)
+            else
             {
-                GL.Vertex2(0, _yCurrentPosition);
-                GL.Vertex2(XMax,_yCurrentPosition);
-                _yCurrentPosition += YScale;
-            }
+                while (_xCurrentPosition <= XMax)
+                {
+                    DrawXScale(ref _xCurrentPosition);
+                }
 
-            _yCurrentPosition = 0;
-            while (_yCurrentPosition >= YMin - YCenter)
-            {
-                GL.Vertex2(0, _yCurrentPosition);
-                GL.Vertex2(XMax, _yCurrentPosition);
-                _yCurrentPosition -= YScale;
+                while (_yCurrentPosition <= YMax - YCenter)
+                {
+                    DrawUpperYScale(ref _yCurrentPosition, XMax);
+                }
+
+                _yCurrentPosition = 0;
+                while (_yCurrentPosition >= YMin - YCenter)
+                {
+                    DrawUnderYScale(ref _yCurrentPosition, XMax);
+                }
             }
         }
         GL.End();
@@ -500,5 +656,39 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.Disable(EnableCap.LineStipple);
     }
     
+    /// <summary>
+    /// x座標の目盛り線を描画するメソッドです。
+    /// </summary>
+    /// <param name="x"></param>
+    private void DrawXScale(ref double x)
+    {
+        // 描画領域に合わせて平行移動する必要がある
+        GL.Vertex2(x, YMin - YCenter);
+        GL.Vertex2(x, YMax - YCenter);
+        x += XScale;
+    }
 
+    /// <summary>
+    /// y座標の上半分の目盛り線を描画するメソッドです。
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="xend"></param>
+    private void DrawUpperYScale(ref double y, double xend)
+    {
+        GL.Vertex2(0, y);
+        GL.Vertex2(xend, y);
+        y += YScale;
+    }
+
+    /// <summary>
+    /// y座標の下半分を描画するメソッドです。
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="xend"></param>
+    private void DrawUnderYScale(ref double y, double xend)
+    {
+        GL.Vertex2(0, y);
+        GL.Vertex2(xend, y);
+        y -= YScale;
+    }
 }
