@@ -38,14 +38,14 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 800;
+    private double _settingXMax = 700;
 
     /// <summary>
     /// 初めに設定するx座標の最小値を取得または設定します。
     /// </summary>
     public double SettingXMin { get { return _settingXMin; } }
 
-    private double _settingXMin = 500;
+    private double _settingXMin = 200;
 
     /// <summary>
     /// 初めに設定するy座標の最大値を取得または設定します。
@@ -191,6 +191,13 @@ public class MainViewModel : INotifyPropertyChanged
     public Color4 LineColor { get { return _lineColor; } }
 
     private Color4 _lineColor = Color4.Aqua;
+
+    /// <summary>
+    /// 軸の位置を取得します。
+    /// </summary>
+    public AxisTypes AxisType { get { return _axisType; } }
+
+    private AxisTypes _axisType = AxisTypes.Left;
 
     /// <summary>
     /// マウス移動時に呼びだされる関数を取得または設定します。

@@ -3,7 +3,7 @@
     /// <summary>
     /// マーカー種別を表します。
     /// </summary>
-    public enum MarkerTypes
+    public enum MarkerTypes 
     {
         /// <summary>
         /// 円を表します。

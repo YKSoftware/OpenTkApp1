@@ -6,6 +6,7 @@
         xmlns:vw="clr-namespace:OpenTkApp1.Views"
         mc:Ignorable="d"
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="650">
+
     <Grid Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -54,12 +55,17 @@
 
         <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}" XMin="{Binding XMin}" XMax="{Binding XMax}" YCenter="{Binding YCenter}" 
                         YMax="{Binding YMax}" YMin="{Binding YMin}" DisplayDisits="{Binding DisplayDigits}" OnMouseMoved="{Binding CallBackMouseMoved}" 
-                        OnMouseLeftButtonDowned="{Binding CallBackMouseLeftButtonDowning}" OnEscKeyDowned="{Binding CallBackEscKeyDowned}">
-           
-            <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" 
+                        OnMouseLeftButtonDowned="{Binding CallBackMouseLeftButtonDowning}" OnEscKeyDowned="{Binding CallBackEscKeyDowned}" >
+            <vw:TkGraphics.GraphBase>
+                <vw:TKLineGraph AxisType="{Binding AxisType}">
+                    <vw:TKLineGraph.DrawingItem>
+                        <vw:TkLineGraphItem  XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" 
                                YMax="{Binding YMax}" YMin="{Binding YMin}" YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" 
                                PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}"
-                               LineColor="{Binding LineColor}"/>
+                               LineColor="{Binding LineColor}" />
+                    </vw:TKLineGraph.DrawingItem>
+                </vw:TKLineGraph>
+            </vw:TkGraphics.GraphBase>
         </vw:TkGraphics>
 
     </Grid>

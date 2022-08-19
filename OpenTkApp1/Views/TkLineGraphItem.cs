@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -402,7 +403,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     }
 
     #endregion LineColor
-
+    
     /// <summary>
     /// 描画処理をおこないます。
     /// </summary>
@@ -455,7 +456,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.End();
 
         GL.Color4(Color4.White);
-
     }
 
     /// <summary>
@@ -691,4 +691,5 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
         GL.Vertex2(xend, y);
         y -= YScale;
     }
+
 }

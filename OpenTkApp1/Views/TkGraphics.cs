@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Markup;
-using System.Linq;
 using System.Windows.Input;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -13,6 +12,43 @@ namespace OpenTkApp1.Views;
 [ContentProperty("DrawingItem")]
 public class TkGraphics : GLWpfControl
 {
+
+    /// <summary>
+    /// GraphBase 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty GraphBaseProperty = DependencyProperty.Register("GraphBase", typeof(ITkGraphBase), typeof(TkGraphics), new PropertyMetadata(null, OnGraphBasePropertyChanged));
+
+    /// <summary>
+    /// 描画内容を取得または設定します。
+    /// </summary>
+    public ITkGraphBase? GraphBase
+    {
+        get => (ITkGraphBase?)GetValue(GraphBaseProperty);
+        set => SetValue(GraphBaseProperty, value);
+    }
+
+    /// <summary>
+    /// GraphBase 依存関係プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
+    private static void OnGraphBasePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var control = (TkGraphics)d;
+        control.OnGraphBasePropertyChanged(e.OldValue, e.NewValue);
+    }
+
+    /// <summary>
+    /// DrawingItem 依存関係プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="oldItem">変更前の値</param>
+    /// <param name="newItem">変更後の値</param>
+    private void OnGraphBasePropertyChanged(object oldItem, object newItem)
+    {
+        RemoveLogicalChild(oldItem);
+        AddLogicalChild(newItem);
+    }
+
     /// <summary>
     /// DrawingItem 依存関係プロパティの定義を表します。
     /// </summary>
@@ -221,11 +257,11 @@ public class TkGraphics : GLWpfControl
     /// <summary>
     /// OnMouseMoved 依存関係プロパティの定義を表します。
     /// </summary>
-    public static readonly DependencyProperty OnMouseMovedProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double,double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
+    public static readonly DependencyProperty OnMouseMovedProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double, double>), typeof(TkGraphics), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
 
     public Action<double, double> OnMouseMoved
     {
-        get => (Action<double,double>)GetValue(OnMouseMovedProperty);
+        get => (Action<double, double>)GetValue(OnMouseMovedProperty);
         set => SetValue(OnMouseMovedProperty, value);
     }
 
@@ -249,7 +285,7 @@ public class TkGraphics : GLWpfControl
 
     public Action<double, double> OnMouseLeftButtonDowned
     {
-        get => (Action<double, double>)GetValue(OnMouseLeftButtonDownedProperty);
+        get => (Action<double, double>) GetValue(OnMouseLeftButtonDownedProperty);
         set => SetValue(OnMouseLeftButtonDownedProperty, value);
     }
 
@@ -325,7 +361,6 @@ public class TkGraphics : GLWpfControl
         };
         Start(settings);
 
-        
         var look = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
         GL.LoadMatrix(ref look);
         GL.Enable(EnableCap.DepthTest);
@@ -364,6 +399,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="delta">経過時間</param>
     private void OnTkRender(TimeSpan delta)
     {
+        GraphBase?.Render();
         DrawingItem?.Render();
     }
 
@@ -414,7 +450,7 @@ public class TkGraphics : GLWpfControl
             this._oldXPosition = _movedx;
             this._oldYPosition = _movedy;
 
-            this.OnMouseLeftButtonDowned(_xTranslate,_yTranslate);
+            this.OnMouseLeftButtonDowned(_xTranslate, _yTranslate);
         }
     }
 
@@ -426,7 +462,7 @@ public class TkGraphics : GLWpfControl
     private void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
     {
         UIElement el = sender as UIElement;
-        if(el != null)
+        if (el != null)
         {
             // ドラッグフラグをtrueにします。
             _isDrag = true;
@@ -491,7 +527,7 @@ public class TkGraphics : GLWpfControl
     /// <returns></returns>
     private double CoordinateXTransformation(double x, double XMin, int n)
     {
-        return Math.Round (x * XRange / ActualWidth + XMin , n);
+        return Math.Round(x * XRange / ActualWidth + XMin, n);
     }
 
     /// <summary>
@@ -503,7 +539,7 @@ public class TkGraphics : GLWpfControl
     /// <returns></returns>
     private double CoordinateYTransformation(double y, double YCenter, int n)
     {
-        return Math.Round ((- y * YRange / ActualHeight) +YRange / 2 + YCenter, n);
+        return Math.Round((-y * YRange / ActualHeight) + YRange / 2 + YCenter, n);
     }
 
     /// <summary>
