@@ -104,7 +104,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XRange
@@ -128,7 +128,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YRange
@@ -152,7 +152,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XMin
@@ -176,7 +176,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnXMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XMax
@@ -200,7 +200,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnYMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YMin
@@ -224,7 +224,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnYMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YMax
@@ -248,7 +248,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YCenter
@@ -272,7 +272,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnMouseMovedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion OnMouseMoved
@@ -296,7 +296,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnMouseLeftButtonDownedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion OnMouseLeftButtonDowned
@@ -320,7 +320,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnEscKeyDownedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion OnEscKeyDowned
@@ -344,7 +344,7 @@ public class TkGraphics : GLWpfControl
     /// <param name="e">イベント引数</param
     private static void OnDisplayDisitsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion DisplayDisits
@@ -400,7 +400,7 @@ public class TkGraphics : GLWpfControl
     private void OnTkRender(TimeSpan delta)
     {
         GraphBase?.Render();
-        DrawingItem?.Render();
+        //DrawingItem?.Render();
     }
 
     /// <summary>
