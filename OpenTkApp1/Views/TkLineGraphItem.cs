@@ -404,5 +404,4 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion LineColor
     
-
 }

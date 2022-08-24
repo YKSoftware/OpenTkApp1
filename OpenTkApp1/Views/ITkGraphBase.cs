@@ -1,7 +1,13 @@
-﻿namespace OpenTkApp1.Views
+﻿using System.Windows;
+using System.Windows.Input;
+
+namespace OpenTkApp1.Views
 {
-    public interface ITkGraphBase
+    public interface ITkGraphBase 
     {
         void Render();
+        void OnMouseMove(object sender, MouseEventArgs e);
+        void OnMouseLeftButtonDowned(object sender, MouseEventArgs e);
+        void OnMouseLeftButtonUpped(object sender, MouseEventArgs e);
     }
 }

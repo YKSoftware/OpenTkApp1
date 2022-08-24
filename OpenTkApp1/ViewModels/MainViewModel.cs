@@ -223,7 +223,7 @@ public class MainViewModel : INotifyPropertyChanged
         set { SetProperty(ref this._currentXPotition, value); }
     }
 
-    private double _currentXPotition ;
+    private double _currentXPotition;
 
     /// <summary>
     /// マウスポインタのy座標を取得または設定します。

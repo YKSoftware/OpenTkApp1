@@ -53,11 +53,10 @@
         <TextBlock Text="{Binding CurrentXPotition, StringFormat=x：{0}}" Grid.Column="0" Grid.Row="0" Height="25" Width="47" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
         <TextBlock Text="{Binding CurrentYPotition, StringFormat=y：{0}}" Grid.Column="0" Grid.Row="0" Height="15" Width="47" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="White" />
 
-        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}" XMin="{Binding XMin}" XMax="{Binding XMax}" YCenter="{Binding YCenter}" 
-                        YMax="{Binding YMax}" YMin="{Binding YMin}" DisplayDisits="{Binding DisplayDigits}" OnMouseMoved="{Binding CallBackMouseMoved}" 
-                        OnMouseLeftButtonDowned="{Binding CallBackMouseLeftButtonDowning}" OnEscKeyDowned="{Binding CallBackEscKeyDowned}" >
+        <vw:TkGraphics  Grid.Column="1" Grid.Row="1" XRange="{Binding XRange}" YRange="{Binding YRange}" >
             <vw:TkGraphics.GraphBase>
-                <vw:TKLineGraph AxisType="{Binding AxisType}">
+                <vw:TKLineGraph AxisType="{Binding AxisType}" OnMouseMoved="{Binding CallBackMouseMoved}" OnMouseLeftButtonDown="{Binding CallBackMouseLeftButtonDowning}" 
+                                OnEscKeyDown="{Binding CallBackEscKeyDowned}">
                     <vw:TKLineGraph.DrawingItem>
                         <vw:TkLineGraphItem  XData="{Binding XData}" YData="{Binding YData}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" 
                                YMax="{Binding YMax}" YMin="{Binding YMin}" YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" 

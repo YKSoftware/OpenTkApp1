@@ -63,6 +63,92 @@ namespace OpenTkApp1.Views
 
         #endregion AxisType
 
+        #region CurrentXPosition
+        public static readonly DependencyProperty CurrentXPositionProperty = DependencyProperty.Register("CurrentXPosition", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnCurrntXPositionPropertyChanged));
+
+        public double CurrentXPosition
+        {
+            get => (double)GetValue(CurrentXPositionProperty);
+            set => SetValue(CurrentXPositionProperty, value);
+        }
+
+        private static void OnCurrntXPositionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+        #endregion CurrentXPosition
+
+        #region OnMouseMoved
+        /// <summary>
+        /// OnMouseMoved 依存関係プロパティの定義を表します。
+        /// </summary>
+        public static readonly DependencyProperty OnMouseMovedProperty = DependencyProperty.Register("OnMouseMoved", typeof(Action<double, double>), typeof(TKLineGraph), new PropertyMetadata(null, OnMouseMovedPropertyChanged));
+
+        public Action<double, double> OnMouseMoved
+        {
+            get => (Action<double, double>)GetValue(OnMouseMovedProperty);
+            set => SetValue(OnMouseMovedProperty, value);
+        }
+
+        /// <summary>
+        /// OnMouseMovedプロパティ変更イベントハンドラ
+        /// </summary>
+        /// <param name="d">イベント発行元</param>
+        /// <param name="e">イベント引数</param
+        private static void OnMouseMovedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+
+        #endregion OnMouseMoved
+
+        #region OnMouseLeftButtonDowned
+        /// <summary>
+        /// OnMouseLeftButtonDowned 依存関係プロパティの定義を表します。
+        /// </summary>
+        public static readonly DependencyProperty OnMouseLeftButtonDownProperty = DependencyProperty.Register("OnMouseLeftButtonDown", typeof(Action<double, double>), typeof(TKLineGraph), new PropertyMetadata(null, OnMouseLeftButtonDownPropertyChanged));
+
+        public Action<double, double> OnMouseLeftButtonDown
+        {
+            get => (Action<double, double>)GetValue(OnMouseLeftButtonDownProperty);
+            set => SetValue(OnMouseLeftButtonDownProperty, value);
+        }
+
+        /// <summary>
+        /// OnMouseLeftButtonDownedプロパティ変更イベントハンドラ
+        /// </summary>
+        /// <param name="d">イベント発行元</param>
+        /// <param name="e">イベント引数</param
+        private static void OnMouseLeftButtonDownPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+
+        #endregion OnMouseLeftButtonDown
+
+        #region OnEscKeyDowned
+        /// <summary>
+        /// OnEscKeyButtonDowned 依存関係プロパティの定義を表します。
+        /// </summary>
+        public static readonly DependencyProperty OnEscKeyDownProperty = DependencyProperty.Register("OnEscKeyDown", typeof(Action<double, double, double, double>), typeof(TKLineGraph), new PropertyMetadata(null, OnEscKeyDownPropertyChanged));
+
+        public Action<double, double, double, double> OnEscKeyDown
+        {
+            get => (Action<double, double, double, double>)GetValue(OnEscKeyDownProperty);
+            set => SetValue(OnEscKeyDownProperty, value);
+        }
+
+        /// <summary>
+        /// OnEscKeyDownedプロパティ変更イベントハンドラ
+        /// </summary>
+        /// <param name="d">イベント発行元</param>
+        /// <param name="e">イベント引数</param
+        private static void OnEscKeyDownPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+
+        #endregion OnEscKeyDowned
 
         public void Render()
         {
@@ -345,5 +431,174 @@ namespace OpenTkApp1.Views
             y -= DrawingItem.YScale;
         }
 
+        /// <summary>
+        /// マウスが移動した際に実行されるイベントハンドラです。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            Point point = e.GetPosition((IInputElement)sender);
+
+            // x座標変換
+            var x = CoordinateXTransformation(point.X, DrawingItem.XMin, 2);
+            // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
+            var y = CoordinateYTransformation(point.Y, DrawingItem.YCenter, 2);
+
+            this.OnMouseMoved(x, y);
+
+            if (_isDrag == true)
+            {
+                // マウス座標を更新します。 :　描画領域の変化に応じてXMin,YCenterが変化するので、ドラッグ開始時のXMin,YCenterを足してあげます。
+                double _movedx = CoordinateXTransformation(point.X, _dragOffsetXMin, 2);
+                double _movedy = CoordinateYTransformation(point.Y, _dragOffsetYCenter, 2);
+
+                // ドラッグ量 MouseMoveイベントは常に走り続けるため、1周期前の座標を現在の座標から引くことで変化量を求めます。
+                double _xTranslate = Math.Round(_movedx - _oldXPosition, 2);
+                double _yTranslate = Math.Round(_movedy - _oldYPosition, 2);
+
+                // 前回のマウス座標を更新
+                this._oldXPosition = _movedx;
+                this._oldYPosition = _movedy;
+
+                this.OnMouseLeftButtonDown(_xTranslate, _yTranslate);
+            }
+        }
+
+        /// <summary>
+        /// マウスの左のボタンを押した際に実行されるイベントハンドラです。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnMouseLeftButtonDowned(object sender, MouseEventArgs e)
+        {
+            UIElement el = sender as UIElement;
+            if (el != null)
+            {
+                // ドラッグフラグをtrueにします。
+                _isDrag = true;
+
+                // ドラッグ開始時の座標を取得します。
+                _dragOffset = e.GetPosition(el);
+                _oldXPosition = CoordinateXTransformation(_dragOffset.X, DrawingItem.XMin, 2);
+                _oldYPosition = CoordinateYTransformation(_dragOffset.Y, DrawingItem.YCenter, 2);
+
+                // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
+                _dragOffsetXMax = DrawingItem.XMax;
+                _dragOffsetXMin = DrawingItem.XMin;
+                _dragOffsetYCenter = DrawingItem.YCenter;
+                _dragOffsetYMax = DrawingItem.YMax;
+                _dragOffsetYMin = DrawingItem.YMin;
+
+                // EscKeyイベントを追加
+                this.KeyDown += OnEscKeyDowned;
+
+                el.CaptureMouse();
+            }
+        }
+
+        /// <summary>
+        /// マウスの左ボタンを離した際に実行されるイベントハンドラです。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnMouseLeftButtonUpped(object sender, MouseEventArgs e)
+        {
+            if (_isDrag == true)
+            {
+                // ドラッグフラグをfalseにします。
+                UIElement el = sender as UIElement;
+                el.ReleaseMouseCapture();
+                _isDrag = false;
+
+                // EscKeyイベントを削除
+                this.KeyDown -= OnEscKeyDowned;
+            }
+        }
+
+        /// <summary>
+        /// キーボードのEscキーを押した際に実行されるイベントハンドラです。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnEscKeyDowned(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                OnEscKeyDown(_dragOffsetXMax, _dragOffsetXMin, _dragOffsetYMax, _dragOffsetYMin);
+            }
+        }
+
+        /// <summary>
+        /// windowのx座標を描画領域に合わせたx座標に変換するメソッドです。
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="xMin"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        private double CoordinateXTransformation(double x, double xMin, int n)
+        {
+            return Math.Round(x * DrawingItem.XRange / TkGraphics.CurrentWidth + xMin, n);
+        }
+
+        /// <summary>
+        ///  windowのy座標を描画領域に合わせたx座標に変換するメソッドです。
+        /// </summary>
+        /// <param name="y"></param>
+        /// <param name="yCenter"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        private double CoordinateYTransformation(double y, double yCenter, int n)
+        {
+            return Math.Round((-y * DrawingItem.YRange / TkGraphics.CuurentHeight) + DrawingItem.YRange / 2 + yCenter, n);
+        }
+
+        #region マウスイベント用フィールド
+        /// <summary>
+        /// 現在のドラッグ状態を表します。
+        /// </summary>
+        private bool _isDrag = false;
+
+        /// <summary>
+        /// ドラッグ開始時の座標を表します。
+        /// </summary>
+        private Point _dragOffset;
+
+        /// <summary>
+        /// 1イベント前のx座標を表します。
+        /// </summary>
+        private double _oldXPosition;
+
+        /// <summary>
+        /// ドラッグ開始時のxの最小値を表します。
+        /// </summary>
+        private double _dragOffsetXMin;
+
+        /// <summary>
+        /// ドラッグ開始時のxの最大値を表します。
+        /// </summary>
+        private double _dragOffsetXMax;
+
+        /// <summary>
+        ///  1イベント前のy座標を表します。
+        /// </summary>
+        private double _oldYPosition;
+
+        /// <summary>
+        /// ドラッグ開始時のyの最小値を表します。
+        /// </summary>
+        private double _dragOffsetYMin;
+
+        /// <summary>
+        /// ドラッグ開始時のyの最大値を表します。
+        /// </summary>
+        private double _dragOffsetYMax;
+
+        /// <summary>
+        /// ドラッグ開始時のyの中間値を表します。
+        /// </summary>
+        private double _dragOffsetYCenter;
+
+        #endregion マウスイベント用フィールド
     }
 }
