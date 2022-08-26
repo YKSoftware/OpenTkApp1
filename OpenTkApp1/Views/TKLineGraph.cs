@@ -168,30 +168,6 @@ namespace OpenTkApp1.Views
 
         #endregion CurrentYPosition
 
-        #region OnEscKeyDowned
-        /// <summary>
-        /// OnEscKeyButtonDowned 依存関係プロパティの定義を表します。
-        /// </summary>
-        public static readonly DependencyProperty OnEscKeyDownProperty = DependencyProperty.Register("OnEscKeyDown", typeof(Action<double, double, double, double>), typeof(TKLineGraph), new PropertyMetadata(null, OnEscKeyDownPropertyChanged));
-
-        public Action<double, double, double, double> OnEscKeyDown
-        {
-            get => (Action<double, double, double, double>)GetValue(OnEscKeyDownProperty);
-            set => SetValue(OnEscKeyDownProperty, value);
-        }
-
-        /// <summary>
-        /// OnEscKeyDownedプロパティ変更イベントハンドラ
-        /// </summary>
-        /// <param name="d">イベント発行元</param>
-        /// <param name="e">イベント引数</param
-        private static void OnEscKeyDownPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as TKLineGraph)?.Render();
-        }
-
-        #endregion OnEscKeyDowned
-
         public void Render()
         {
             // 1回目のRenderが走るタイミングがBindingするより早いため
@@ -647,7 +623,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnMouseLeftButtonDowned(object sender, MouseEventArgs e) //Todo: 後で名前をdownに変える
+        public void OnMouseLeftButtonDown(object sender, MouseEventArgs e) //Todo: 後で名前をdownに変える
         {
             UIElement el = sender as UIElement;
             if (el != null)
@@ -676,7 +652,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnMouseLeftButtonUpped(object sender, MouseEventArgs e)
+        public void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
         {
             if (_isDrag == true)
             {
@@ -693,7 +669,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnEscKeyDowned(object sender, KeyEventArgs e)
+        public void OnEscKeyDown(object sender, KeyEventArgs e)
         {
             if (_isDrag == true)
             {

@@ -148,9 +148,9 @@ public class TkGraphics : GLWpfControl
         GraphBase?.Render();
         // コンストラクタのタイミングだと、GraphBaseがnullになってしまう。
         this.MouseMove += GraphBase.OnMouseMove;
-        this.MouseLeftButtonDown += GraphBase.OnMouseLeftButtonDowned;
-        this.MouseLeftButtonUp += GraphBase.OnMouseLeftButtonUpped;
-        this.KeyDown += GraphBase.OnEscKeyDowned;
+        this.MouseLeftButtonDown += GraphBase.OnMouseLeftButtonDown;
+        this.MouseLeftButtonUp += GraphBase.OnMouseLeftButtonUp;
+        this.KeyDown += GraphBase.OnEscKeyDown;
     }
 
     /// <summary>

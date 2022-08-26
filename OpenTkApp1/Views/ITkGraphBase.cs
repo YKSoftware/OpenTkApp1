@@ -6,8 +6,8 @@ namespace OpenTkApp1.Views
     {
         void Render();
         void OnMouseMove(object sender, MouseEventArgs e);
-        void OnMouseLeftButtonDowned(object sender, MouseEventArgs e);
-        void OnMouseLeftButtonUpped(object sender, MouseEventArgs e);
-        void OnEscKeyDowned(object sender, KeyEventArgs e);
+        void OnMouseLeftButtonDown(object sender, MouseEventArgs e);
+        void OnMouseLeftButtonUp(object sender, MouseEventArgs e);
+        void OnEscKeyDown(object sender, KeyEventArgs e);
     }
 }
