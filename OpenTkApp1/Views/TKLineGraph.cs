@@ -563,62 +563,6 @@ namespace OpenTkApp1.Views
 
             // text分の四角形のビットマップを作成した、その四角形をテクスチャとして貼り付けることで描画する。
 
-            //var window = Application.Current.MainWindow;
-
-            //// テキストの色定義
-            //Brush foreground = new SolidColorBrush(color);
-            //double pixelsPerDip = 96;
-
-            //var text = new FormattedText(
-            //    str,
-            //    new System.Globalization.CultureInfo("en-us"),
-            //    FlowDirection.LeftToRight,
-            //    new Typeface(
-            //        window.FontFamily,
-            //        FontStyles.Normal,
-            //        FontWeights.Normal,
-            //        FontStretches.Normal),
-            //    fontSize, 
-            //    foreground,
-            //    pixelsPerDip);
-
-            //System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
-            //{
-            //    int width = (int)Math.Ceiling(text.Width);
-            //    int height = (int)Math.Ceiling(text.Height);
-            //    var dpi = VisualTreeHelper.GetDpi(this);
-            //    double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
-            //    double dpiY = dpi.PixelsPerInchY;
-            //    bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(
-            //        width, height, dpiX, dpiY, PixelFormats.Pbgra32);
-            //}
-
-            //var drawingVisual = new DrawingVisual();
-            //using (DrawingContext drawingContext = drawingVisual.RenderOpen())
-            //{
-            //    drawingContext.DrawRectangle(Brushes.White, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
-            //    drawingContext.DrawText(text, new Point(0, 0));
-            //}
-
-            //bmp.Render(drawingVisual);
-
-            //// ビットマップの幅、高さ取得
-            //int bmpWidth = bmp.PixelWidth;
-            //int bmpHeight = bmp.PixelHeight;
-            //int stride = bmpWidth * 4;
-            //byte[] tmpbits = new byte[stride * bmpHeight];
-            //var rectangle = new Int32Rect(0, 0, bmpWidth, bmpHeight);
-            //bmp.CopyPixels(rectangle, tmpbits, stride, 0);
-            //// 上下反転する
-            //byte[] bits = new byte[stride * bmpHeight];
-            //for (int h = 0; h < bmpHeight; h++)
-            //{
-            //    for (int w = 0; w < stride; w++)
-            //    {
-            //        bits[h * stride + w] = tmpbits[(bmpHeight - 1 - h) * stride + w];
-            //    }
-            //}
-
             bool isTexture = GL.IsEnabled(EnableCap.Texture2D);
             GL.Enable(EnableCap.Texture2D);
 
@@ -626,6 +570,7 @@ namespace OpenTkApp1.Views
             //int texture = GL.GenTexture();
             // テクスチャ用バッファの紐づけ
             //GL.BindTexture(TextureTarget.Texture2D, texture);
+
             // テクスチャの設定
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Linear);
@@ -657,11 +602,21 @@ namespace OpenTkApp1.Views
             GL.MatrixMode(MatrixMode.Modelview);
         }
 
+        #region テキストビットマップ作成
+        /// <summary>
+        /// 新たにCreateBitmapをインスタンス生成するメソッドです。
+        /// </summary>
         public void CreateTextBitmap()
         {
             CreateTextBitmap("計測誤差[mg]", 40, Colors.Orange);
         }
 
+        /// <summary>
+        /// テキストのビットマップを作成するメソッドです。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
         public void CreateTextBitmap(string str, double fontSize, Color color)
         {
             var window = Application.Current.MainWindow;
@@ -719,12 +674,21 @@ namespace OpenTkApp1.Views
                     _bits[h * stride + w] = tmpbits[(_bmpHeight - 1 - h) * stride + w];
                 }
             }
-            
         }
 
+        /// <summary>
+        /// 作成したビットマップの横幅を表します。
+        /// </summary>
         private int _bmpWidth;
+        /// <summary>
+        /// 作成したビットマップの高さを表します。
+        /// </summary>
         private int _bmpHeight;
+        /// <summary>
+        /// ビットマップの配列を格納します。
+        /// </summary>
         private byte[] _bits;
+        #endregion テキストビットマップ作成
 
         #endregion テキスト描画
 
