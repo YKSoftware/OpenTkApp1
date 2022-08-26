@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -35,7 +36,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnXDataPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XData
@@ -63,58 +64,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnYDataPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YData
-
-    #region XScale
-    /// <summary>
-    /// XScale 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty XScaleProperty = DependencyProperty.Register("XScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXScalePropertyChanged));
-
-    public double XScale
-    {
-        get => (double)GetValue(XScaleProperty);
-        set => SetValue(XScaleProperty, value);
-    }
-
-    /// <summary>
-    /// XScale プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnXScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TkLineGraphItem)?.Render();
-    }
-
-    #endregion XScale
-
-    #region YScale
-    /// <summary>
-    /// YScale 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty YScaleProperty = DependencyProperty.Register("YScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYScalePropertyChanged));
-
-    public double YScale
-    {
-        get => (double)GetValue(YScaleProperty);
-        set => SetValue(YScaleProperty, value);
-    }
-
-    /// <summary>
-    /// YScale プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnYScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TkLineGraphItem)?.Render();
-    }
-
-    #endregion YScale
 
     #region XMax
     /// <summary>
@@ -135,7 +88,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnXMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XMax
@@ -158,7 +111,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnXMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion XMin
@@ -182,7 +135,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnYMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YMax
@@ -206,7 +159,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnYMinPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YMin
@@ -230,58 +183,10 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion YCenter
-
-    #region XRange
-    /// <summary>
-    /// XRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXRangePropertyChanged));
-
-    public double XRange
-    {
-        get => (double)GetValue(XRangeProperty);
-        set => SetValue(XRangeProperty, value);
-    }
-
-    /// <summary>
-    /// XRangeプロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TkLineGraphItem)?.Render();
-    }
-
-    #endregion XRange
-
-    #region YRange
-    /// <summary>
-    /// YRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYRangePropertyChanged));
-
-    public double YRange
-    {
-        get => (double)GetValue(YRangeProperty);
-        set => SetValue(YRangeProperty, value);
-    }
-
-    /// <summary>
-    /// YRange プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TkLineGraphItem)?.Render();
-    }
-
-    #endregion YRange
 
     #region PlotSize
     /// <summary>
@@ -302,7 +207,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnPlotSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion PlotSize
@@ -326,7 +231,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param
     private static void OnPlotTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion PlotType
@@ -350,7 +255,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param
     private static void OnPlotColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion PlotColor
@@ -374,7 +279,7 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnIsPlotPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion IsPlot
@@ -398,297 +303,9 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     /// <param name="e">イベント引数</param>
     private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as TkLineGraphItem)?.Render();
+        (d as TKLineGraph)?.Render();
     }
 
     #endregion LineColor
-
-    /// <summary>
-    /// 描画処理をおこないます。
-    /// </summary>
-
-    public void Render()
-    {
-        if (this.XData is null) return;
-        if (this.YData is null) return;            
-        if (XScale == 0) return;
-        if (YScale == 0) return;
-        if (XRange == 0) return;
-        if (YRange == 0) return;
-
-        // ToDo: XData と YData を用いてグラフを描画する
-
-        GL.ClearColor(Color4.Black);
-
-        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); 
-
-        GL.Color4(Color4.White);
-
-        GL.PushMatrix();
-        {
-            // 左端から描画するために移動
-            GL.Translate(-((XMax - XMin)/2), 0, 0);
-            // グラフ点描画
-            DrawPlot(PlotSize, PlotType, PlotColor);
-            // グラフ線描画
-            DrawGraph(LineColor);
-            // 目盛り線描画
-            DrawScale();
-        }
-        GL.PopMatrix();
-    }
-
-    /// <summary>
-    /// グラフの線を描画するメソッドです。
-    /// </summary>
-    /// <param name="color"></param>
-    private void DrawGraph(Color4 color)
-    {
-        GL.Color4(color);
-
-        GL.Begin(PrimitiveType.LineStrip);
-        {
-            for(int i = 0; i < XData.Length; i++)
-            // 描画領域に合わせて平行移動する必要がある
-            GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
-        }
-        GL.End();
-
-        GL.Color4(Color4.White);
-
-    }
-
-    /// <summary>
-    /// グラフの点を描画するメソッドです。
-    /// </summary>
-    /// <param name="size"></param>
-    /// <param name="type"></param>
-    /// <param name="color"></param>
-    private void DrawPlot(double size, MarkerTypes type, Color4 color)
-    {
-        if (IsPlot == false) return;
-
-        GL.Color4(color);
-
-        double halfsize = size / 2;
-
-        switch (type)
-        {
-            case MarkerTypes.Ellipse:
-                DrawEllipsePlot(size);
-                break;
-
-            case MarkerTypes.Triangle:
-                DrawTrianglePlot(halfsize);
-                break;
-
-            case MarkerTypes.Rectangle:
-                DrawRectanglePlot(halfsize);
-                break;
-
-            case MarkerTypes.InvertedTriangle:
-                DrawInvertedTrianglePlot(halfsize);
-                break;
-        }
-
-        GL.Color4(Color4.White);
-    }
-
-    /// <summary>
-    /// プロットを丸型に設定するメソッドです。
-    /// </summary>
-    /// <param name="size"></param>
-    private void DrawEllipsePlot(double size)
-    {
-        // 分割数
-        int division = 40;
-        double delta = 2.0 * Math.PI / (double)division;
-        // プロットする図形に歪みが出ないようにアスペクト比をかける。
-        double aspectRatio = (double)XRange / YRange;
-        double xSize = size * aspectRatio;
-
-        GL.Begin(PrimitiveType.Triangles);
-        {
-            for (int i = 0; i < XData.Length; i++)
-            {
-                for (int j = 0; j <= division; j++)
-                {
-                    double x1 = XData[i] - XMin + (xSize * Math.Cos(delta * j));
-                    double y1 = YData[i] - YCenter + (size * Math.Sin(delta * j));
-                    double x2 = XData[i] - XMin + (xSize * Math.Cos(delta * j+1));
-                    double y2 = YData[i] - YCenter + (size * Math.Sin(delta * j+1));
-                    GL.Vertex2(XData[i] - XMin, YData[i] - YCenter);
-                    GL.Vertex2(x1, y1);
-                    GL.Vertex2(x2, y2);
-                }
-            }
-        }
-        GL.End();
-    }
-
-    /// <summary>
-    /// プロットを三角形に設定するメソッドです。
-    /// </summary>
-    /// <param name="halfsize"></param>
-    private void DrawTrianglePlot(double halfsize)
-    {
-        // プロットする図形に歪みが出ないようにアスペクト比をかける。
-        double aspectRatio = (double)XRange / YRange;
-        double halfXEdge = halfsize * aspectRatio;
-        double halfYEdge = halfsize * Math.Sqrt(3);
-
-        GL.Begin(PrimitiveType.Triangles);
-        {
-            for (int i = 0; i < XData.Length; i++)
-            // 描画領域に合わせて平行移動する必要がある
-            {
-                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter - halfYEdge);
-                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter - halfYEdge);
-                GL.Vertex2(XData[i] - XMin, YData[i] - YCenter + Math.Sqrt(3) * halfYEdge);
-            }
-        }
-        GL.End();
-    }
-
-    /// <summary>
-    /// プロットを正方形に設定するメソッドです。
-    /// </summary>
-    /// <param name="halfsize"></param>
-    private void DrawRectanglePlot(double halfsize)
-    {
-        // プロットする図形に歪みが出ないようにアスペクト比をかける。
-        double aspectRatio = (double)XRange / YRange;
-        double halfXEdge = halfsize * aspectRatio;
-        double halfYEdge = halfsize;
-
-        GL.Begin(PrimitiveType.Quads);
-        {
-            for (int i = 0; i < XData.Length; i++)
-            // 描画領域に合わせて平行移動する必要がある
-            {
-                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter - halfYEdge);
-                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter - halfYEdge);
-                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter + halfYEdge);
-                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter + halfYEdge);
-            }
-        }
-        GL.End();
-    }
-
-    /// <summary>
-    /// プロットを逆三角形に設定するメソッドです。
-    /// </summary>
-    /// <param name="halfsize"></param>
-    private void DrawInvertedTrianglePlot(double halfsize)
-    {
-        // プロットする図形に歪みが出ないようにアスペクト比をかける。
-        double aspectRatio = (double)XRange / YRange;
-        double halfXEdge = halfsize * aspectRatio;
-        double halfYEdge = halfsize * Math.Sqrt(3);
-
-        GL.Begin(PrimitiveType.Triangles);
-        {
-            for (int i = 0; i < XData.Length; i++)
-            // 描画領域に合わせて平行移動する必要がある
-            {
-                GL.Vertex2(XData[i] - XMin - halfXEdge, YData[i] - YCenter + halfYEdge);
-                GL.Vertex2(XData[i] - XMin + halfXEdge, YData[i] - YCenter + halfYEdge);
-                GL.Vertex2(XData[i] - XMin, YData[i] - YCenter - halfYEdge);
-            }
-        }
-        GL.End();
-    }
-
-    /// <summary>
-    /// 目盛り線を描画するメソッドです。
-    /// </summary>
-    private void DrawScale()
-    {
-        // 点線描画ON
-        GL.Enable(EnableCap.LineStipple);
-        // 破線の形状を決める
-        GL.LineStipple(1, 0xF0F0);
-        GL.Begin(PrimitiveType.Lines);
-        {
-            double _xCurrentPosition = 0;
-            double _yCurrentPosition = 0;
-
-            if (XMin < 0)
-            {
-                while (_xCurrentPosition <= XMax - XMin)
-                {
-                    DrawXScale(ref _xCurrentPosition);
-                }
-
-                while (_yCurrentPosition <= YMax - YCenter)
-                {
-                    DrawUpperYScale(ref _yCurrentPosition, XMax - XMin);
-                }
-
-                _yCurrentPosition = 0;
-                while (_yCurrentPosition >= YMin - YCenter)
-                {
-                    DrawUnderYScale(ref _yCurrentPosition, XMax - XMin);
-                }
-            }
-
-            else
-            {
-                while (_xCurrentPosition <= XMax)
-                {
-                    DrawXScale(ref _xCurrentPosition);
-                }
-
-                while (_yCurrentPosition <= YMax - YCenter)
-                {
-                    DrawUpperYScale(ref _yCurrentPosition, XMax);
-                }
-
-                _yCurrentPosition = 0;
-                while (_yCurrentPosition >= YMin - YCenter)
-                {
-                    DrawUnderYScale(ref _yCurrentPosition, XMax);
-                }
-            }
-        }
-        GL.End();
-        // 点線描画OFF ※これをしないと描画したもの全て点線になる
-        GL.Disable(EnableCap.LineStipple);
-    }
     
-    /// <summary>
-    /// x座標の目盛り線を描画するメソッドです。
-    /// </summary>
-    /// <param name="x"></param>
-    private void DrawXScale(ref double x)
-    {
-        // 描画領域に合わせて平行移動する必要がある
-        GL.Vertex2(x, YMin - YCenter);
-        GL.Vertex2(x, YMax - YCenter);
-        x += XScale;
-    }
-
-    /// <summary>
-    /// y座標の上半分の目盛り線を描画するメソッドです。
-    /// </summary>
-    /// <param name="y"></param>
-    /// <param name="xend"></param>
-    private void DrawUpperYScale(ref double y, double xend)
-    {
-        GL.Vertex2(0, y);
-        GL.Vertex2(xend, y);
-        y += YScale;
-    }
-
-    /// <summary>
-    /// y座標の下半分を描画するメソッドです。
-    /// </summary>
-    /// <param name="y"></param>
-    /// <param name="xend"></param>
-    private void DrawUnderYScale(ref double y, double xend)
-    {
-        GL.Vertex2(0, y);
-        GL.Vertex2(xend, y);
-        y -= YScale;
-    }
 }

@@ -70,4 +70,7 @@ public class SampleTiles : ITkGraphicsItem
         GL.Color4(color);
         DrawSquare();
     }
+
+    public double XMax { get; set; }
+    public double XMin { get; set; }
 }
