@@ -69,54 +69,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion YData
 
-    #region XScale
-    /// <summary>
-    /// XScale 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty XScaleProperty = DependencyProperty.Register("XScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXScalePropertyChanged));
-
-    public double XScale
-    {
-        get => (double)GetValue(XScaleProperty);
-        set => SetValue(XScaleProperty, value);
-    }
-
-    /// <summary>
-    /// XScale プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnXScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion XScale
-
-    #region YScale
-    /// <summary>
-    /// YScale 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty YScaleProperty = DependencyProperty.Register("YScale", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYScalePropertyChanged));
-
-    public double YScale
-    {
-        get => (double)GetValue(YScaleProperty);
-        set => SetValue(YScaleProperty, value);
-    }
-
-    /// <summary>
-    /// YScale プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnYScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion YScale
-
     #region XMax
     /// <summary>
     /// XMax 依存関係プロパティの定義を表します。
@@ -235,54 +187,6 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     }
 
     #endregion YCenter
-
-    #region XRange
-    /// <summary>
-    /// XRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnXRangePropertyChanged));
-
-    public double XRange
-    {
-        get => (double)GetValue(XRangeProperty);
-        set => SetValue(XRangeProperty, value);
-    }
-
-    /// <summary>
-    /// XRangeプロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion XRange
-
-    #region YRange
-    /// <summary>
-    /// YRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkLineGraphItem), new PropertyMetadata(0.0, OnYRangePropertyChanged));
-
-    public double YRange
-    {
-        get => (double)GetValue(YRangeProperty);
-        set => SetValue(YRangeProperty, value);
-    }
-
-    /// <summary>
-    /// YRange プロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param>
-    private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion YRange
 
     #region PlotSize
     /// <summary>

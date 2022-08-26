@@ -106,6 +106,82 @@ namespace OpenTkApp1.Views
         }
         #endregion YMin
 
+        #region YCenter
+        public static readonly DependencyProperty YCenterProperty = DependencyProperty.Register("YCenter", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnYCenterPropertyChanged));
+
+        public double YCenter
+        {
+            get => (double)GetValue(YCenterProperty);
+            set => SetValue(YCenterProperty, value);
+        }
+
+        private static void OnYCenterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+
+        #endregion YCenter
+
+        #region XScale
+        public static readonly DependencyProperty XScaleProperty = DependencyProperty.Register("XScale", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnXScalePropertyChanged));
+
+        public double XScale
+        {
+            get => (double)GetValue(XScaleProperty);
+            set => SetValue(XScaleProperty, value);
+        }
+
+        private static void OnXScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+        #endregion XScale
+
+        #region YScale
+        public static readonly DependencyProperty YScaleProperty = DependencyProperty.Register("YScale", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnYScalePropertyChanged));
+
+        public double YScale
+        {
+            get => (double)GetValue(YScaleProperty);
+            set => SetValue(YScaleProperty, value);
+        }
+
+        private static void OnYScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+        #endregion YSacle
+
+        #region XRange 
+        public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnXRangePropertyChanged));
+
+        public double XRange
+        {
+            get => (double)GetValue(XRangeProperty);
+            set => SetValue(XRangeProperty, value);
+        }
+
+        private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+        #endregion XRange
+
+        #region YRange
+        public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TKLineGraph), new PropertyMetadata(0.0, OnYRangePropertyChanged));
+
+        public double YRange
+        {
+            get => (double)GetValue(YRangeProperty);
+            set => SetValue(YRangeProperty, value);
+        }
+
+        private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as TKLineGraph)?.Render();
+        }
+        #endregion YRange
+
         #region AxisType
         public static readonly DependencyProperty AxisTypeProperty = DependencyProperty.Register("AxisType", typeof(AxisTypes), typeof(TKLineGraph), new PropertyMetadata(AxisTypes.Left, OnAxisTypePropertyChanged));
 
@@ -173,8 +249,8 @@ namespace OpenTkApp1.Views
             // 1回目のRenderが走るタイミングがBindingするより早いため
             if (DrawingItem?.XData is null) return;
             if (DrawingItem.YData is null) return;
-            if (DrawingItem.XScale == 0) return;
-            if (DrawingItem.YScale == 0) return;
+            if (XScale == 0) return;
+            if (YScale == 0) return;
 
             GL.ClearColor(Color4.Black);
 
@@ -185,7 +261,7 @@ namespace OpenTkApp1.Views
             GL.PushMatrix();
             {
                 // 左端から描画するために移動
-                GL.Translate(-(DrawingItem.XRange / 2), 0, 0);
+                GL.Translate(-(XRange / 2), 0, 0);
                 // グラフ点描画
                 DrawPlot(DrawingItem.PlotSize, DrawingItem.PlotType, DrawingItem.PlotColor);
                 // グラフ線描画
@@ -193,7 +269,7 @@ namespace OpenTkApp1.Views
                 //// 目盛り線描画
                 DrawScale();
 
-                DrawString("計測誤差[mg]", 16, System.Windows.Media.Colors.Orange);
+                //DrawString("計測誤差[mg]", 16, System.Windows.Media.Colors.Orange);
             }
             GL.PopMatrix();
 
@@ -213,7 +289,7 @@ namespace OpenTkApp1.Views
             {
                 for (int i = 0; i < DrawingItem.XData.Length; i++)
                     // 描画領域に合わせて平行移動する必要がある
-                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - DrawingItem.YCenter);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - YCenter);
             }
             GL.End();
 
@@ -241,13 +317,13 @@ namespace OpenTkApp1.Views
                         DrawXScale(ref _xCurrentPosition);
                     }
 
-                    while (_yCurrentPosition <= YMax - DrawingItem.YCenter)
+                    while (_yCurrentPosition <= YMax - YCenter)
                     {
                         DrawUpperYScale(ref _yCurrentPosition, XMax - XMin);
                     }
 
                     _yCurrentPosition = 0;
-                    while (_yCurrentPosition >= YMin - DrawingItem.YCenter)
+                    while (_yCurrentPosition >= YMin - YCenter)
                     {
                         DrawUnderYScale(ref _yCurrentPosition, XMax - XMin);
                     }
@@ -260,13 +336,13 @@ namespace OpenTkApp1.Views
                         DrawXScale(ref _xCurrentPosition);
                     }
 
-                    while (_yCurrentPosition <= YMax - DrawingItem.YCenter)
+                    while (_yCurrentPosition <= YMax - YCenter)
                     {
                         DrawUpperYScale(ref _yCurrentPosition, XMax);
                     }
 
                     _yCurrentPosition = 0;
-                    while (_yCurrentPosition >= YMin - DrawingItem.YCenter)
+                    while (_yCurrentPosition >= YMin - YCenter)
                     {
                         DrawUnderYScale(ref _yCurrentPosition, XMax);
                     }
@@ -284,9 +360,9 @@ namespace OpenTkApp1.Views
         private void DrawXScale(ref double x)
         {
             // 描画領域に合わせて平行移動する必要がある
-            GL.Vertex2(x, YMin - DrawingItem.YCenter);
-            GL.Vertex2(x, YMax - DrawingItem.YCenter);
-            x += DrawingItem.XScale;
+            GL.Vertex2(x, YMin - YCenter);
+            GL.Vertex2(x, YMax - YCenter);
+            x += XScale;
         }
 
         /// <summary>
@@ -298,7 +374,7 @@ namespace OpenTkApp1.Views
         {
             GL.Vertex2(0, y);
             GL.Vertex2(xend, y);
-            y += DrawingItem.YScale;
+            y += YScale;
         }
 
         /// <summary>
@@ -310,7 +386,7 @@ namespace OpenTkApp1.Views
         {
             GL.Vertex2(0, y);
             GL.Vertex2(xend, y);
-            y -= DrawingItem.YScale;
+            y -= YScale;
         }
 
         #endregion　グラフ描画
@@ -362,7 +438,7 @@ namespace OpenTkApp1.Views
             int division = 40;
             double delta = 2.0 * Math.PI / (double)division;
             // プロットする図形に歪みが出ないようにアスペクト比をかける。
-            double aspectRatio = (double)DrawingItem.XRange / DrawingItem.YRange;
+            double aspectRatio = (double)XRange / YRange;
             double xSize = size * aspectRatio;
 
             GL.Begin(PrimitiveType.Triangles);
@@ -372,10 +448,10 @@ namespace OpenTkApp1.Views
                     for (int j = 0; j <= division; j++)
                     {
                         double x1 = DrawingItem.XData[i] - XMin + (xSize * Math.Cos(delta * j));
-                        double y1 = DrawingItem.YData[i] - DrawingItem.YCenter + (size * Math.Sin(delta * j));
+                        double y1 = DrawingItem.YData[i] - YCenter + (size * Math.Sin(delta * j));
                         double x2 = DrawingItem.XData[i] - XMin + (xSize * Math.Cos(delta * j + 1));
-                        double y2 = DrawingItem.YData[i] - DrawingItem.YCenter + (size * Math.Sin(delta * j + 1));
-                        GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - DrawingItem.YCenter);
+                        double y2 = DrawingItem.YData[i] - YCenter + (size * Math.Sin(delta * j + 1));
+                        GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - YCenter);
                         GL.Vertex2(x1, y1);
                         GL.Vertex2(x2, y2);
                     }
@@ -391,7 +467,7 @@ namespace OpenTkApp1.Views
         private void DrawTrianglePlot(double halfsize)
         {
             // プロットする図形に歪みが出ないようにアスペクト比をかける。
-            double aspectRatio = (double)DrawingItem.XRange / DrawingItem.YRange;
+            double aspectRatio = (double)XRange / YRange;
             double halfXEdge = halfsize * aspectRatio;
             double halfYEdge = halfsize * Math.Sqrt(3);
 
@@ -400,9 +476,9 @@ namespace OpenTkApp1.Views
                 for (int i = 0; i < DrawingItem.XData.Length; i++)
                 // 描画領域に合わせて平行移動する必要がある
                 {
-                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter - halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter - halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - DrawingItem.YCenter + Math.Sqrt(3) * halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - YCenter - halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - YCenter - halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - YCenter + Math.Sqrt(3) * halfYEdge);
                 }
             }
             GL.End();
@@ -415,7 +491,7 @@ namespace OpenTkApp1.Views
         private void DrawRectanglePlot(double halfsize)
         {
             // プロットする図形に歪みが出ないようにアスペクト比をかける。
-            double aspectRatio = (double)DrawingItem.XRange / DrawingItem.YRange;
+            double aspectRatio = (double)XRange / YRange;
             double halfXEdge = halfsize * aspectRatio;
             double halfYEdge = halfsize;
 
@@ -424,10 +500,10 @@ namespace OpenTkApp1.Views
                 for (int i = 0; i < DrawingItem.XData.Length; i++)
                 // 描画領域に合わせて平行移動する必要がある
                 {
-                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter - halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter - halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter + halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter + halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - YCenter - halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - YCenter - halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - YCenter + halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - YCenter + halfYEdge);
                 }
             }
             GL.End();
@@ -440,7 +516,7 @@ namespace OpenTkApp1.Views
         private void DrawInvertedTrianglePlot(double halfsize)
         {
             // プロットする図形に歪みが出ないようにアスペクト比をかける。
-            double aspectRatio = (double)DrawingItem.XRange / DrawingItem.YRange;
+            double aspectRatio = (double)XRange / YRange;
             double halfXEdge = halfsize * aspectRatio;
             double halfYEdge = halfsize * Math.Sqrt(3);
 
@@ -449,9 +525,9 @@ namespace OpenTkApp1.Views
                 for (int i = 0; i < DrawingItem.XData.Length; i++)
                 // 描画領域に合わせて平行移動する必要がある
                 {
-                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter + halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - DrawingItem.YCenter + halfYEdge);
-                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - DrawingItem.YCenter - halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin - halfXEdge, DrawingItem.YData[i] - YCenter + halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin + halfXEdge, DrawingItem.YData[i] - YCenter + halfYEdge);
+                    GL.Vertex2(DrawingItem.XData[i] - XMin, DrawingItem.YData[i] - YCenter - halfYEdge);
                 }
             }
             GL.End();
@@ -561,7 +637,7 @@ namespace OpenTkApp1.Views
         /// <returns></returns>
         private double CoordinateXTransformation(double x, double xMin, int n)
         {
-            return Math.Round(x * DrawingItem.XRange / TkGraphics.CurrentWidth + xMin, n);
+            return Math.Round(x * XRange / TkGraphics.CurrentWidth + xMin, n);
         }
 
         /// <summary>
@@ -573,7 +649,7 @@ namespace OpenTkApp1.Views
         /// <returns></returns>
         private double CoordinateYTransformation(double y, double yCenter, int n)
         {
-            return Math.Round((-y * DrawingItem.YRange / TkGraphics.CuurentHeight) + DrawingItem.YRange / 2 + yCenter, n);
+            return Math.Round((-y * YRange / TkGraphics.CuurentHeight) + YRange / 2 + yCenter, n);
         }
         #endregion 座標変換
 
@@ -590,7 +666,7 @@ namespace OpenTkApp1.Views
             // x座標変換
             var x = CoordinateXTransformation(point.X, XMin, DisplayDisits);
             // y座標変換 ※ActualHeightとpoint.Yの間に何故か1.25の差が生じている...
-            var y = CoordinateYTransformation(point.Y, DrawingItem.YCenter, DisplayDisits);
+            var y = CoordinateYTransformation(point.Y, YCenter, DisplayDisits);
 
             // Viewの値の変更をViewModelにも伝えてあげる。
             SetCurrentValue(CurrentXPositionProperty, x);
@@ -634,12 +710,12 @@ namespace OpenTkApp1.Views
                 // ドラッグ開始時の座標を取得します。
                 _dragOffset = e.GetPosition(el);
                 _oldXPosition = CoordinateXTransformation(_dragOffset.X, XMin, DisplayDisits);
-                _oldYPosition = CoordinateYTransformation(_dragOffset.Y, DrawingItem.YCenter, DisplayDisits);
+                _oldYPosition = CoordinateYTransformation(_dragOffset.Y, YCenter, DisplayDisits);
 
                 // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
                 _dragOffsetXMax = XMax;
                 _dragOffsetXMin = XMin;
-                _dragOffsetYCenter = DrawingItem.YCenter;
+                _dragOffsetYCenter = YCenter;
                 _dragOffsetYMax = YMax;
                 _dragOffsetYMin = YMin;
 

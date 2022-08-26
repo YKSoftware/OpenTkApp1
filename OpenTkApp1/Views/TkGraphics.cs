@@ -48,54 +48,6 @@ public class TkGraphics : GLWpfControl
         AddLogicalChild(newItem);
     }
 
-    #region XRange
-    /// <summary>
-    /// XRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty XRangeProperty = DependencyProperty.Register("XRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnXRangePropertyChanged));
-
-    public double XRange
-    {
-        get => (double)GetValue(XRangeProperty);
-        set => SetValue(XRangeProperty, value);
-    }
-
-    /// <summary>
-    /// XRangeプロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param
-    private static void OnXRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion XRange
-
-    #region YRange
-    /// <summary>
-    /// YRange 依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty YRangeProperty = DependencyProperty.Register("YRange", typeof(double), typeof(TkGraphics), new PropertyMetadata(0.0, OnYRangePropertyChanged));
-
-    public double YRange
-    {
-        get => (double)GetValue(YRangeProperty);
-        set => SetValue(YRangeProperty, value);
-    }
-
-    /// <summary>
-    /// YRangeプロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param
-    private static void OnYRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion YRange
-
     /// <summary>
     /// 新しいインスタンスを生成します。
     /// </summary>
@@ -164,7 +116,7 @@ public class TkGraphics : GLWpfControl
         // 視体積の設定
         GL.MatrixMode(MatrixMode.Projection);
         {
-            Matrix4 proj = Matrix4.CreateOrthographic((int)XRange, (int)YRange, 0.01f, 1000.0f);
+            Matrix4 proj = Matrix4.CreateOrthographic((int)GraphBase.XRange, (int)GraphBase.YRange, 0.01f, 1000.0f);
             GL.LoadMatrix(ref proj);
         }
         GL.MatrixMode(MatrixMode.Modelview);

@@ -35,14 +35,14 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 700;
+    private double _settingXMax = 600;
 
     /// <summary>
     /// 初めに設定するx座標の最小値を取得または設定します。
     /// </summary>
     public double SettingXMin { get { return _settingXMin; } }
 
-    private double _settingXMin = 200;
+    private double _settingXMin = 300;
 
     /// <summary>
     /// 初めに設定するy座標の最大値を取得または設定します。
@@ -56,7 +56,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingYMin { get { return _settingYMin; } }
 
-    private double _settingYMin = -40;
+    private double _settingYMin = -60;
 
     /// <summary>
     /// x座標の目盛り幅を取得します。
