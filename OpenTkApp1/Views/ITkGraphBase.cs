@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace OpenTkApp1.Views
 {
@@ -9,5 +8,6 @@ namespace OpenTkApp1.Views
         void OnMouseMove(object sender, MouseEventArgs e);
         void OnMouseLeftButtonDowned(object sender, MouseEventArgs e);
         void OnMouseLeftButtonUpped(object sender, MouseEventArgs e);
+        void OnEscKeyDowned(object sender, KeyEventArgs e);
     }
 }

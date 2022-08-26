@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Markup;
-using System.Windows.Input;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
@@ -48,42 +47,6 @@ public class TkGraphics : GLWpfControl
         RemoveLogicalChild(oldItem);
         AddLogicalChild(newItem);
     }
-
-    ///// <summary>
-    ///// DrawingItem 依存関係プロパティの定義を表します。
-    ///// </summary>
-    //public static readonly DependencyProperty DrawingItemProperty = DependencyProperty.Register("DrawingItem", typeof(ITkGraphicsItem), typeof(TkGraphics), new PropertyMetadata(null, OnDrawingItemPropertyChanged));
-
-    ///// <summary>
-    ///// 描画内容を取得または設定します。
-    ///// </summary>
-    //public ITkGraphicsItem? DrawingItem
-    //{
-    //    get => (ITkGraphicsItem?)GetValue(DrawingItemProperty);
-    //    set => SetValue(DrawingItemProperty, value);
-    //}
-
-    ///// <summary>
-    ///// DrawingItem 依存関係プロパティ変更イベントハンドラ
-    ///// </summary>
-    ///// <param name="d">イベント発行元</param>
-    ///// <param name="e">イベント引数</param>
-    //private static void OnDrawingItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    //{
-    //    var control = (TkGraphics)d;
-    //    control.OnDrawingItemPropertyChanged(e.OldValue, e.NewValue);
-    //}
-
-    ///// <summary>
-    ///// DrawingItem 依存関係プロパティ変更イベントハンドラ
-    ///// </summary>
-    ///// <param name="oldItem">変更前の値</param>
-    ///// <param name="newItem">変更後の値</param>
-    //private void OnDrawingItemPropertyChanged(object oldItem, object newItem)
-    //{
-    //    RemoveLogicalChild(oldItem);
-    //    AddLogicalChild(newItem);
-    //}
 
     #region XRange
     /// <summary>
@@ -132,30 +95,6 @@ public class TkGraphics : GLWpfControl
     }
 
     #endregion YRange
-
-    #region DisplayDisits
-    /// <summary>
-    /// DisplayDisits依存関係プロパティの定義を表します。
-    /// </summary>
-    public static readonly DependencyProperty DisplayDisitsProperty = DependencyProperty.Register("DisplayDisits", typeof(int), typeof(TkGraphics), new PropertyMetadata(0, OnDisplayDisitsPropertyChanged));
-
-    public int DisplayDisits
-    {
-        get => (int)GetValue(DisplayDisitsProperty);
-        set => SetValue(DisplayDisitsProperty, value);
-    }
-
-    /// <summary>
-    /// DisplayDisitsプロパティ変更イベントハンドラ
-    /// </summary>
-    /// <param name="d">イベント発行元</param>
-    /// <param name="e">イベント引数</param
-    private static void OnDisplayDisitsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as TKLineGraph)?.Render();
-    }
-
-    #endregion DisplayDisits
 
     /// <summary>
     /// 新しいインスタンスを生成します。
@@ -211,7 +150,7 @@ public class TkGraphics : GLWpfControl
         this.MouseMove += GraphBase.OnMouseMove;
         this.MouseLeftButtonDown += GraphBase.OnMouseLeftButtonDowned;
         this.MouseLeftButtonUp += GraphBase.OnMouseLeftButtonUpped;
-        //DrawingItem?.Render();
+        this.KeyDown += GraphBase.OnEscKeyDowned;
     }
 
     /// <summary>

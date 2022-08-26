@@ -17,8 +17,6 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public MainViewModel()
     {
-        this.CallBackMouseMoved = GetPotition;
-        this.CallBackMouseLeftButtonDowning = TranslateView;
         this.CallBackEscKeyDowned = TranslateDragPreviewView;
         this.XMax = SettingXMax;
         this.XMin = SettingXMin;
@@ -59,7 +57,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingYMin { get { return _settingYMin; } }
 
-    private double _settingYMin = -60;
+    private double _settingYMin = -40;
 
     /// <summary>
     /// x座標の目盛り幅を取得します。
@@ -72,7 +70,7 @@ public class MainViewModel : INotifyPropertyChanged
     public double XMin
     {
         get { return Math.Round(_xMin, DisplayDigits); }
-        private set { SetProperty(ref this._xMin, value); }
+        set { SetProperty(ref this._xMin, value); }
     }
 
     private double _xMin;
@@ -83,7 +81,7 @@ public class MainViewModel : INotifyPropertyChanged
     public double XMax 
     { 
         get { return Math.Round(_xMax, DisplayDigits); }
-        private set { SetProperty(ref this._xMax, value); }
+        set { SetProperty(ref this._xMax, value); }
     }
     
     private double _xMax;
@@ -104,7 +102,7 @@ public class MainViewModel : INotifyPropertyChanged
     public double YMin 
     { 
         get { return Math.Round(_yMin, DisplayDigits); }
-        private set
+        set
         {
             if(SetProperty(ref this._yMin, value))
             {
@@ -121,7 +119,7 @@ public class MainViewModel : INotifyPropertyChanged
     public double YMax 
     { 
         get { return Math.Round(_yMax, DisplayDigits); } 
-        private set 
+        set 
         {
             if (SetProperty(ref this._yMax, value))
             {
@@ -200,16 +198,6 @@ public class MainViewModel : INotifyPropertyChanged
     private AxisTypes _axisType = AxisTypes.Left;
 
     /// <summary>
-    /// マウス移動時に呼びだされる関数を取得または設定します。
-    /// </summary>
-    public Action<double,double> CallBackMouseMoved { get; set; }
-
-    /// <summary>
-    /// マウス左クリック時に呼びだされる関数を取得または設定します。
-    /// </summary>
-    public Action<double,double> CallBackMouseLeftButtonDowning { get; set; }
-
-    /// <summary>
     /// ドラッグ中にEsckeyが押された時に呼びだされる関数を取得または設定します。
     /// </summary>
     public Action<double, double, double, double> CallBackEscKeyDowned { get; set; }
@@ -217,48 +205,24 @@ public class MainViewModel : INotifyPropertyChanged
     /// <summary>
     /// マウスポインタのx座標を取得または設定します。
     /// </summary>
-    public double CurrentXPotition
+    public double CurrentXPosition
     {
-        get { return _currentXPotition; }
-        set { SetProperty(ref this._currentXPotition, value); }
+        get { return _currentXPosition; }
+        set { SetProperty(ref this._currentXPosition, value); }
     }
 
-    private double _currentXPotition;
+    private double _currentXPosition;
 
     /// <summary>
     /// マウスポインタのy座標を取得または設定します。
     /// </summary>
-    public double CurrentYPotition 
+    public double CurrentYPosition 
     { 
-        get { return _currentYPotition; }
-        set { SetProperty (ref this._currentYPotition, value); }
+        get { return _currentYPosition; }
+        set { SetProperty (ref this._currentYPosition, value); }
     }
 
-    private double _currentYPotition;
-
-    /// <summary>
-    /// マウスポインタの座標を取得するメソッドです。
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    private void GetPotition(double x, double y)
-    {
-        CurrentXPotition = x;
-        CurrentYPotition = y;
-    }
-
-    /// <summary>
-    /// x,yの最大・最小を変化させることで描画領域を移動するメソッドです。
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    private void TranslateView(double x, double y)
-    {
-        XMax = XMax - x;
-        XMin = XMin - x;
-        YMax = YMax - y;
-        YMin = YMin - y;
-    }
+    private double _currentYPosition;
 
     private void TranslateDragPreviewView(double oldXMax, double oldXMin, double oldyMax, double oldyMin)
     {
