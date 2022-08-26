@@ -11,6 +11,9 @@ namespace OpenTkApp1.Views
 {
     public class TKLineGraph : FrameworkElement, ITkGraphBase
     {
+        #region 依存関係プロパティ定義
+
+        #region DrawingItem
         /// <summary>
         /// DrawingItem 依存関係プロパティの定義を表します。
         /// </summary>
@@ -46,6 +49,7 @@ namespace OpenTkApp1.Views
             RemoveLogicalChild(oldItem);
             AddLogicalChild(newItem);
         }
+        #endregion DrawingItem
 
         #region XMax
         public static readonly DependencyProperty XMaxProperty = DependencyProperty.Register("XMax", typeof(double), typeof(TKLineGraph), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnXMaxPropertyChanged));
@@ -244,6 +248,8 @@ namespace OpenTkApp1.Views
 
         #endregion CurrentYPosition
 
+        #endregion 依存関係プロパティ定義
+
         public void Render()
         {
             // 1回目のRenderが走るタイミングがBindingするより早いため
@@ -269,7 +275,7 @@ namespace OpenTkApp1.Views
                 //// 目盛り線描画
                 DrawScale();
 
-                //DrawString("計測誤差[mg]", 16, System.Windows.Media.Colors.Orange);
+                DrawString("計測誤差[mg]", 40, Colors.Orange);
             }
             GL.PopMatrix();
 
@@ -535,19 +541,39 @@ namespace OpenTkApp1.Views
         #endregion プロット描画
        
         #region テキスト描画
-        public void DrawString(string str, double fontSize, System.Windows.Media.Color color)
+
+        /// <summary>
+        /// 文字を描画するメソッドです。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        public void DrawString(string str, double fontSize, Color color)
         {
-            var window = System.Windows.Application.Current.MainWindow;
+            // 視体積の設定
+            GL.MatrixMode(MatrixMode.Projection);
+            {
+                float r = (float)TkGraphics.CurrentWidth /  (float)TkGraphics.CuurentHeight;
+                int h = 800;
+                float w =  h * r;
+                Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 1000.0f);
+                GL.LoadMatrix(ref proj);
+            }
+            GL.MatrixMode(MatrixMode.Modelview);
+
+            // text分の四角形のビットマップを作成した、その四角形をテクスチャとして貼り付けることで描画する。
+
+            var window = Application.Current.MainWindow;
 
             // テキストの色定義
-            System.Windows.Media.Brush foreground = new System.Windows.Media.SolidColorBrush(color);
+            Brush foreground = new SolidColorBrush(color);
             double pixelsPerDip = 0;
 
-            var text = new System.Windows.Media.FormattedText(
+            var text = new FormattedText(
                 str,
                 new System.Globalization.CultureInfo("en-us"),
                 FlowDirection.LeftToRight,
-                new System.Windows.Media.Typeface(
+                new Typeface(
                     window.FontFamily,
                     FontStyles.Normal,
                     FontWeights.Normal,
@@ -558,20 +584,20 @@ namespace OpenTkApp1.Views
 
             System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
             {
-                int width = (int)text.Width;
-                int height = (int)text.Height;
-                var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this);
+                int width = (int)Math.Ceiling(text.Width);
+                int height = (int)Math.Ceiling(text.Height);
+                var dpi = VisualTreeHelper.GetDpi(this);
                 double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
                 double dpiY = dpi.PixelsPerInchY;
                 bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(
-                    width, height, dpiX, dpiY, System.Windows.Media.PixelFormats.Pbgra32);
+                    width, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
-            var drawingVisual = new System.Windows.Media.DrawingVisual();
-            using (System.Windows.Media.DrawingContext drawingContext = drawingVisual.RenderOpen())
+            var drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
-                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
-                drawingContext.DrawText(text, new System.Windows.Point(0, 0));
+                drawingContext.DrawRectangle(Brushes.White, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                drawingContext.DrawText(text, new Point(0, 0));
             }
 
             bmp.Render(drawingVisual);
@@ -581,7 +607,7 @@ namespace OpenTkApp1.Views
             int bmpHeight = bmp.PixelHeight;
             int stride = bmpWidth * 4;
             byte[] tmpbits = new byte[stride * bmpHeight];
-            var rectangle = new System.Windows.Int32Rect(0, 0, bmpWidth, bmpHeight);
+            var rectangle = new Int32Rect(0, 0, bmpWidth, bmpHeight);
             bmp.CopyPixels(rectangle, tmpbits, stride, 0);
             // 上下反転する
             byte[] bits = new byte[stride * bmpHeight];
@@ -623,6 +649,12 @@ namespace OpenTkApp1.Views
                 GL.Disable(EnableCap.Texture2D);
             }
 
+            GL.MatrixMode(MatrixMode.Projection);
+            {
+                Matrix4 proj = Matrix4.CreateOrthographic((int)XRange, (int)YRange, 0.01f, 1000.0f);
+                GL.LoadMatrix(ref proj);
+            }
+            GL.MatrixMode(MatrixMode.Modelview);
         }
 
         #endregion テキスト描画
@@ -699,7 +731,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnMouseLeftButtonDown(object sender, MouseEventArgs e) //Todo: 後で名前をdownに変える
+        public void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
         {
             UIElement el = sender as UIElement;
             if (el != null)
@@ -720,6 +752,9 @@ namespace OpenTkApp1.Views
                 _dragOffsetYMin = YMin;
 
                 el.CaptureMouse();
+
+                Render();
+                
             }
         }
 
@@ -755,6 +790,7 @@ namespace OpenTkApp1.Views
                     SetCurrentValue(XMinProperty, _dragOffsetXMin);
                     SetCurrentValue(YMaxProperty, _dragOffsetYMax);
                     SetCurrentValue(YMinProperty, _dragOffsetYMin);
+                    Render();
                 }
             }
         }
