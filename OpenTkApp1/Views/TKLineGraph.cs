@@ -563,6 +563,10 @@ namespace OpenTkApp1.Views
 
             // text分の四角形のビットマップを作成した、その四角形をテクスチャとして貼り付けることで描画する。
 
+            // テクスチャIDの作成
+            //int texture = GL.GenTexture();
+            // テクスチャ用バッファの紐づけ
+            //GL.BindTexture(TextureTarget.Texture2D, texture);
         public void CreateTextBitmap()
         {
             CreateTextBitmap("計測誤差[mg]", 40, Colors.Orange);
