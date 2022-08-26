@@ -563,11 +563,18 @@ namespace OpenTkApp1.Views
 
             // text分の四角形のビットマップを作成した、その四角形をテクスチャとして貼り付けることで描画する。
 
+        public void CreateTextBitmap()
+        {
+            CreateTextBitmap("計測誤差[mg]", 40, Colors.Orange);
+        }
+
+        public void CreateTextBitmap(string str, double fontSize, Color color)
+        {
             var window = Application.Current.MainWindow;
 
             // テキストの色定義
             Brush foreground = new SolidColorBrush(color);
-            double pixelsPerDip = 0;
+            double pixelsPerDip = 96;
 
             var text = new FormattedText(
                 str,
@@ -578,7 +585,7 @@ namespace OpenTkApp1.Views
                     FontStyles.Normal,
                     FontWeights.Normal,
                     FontStretches.Normal),
-                fontSize, 
+                fontSize,
                 foreground,
                 pixelsPerDip);
 
@@ -596,66 +603,34 @@ namespace OpenTkApp1.Views
             var drawingVisual = new DrawingVisual();
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
-                drawingContext.DrawRectangle(Brushes.White, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
                 drawingContext.DrawText(text, new Point(0, 0));
             }
 
             bmp.Render(drawingVisual);
 
             // ビットマップの幅、高さ取得
-            int bmpWidth = bmp.PixelWidth;
-            int bmpHeight = bmp.PixelHeight;
-            int stride = bmpWidth * 4;
-            byte[] tmpbits = new byte[stride * bmpHeight];
-            var rectangle = new Int32Rect(0, 0, bmpWidth, bmpHeight);
+            _bmpWidth = bmp.PixelWidth;
+            _bmpHeight = bmp.PixelHeight;
+            int stride = _bmpWidth * 4;
+            byte[] tmpbits = new byte[stride * _bmpHeight];
+            var rectangle = new Int32Rect(0, 0, _bmpWidth, _bmpHeight);
             bmp.CopyPixels(rectangle, tmpbits, stride, 0);
             // 上下反転する
-            byte[] bits = new byte[stride * bmpHeight];
-            for (int h = 0; h < bmpHeight; h++)
+            _bits = new byte[stride * _bmpHeight];
+            for (int h = 0; h < _bmpHeight; h++)
             {
                 for (int w = 0; w < stride; w++)
                 {
-                    bits[h * stride + w] = tmpbits[(bmpHeight - 1 - h) * stride + w];
+                    _bits[h * stride + w] = tmpbits[(_bmpHeight - 1 - h) * stride + w];
                 }
             }
-
-            bool isTexture = GL.IsEnabled(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Texture2D);
-
-            // テクスチャIDの作成
-            int texture = GL.GenTexture();
-            // テクスチャ用バッファの紐づけ
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            // テクスチャの設定
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Linear);
-            // テクスチャ割り当て
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpWidth, bmpHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bits);
-
-            // 四角形で描画
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(0, 0);
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(bmpWidth, 0);
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(bmpWidth, bmpHeight);
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(0, bmpHeight);
-            GL.End();
-
-            if (!isTexture)
-            {
-                GL.Disable(EnableCap.Texture2D);
-            }
-
-            GL.MatrixMode(MatrixMode.Projection);
-            {
-                Matrix4 proj = Matrix4.CreateOrthographic((int)XRange, (int)YRange, 0.01f, 1000.0f);
-                GL.LoadMatrix(ref proj);
-            }
-            GL.MatrixMode(MatrixMode.Modelview);
+            
         }
+
+        private int _bmpWidth;
+        private int _bmpHeight;
+        private byte[] _bits;
 
         #endregion テキスト描画
 
