@@ -95,7 +95,7 @@ public class TkGraphics : GLWpfControl
     {
         SetProjection();
         _currentWidth = ActualWidth;
-        _cuurentHeight = ActualHeight;
+        _currentHeight = ActualHeight;
         GraphBase?.CreateTextBitmap();
 
     }
@@ -132,7 +132,7 @@ public class TkGraphics : GLWpfControl
     private static double _currentWidth; 
     public static double CurrentWidth { get { return _currentWidth; } }
 
-    private static double _cuurentHeight;
-    public static double CuurentHeight { get { return _cuurentHeight; } }
+    private static double _currentHeight;
+    public static double CurrentHeight { get { return _currentHeight; } }
 
 }

@@ -307,5 +307,19 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
     }
 
     #endregion LineColor
-    
+
+    #region Legend
+    public static readonly DependencyProperty LegndProperty = DependencyProperty.Register("Legend", typeof(string), typeof(TkLineGraphItem), new PropertyMetadata(null, OnLegendPropertyChanged));
+
+    public string Legend
+    {
+        get => (string)GetValue(LegndProperty);
+        set => SetValue(LegndProperty, value);
+    }
+
+    private static void OnLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TKLineGraph)?.Render();
+    }
+    #endregion Legend
 }

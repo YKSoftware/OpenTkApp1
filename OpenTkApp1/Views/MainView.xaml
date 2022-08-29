@@ -59,7 +59,7 @@
                                 YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" CurrentXPosition="{Binding CurrentXPosition}" CurrentYPosition="{Binding CurrentYPosition}">
                     <vw:TKLineGraph.DrawingItem>
                         <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}"  PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" 
-                                            PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" LineColor="{Binding LineColor}" />
+                                            PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" LineColor="{Binding LineColor}" Legend="{Binding Legend}"/>
                     </vw:TKLineGraph.DrawingItem>
                 </vw:TKLineGraph>
             </vw:TkGraphics.GraphBase>

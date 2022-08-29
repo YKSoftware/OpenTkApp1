@@ -218,6 +218,13 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _currentYPosition;
 
+    public string Legend
+    {
+        get { return _legend; }
+    }
+
+    private string _legend = "計測誤差[mg]";
+
     #region INotifyPropertyChanged の実装
 
     public event PropertyChangedEventHandler? PropertyChanged;
