@@ -287,7 +287,6 @@ namespace OpenTkApp1.Views
                 DrawTestText(TestBitmap);
             }
             GL.PopMatrix();
-           
         }
 
         #region グラフ描画
@@ -618,8 +617,8 @@ namespace OpenTkApp1.Views
         public void CreateTextBitmap()
         {
             if (DrawingItem.Legend == null) return;
-            CreateTextBitmap(DrawingItem.Legend, 32, Colors.White, LegendBitmap) ;
-            CreateTextBitmap("Test", 48, Colors.Orange, TestBitmap);
+            CreateLegendBitmap(DrawingItem.Legend, 32, Colors.White, LegendBitmap) ;
+            CreateTextBitmap("テスト \r\nだよ ", 32, Colors.Aqua, TestBitmap);
         }
 
         /// <summary>
@@ -628,6 +627,74 @@ namespace OpenTkApp1.Views
         /// <param name="str"></param>
         /// <param name="fontSize"></param>
         /// <param name="color"></param>
+        public void CreateLegendBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
+        {
+            var window = Application.Current.MainWindow;
+
+            // テキストの色定義
+            Brush foreground = new SolidColorBrush(color);
+            double pixelsPerDip = 96;
+
+            // テキストのフォーマット定義
+            var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
+                FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
+
+            var vartext = new FormattedText("―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Aqua), pixelsPerDip);
+
+            var vartext2 = new FormattedText("\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Orange), pixelsPerDip);
+
+            // ビットマップのフォーマット定義
+            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
+            {
+                int width = (int)Math.Ceiling(text.Width + vartext.Width);
+                int height = (int)Math.Ceiling(text.Height);
+                var dpi = VisualTreeHelper.GetDpi(this);
+                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
+                double dpiY = dpi.PixelsPerInchY;
+                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
+            }
+
+            var drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                // テキストを書く下地を作る
+                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                // テキストを書く
+                drawingContext.DrawText(text, new Point(vartext.Width, 0));
+                drawingContext.DrawText(vartext, new Point(0, 0));
+                drawingContext.DrawText(vartext2, new Point(0, 0));
+
+            }
+
+            // ビットマップ作成
+            bmp.Render(drawingVisual);
+
+            // ビットマップの幅、高さ取得
+            bitmap.Width = bmp.PixelWidth;
+            bitmap.Height = bmp.PixelHeight;
+            // stride: 画像の横１列分のデータサイズ = 画像の横幅 * 1画素あたりのbyte(4byte) 
+            int stride = bmp.PixelWidth * 4;
+            // ビットマップ全体のサイズ分の配列を定義
+            byte[] tmpbits = new byte[stride * bmp.PixelHeight];
+            var rectangle = new Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
+            // ビットマップを上下反転させる。画像空間の座標と、テクスチャ空間の座標が反転しているため。画像空間は左上原点の軸方向が第4事象、テクスチャ空間は左下原点の第1事象。
+            _bits = new byte[stride * bmp.PixelHeight];
+            for (int h = 0; h < bmp.PixelHeight; h++)
+            {
+                for (int w = 0; w < stride; w++)
+                {
+                    _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
+                }
+            }
+
+            // 作成したビットマップをテクスチャに貼り付ける設定を行います。
+            SettingTexture(bitmap);
+
+        }
+
         public void CreateTextBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
         {
             var window = Application.Current.MainWindow;
