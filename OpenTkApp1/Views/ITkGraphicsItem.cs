@@ -20,4 +20,5 @@ public interface ITkGraphicsItem
     public Color4 PlotColor { get; set; }
     public bool IsPlot { get; set; }
     public Color4 LineColor { get; set; }
+    public string Legend { get; set; }
 }

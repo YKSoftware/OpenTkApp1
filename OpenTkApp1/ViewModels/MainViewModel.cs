@@ -218,6 +218,16 @@ public class MainViewModel : INotifyPropertyChanged
 
     private double _currentYPosition;
 
+    /// <summary>
+    /// 凡例として表示する文字を取得します。
+    /// </summary>
+    public string Legend
+    {
+        get { return _legend; }
+    }
+
+    private string _legend = "生値\r\nフィルタ出力";
+
     #region INotifyPropertyChanged の実装
 
     public event PropertyChangedEventHandler? PropertyChanged;

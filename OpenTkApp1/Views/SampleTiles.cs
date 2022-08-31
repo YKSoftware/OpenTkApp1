@@ -71,6 +71,12 @@ public class SampleTiles : ITkGraphicsItem
         DrawSquare();
     }
 
-    public double XMax { get; set; }
-    public double XMin { get; set; }
+    public double[] XData { get; set; }
+    public double[] YData { get; set; }
+
+    public double PlotSize { get; set; }
+    public MarkerTypes PlotType { get; set; }
+    public Color4 PlotColor { get; set; }
+    public bool IsPlot { get; set; }
+    public Color4 LineColor { get; set; }
 }

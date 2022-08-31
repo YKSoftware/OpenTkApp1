@@ -67,6 +67,7 @@ public class TkGraphics : GLWpfControl
         this.Loaded += OnLoaded;
         this.SizeChanged += OnSizeChanged;
         this.Render += OnTkRender;
+        
     }
 
     /// <summary>
@@ -77,6 +78,12 @@ public class TkGraphics : GLWpfControl
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         SetProjection();
+        GraphBase?.CreateTextBitmap();
+        // コンストラクタのタイミングだと、GraphBaseがnullになってしまう。
+        this.MouseMove += GraphBase.OnMouseMove;
+        this.MouseLeftButtonDown += GraphBase.OnMouseLeftButtonDown;
+        this.MouseLeftButtonUp += GraphBase.OnMouseLeftButtonUp;
+        this.KeyDown += GraphBase.OnEscKeyDown;
     }
 
     /// <summary>
@@ -88,7 +95,9 @@ public class TkGraphics : GLWpfControl
     {
         SetProjection();
         _currentWidth = ActualWidth;
-        _cuurentHeight = ActualHeight;
+        _currentHeight = ActualHeight;
+        GraphBase?.CreateTextBitmap();
+
     }
 
     /// <summary>
@@ -97,13 +106,11 @@ public class TkGraphics : GLWpfControl
     /// <param name="delta">経過時間</param>
     private void OnTkRender(TimeSpan delta)
     {
+        
         GraphBase?.Render();
-        // コンストラクタのタイミングだと、GraphBaseがnullになってしまう。
-        this.MouseMove += GraphBase.OnMouseMove;
-        this.MouseLeftButtonDown += GraphBase.OnMouseLeftButtonDown;
-        this.MouseLeftButtonUp += GraphBase.OnMouseLeftButtonUp;
-        this.KeyDown += GraphBase.OnEscKeyDown;
     }
+
+    
 
     /// <summary>
     /// 投影方法を設定します。
@@ -125,7 +132,7 @@ public class TkGraphics : GLWpfControl
     private static double _currentWidth; 
     public static double CurrentWidth { get { return _currentWidth; } }
 
-    private static double _cuurentHeight;
-    public static double CuurentHeight { get { return _cuurentHeight; } }
+    private static double _currentHeight;
+    public static double CurrentHeight { get { return _currentHeight; } }
 
 }

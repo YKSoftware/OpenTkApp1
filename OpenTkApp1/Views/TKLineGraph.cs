@@ -1,16 +1,22 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Collections.Generic;
 using OpenTK.Wpf;
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace OpenTkApp1.Views
 {
     public class TKLineGraph : FrameworkElement, ITkGraphBase
     {
+        #region 依存関係プロパティ定義
+
+        #region DrawingItem
         /// <summary>
         /// DrawingItem 依存関係プロパティの定義を表します。
         /// </summary>
@@ -46,6 +52,7 @@ namespace OpenTkApp1.Views
             RemoveLogicalChild(oldItem);
             AddLogicalChild(newItem);
         }
+        #endregion DrawingItem
 
         #region XMax
         public static readonly DependencyProperty XMaxProperty = DependencyProperty.Register("XMax", typeof(double), typeof(TKLineGraph), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnXMaxPropertyChanged));
@@ -244,6 +251,15 @@ namespace OpenTkApp1.Views
 
         #endregion CurrentYPosition
 
+        #endregion 依存関係プロパティ定義
+
+        /// <summary>
+        /// テクスチャのコレクションを生成します。
+        /// </summary>
+        List<int> Textures = new List<int>();
+        TKBitmap LegendBitmap = new TKBitmap();
+        TKBitmap TestBitmap = new TKBitmap();
+
         public void Render()
         {
             // 1回目のRenderが走るタイミングがBindingするより早いため
@@ -252,11 +268,12 @@ namespace OpenTkApp1.Views
             if (XScale == 0) return;
             if (YScale == 0) return;
 
+            // 背景の定義
             GL.ClearColor(Color4.Black);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.Color4(Color4.White);
+            GL.Enable(EnableCap.DepthTest);
 
             GL.PushMatrix();
             {
@@ -266,13 +283,16 @@ namespace OpenTkApp1.Views
                 DrawPlot(DrawingItem.PlotSize, DrawingItem.PlotType, DrawingItem.PlotColor);
                 // グラフ線描画
                 DrawGraph(DrawingItem.LineColor);
-                //// 目盛り線描画
+                // 目盛り線描画
                 DrawScale();
 
-                //DrawString("計測誤差[mg]", 16, System.Windows.Media.Colors.Orange);
+                GL.Translate((XRange / 2), 0, 0);
+                // 重なった時凡例が上になるようにDepthTest解除
+                GL.Disable(EnableCap.DepthTest);
+                // 凡例描画
+                DrawLegend(LegendBitmap);
             }
             GL.PopMatrix();
-
         }
 
         #region グラフ描画
@@ -535,95 +555,298 @@ namespace OpenTkApp1.Views
         #endregion プロット描画
        
         #region テキスト描画
-        public void DrawString(string str, double fontSize, System.Windows.Media.Color color)
+        /// <summary>
+        /// 凡例を描画するメソッドです。
+        /// </summary>
+        private void DrawLegend(TKBitmap bitmap)
         {
-            var window = System.Windows.Application.Current.MainWindow;
+            float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
+            float h = 2 * (float)TkGraphics.CurrentHeight;
+            float w = h * r;
+            GL.Translate(-bitmap.Width / 2, -h / 3, 0);
+            if (Textures.Count > 0)
+            // 指定したIDのテクスチャを現在のテクスチャとします。
+            GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
 
-            // テキストの色定義
-            System.Windows.Media.Brush foreground = new System.Windows.Media.SolidColorBrush(color);
-            double pixelsPerDip = 0;
+            DrawString(bitmap);
+        }
 
-            var text = new System.Windows.Media.FormattedText(
-                str,
-                new System.Globalization.CultureInfo("en-us"),
-                FlowDirection.LeftToRight,
-                new System.Windows.Media.Typeface(
-                    window.FontFamily,
-                    FontStyles.Normal,
-                    FontWeights.Normal,
-                    FontStretches.Normal),
-                fontSize, 
-                foreground,
-                pixelsPerDip);
+        private void DrawTestText(TKBitmap bitmap)
+        {
+            float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
+            float h = 2 * (float)TkGraphics.CurrentHeight;
+            float w = h * r;
+            GL.Translate(2 * LegendBitmap.Width , 0, 0);
+            if (Textures.Count > 0)
+                // 指定したIDのテクスチャを現在のテクスチャとします。
+                GL.BindTexture(TextureTarget.Texture2D, Textures[1]);
 
-            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
-            {
-                int width = (int)text.Width;
-                int height = (int)text.Height;
-                var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this);
-                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
-                double dpiY = dpi.PixelsPerInchY;
-                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(
-                    width, height, dpiX, dpiY, System.Windows.Media.PixelFormats.Pbgra32);
-            }
+            DrawString(bitmap);
+        }
+        /// <summary>
+        /// 文字を描画するメソッドです。
+        /// 四角形の上にテキストを書いたビットマップをテクスチャとして貼り付けている。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        public void DrawString(TKBitmap bitmap)
+        {
+            // テキストのサイズを画面の大きさに依存しないように領域を定義します。
+            SetTextProjection();
 
-            var drawingVisual = new System.Windows.Media.DrawingVisual();
-            using (System.Windows.Media.DrawingContext drawingContext = drawingVisual.RenderOpen())
-            {
-                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
-                drawingContext.DrawText(text, new System.Windows.Point(0, 0));
-            }
-
-            bmp.Render(drawingVisual);
-
-            // ビットマップの幅、高さ取得
-            int bmpWidth = bmp.PixelWidth;
-            int bmpHeight = bmp.PixelHeight;
-            int stride = bmpWidth * 4;
-            byte[] tmpbits = new byte[stride * bmpHeight];
-            var rectangle = new System.Windows.Int32Rect(0, 0, bmpWidth, bmpHeight);
-            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
-            // 上下反転する
-            byte[] bits = new byte[stride * bmpHeight];
-            for (int h = 0; h < bmpHeight; h++)
-            {
-                for (int w = 0; w < stride; w++)
-                {
-                    bits[h * stride + w] = tmpbits[(bmpHeight - 1 - h) * stride + w];
-                }
-            }
-
-            bool isTexture = GL.IsEnabled(EnableCap.Texture2D);
+            // テクスチャを有効化します。
             GL.Enable(EnableCap.Texture2D);
-
-            // テクスチャIDの作成
-            int texture = GL.GenTexture();
-            // テクスチャ用バッファの紐づけ
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            // テクスチャの設定
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,(int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Linear);
-            // テクスチャ割り当て
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpWidth, bmpHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bits);
 
             // 四角形で描画
             GL.Begin(PrimitiveType.Quads);
             GL.TexCoord2(0, 0);
             GL.Vertex2(0, 0);
             GL.TexCoord2(1, 0);
-            GL.Vertex2(bmpWidth, 0);
+            GL.Vertex2(bitmap.Width, 0);
             GL.TexCoord2(1, 1);
-            GL.Vertex2(bmpWidth, bmpHeight);
+            GL.Vertex2(bitmap.Width, bitmap.Height);
             GL.TexCoord2(0, 1);
-            GL.Vertex2(0, bmpHeight);
+            GL.Vertex2(0, bitmap.Height);
             GL.End();
 
-            if (!isTexture)
+            GL.Disable(EnableCap.Texture2D);
+            
+            SetGraphProjection();
+        }
+
+        #region テキストビットマップ作成
+        /// <summary>
+        /// 新たにCreateBitmapをインスタンス生成するメソッドです。
+        /// 画面のサイズが変更されたときに呼びだされます。
+        /// </summary>
+        public void CreateTextBitmap()
+        {
+            if (DrawingItem.Legend == null) return;
+            CreateLegendBitmap(DrawingItem.Legend, 40, Colors.White, LegendBitmap) ;
+            CreateTextBitmap("テスト \r\nだよ ", 32, Colors.Aqua, TestBitmap);
+        }
+
+        /// <summary>
+        /// 凡例のビットマップを作成するメソッドです。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        public void CreateLegendBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
+        {
+            var window = Application.Current.MainWindow;
+
+            // テキストの色定義
+            Brush foreground = new SolidColorBrush(color);
+            double pixelsPerDip = 96;
+            
+            // 線種1の色を取得します。
+            Color linecolor1 =  Draw2MediaColor((System.Drawing.Color)DrawingItem.LineColor);
+
+            // テキストのフォーマット定義
+            var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
+                FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
+
+            var linetype = new FormattedText("―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(linecolor1), pixelsPerDip);
+
+            var linetpe2 = new FormattedText("\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Orange), pixelsPerDip);
+
+            var linetype3 = new FormattedText("\r\n\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+               new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.White), pixelsPerDip);
+
+            // 文字と枠線のスペース
+            int space = 10;
+
+            // ビットマップのフォーマット定義
+            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
             {
-                GL.Disable(EnableCap.Texture2D);
+                int width = (int)Math.Ceiling(text.Width + linetype.Width);
+                int height = (int)Math.Ceiling(text.Height);
+                var dpi = VisualTreeHelper.GetDpi(this);
+                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
+                double dpiY = dpi.PixelsPerInchY;
+                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
+            var drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                Pen pen = new Pen(foreground, 3);
+                // テキストを書く下地を作る
+                drawingContext.DrawRectangle(Brushes.Black, pen, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                // テキストを書く
+                drawingContext.DrawText(text, new Point(linetype.Width + space, 0));
+                drawingContext.DrawText(linetype, new Point(space, 0));
+                drawingContext.DrawText(linetpe2, new Point(space, 0));
+                drawingContext.DrawText(linetype3, new Point(space, 0));
+            }
+
+            // ビットマップ作成
+            bmp.Render(drawingVisual);
+
+            // ビットマップの幅、高さ取得
+            bitmap.Width = bmp.PixelWidth;
+            bitmap.Height = bmp.PixelHeight;
+            // stride: 画像の横１列分のデータサイズ = 画像の横幅 * 1画素あたりのbyte(4byte) 
+            int stride = bmp.PixelWidth * 4;
+            // ビットマップ全体のサイズ分の配列を定義
+            byte[] tmpbits = new byte[stride * bmp.PixelHeight];
+            var rectangle = new Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
+            // ビットマップを上下反転させる。画像空間の座標と、テクスチャ空間の座標が反転しているため。画像空間は左上原点の軸方向が第4事象、テクスチャ空間は左下原点の第1事象。
+            _bits = new byte[stride * bmp.PixelHeight];
+            for (int h = 0; h < bmp.PixelHeight; h++)
+            {
+                for (int w = 0; w < stride; w++)
+                {
+                    _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
+                }
+            }
+            // 作成したビットマップをテクスチャに貼り付ける設定を行います。
+            SettingTexture(bitmap);
         }
+
+        /// <summary>
+        /// System.Drawing.ColorからSystem.Windows.Media.Colorに変換するメソッドです。
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        static public System.Windows.Media.Color Draw2MediaColor(System.Drawing.Color color)
+        {
+            return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        /// <summary>
+        /// テキストのビットマップを作成します。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        /// <param name="bitmap"></param>
+        public void CreateTextBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
+        {
+            var window = Application.Current.MainWindow;
+            
+            // テキストの色定義
+            Brush foreground = new SolidColorBrush(color);
+
+            double pixelsPerDip = 96;
+
+            // テキストのフォーマット定義
+            var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
+                FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
+
+            // ビットマップのフォーマット定義
+            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
+            {
+                int width = (int)Math.Ceiling(text.Width);
+                int height = (int)Math.Ceiling(text.Height);
+                var dpi = VisualTreeHelper.GetDpi(this);
+                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
+                double dpiY = dpi.PixelsPerInchY;
+                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
+            }
+
+            var drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                // テキストを書く下地を作る
+                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                // テキストを書く
+                drawingContext.DrawText(text, new Point(0, 0));
+            }
+
+            // ビットマップ作成
+            bmp.Render(drawingVisual);
+
+            // ビットマップの幅、高さ取得
+            bitmap.Width = bmp.PixelWidth;
+            bitmap.Height = bmp.PixelHeight;
+            // stride: 画像の横１列分のデータサイズ = 画像の横幅 * 1画素あたりのbyte(4byte) 
+            int stride = bmp.PixelWidth * 4;
+            // ビットマップ全体のサイズ分の配列を定義
+            byte[] tmpbits = new byte[stride * bmp.PixelHeight];
+            var rectangle = new Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
+            // ビットマップを上下反転させる。画像空間の座標と、テクスチャ空間の座標が反転しているため。画像空間は左上原点の軸方向が第4事象、テクスチャ空間は左下原点の第1事象。
+            _bits = new byte[stride * bmp.PixelHeight];
+            for (int h = 0; h < bmp.PixelHeight; h++)
+            {
+                for (int w = 0; w < stride; w++)
+                {
+                    _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
+                }
+            }
+
+            // 作成したビットマップをテクスチャに貼り付ける設定を行います。
+            SettingTexture(bitmap);
+
+        }
+        #endregion テキストビットマップ作成
+
+        /// <summary>
+        /// テキストを描画する際の描画領域を設定するメソッドです。
+        /// </summary>
+        private void SetTextProjection()
+        {
+            // 視体積の設定
+            GL.MatrixMode(MatrixMode.Projection);
+            {
+                float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
+                float h = 2 * (float)TkGraphics.CurrentHeight;
+                float w = h * r;
+                Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 1000.0f);
+                GL.LoadMatrix(ref proj);
+            }
+            GL.MatrixMode(MatrixMode.Modelview);
+        }
+
+        /// <summary>
+        /// グラフを描画する際の描画領域を設定するメソッドです。
+        /// </summary>
+        private void SetGraphProjection()
+        {
+            GL.MatrixMode(MatrixMode.Projection);
+            {
+                Matrix4 proj = Matrix4.CreateOrthographic((int)XRange, (int)YRange, 0.01f, 1000.0f);
+                GL.LoadMatrix(ref proj);
+            }
+            GL.MatrixMode(MatrixMode.Modelview);
+        }
+
+        /// <summary>
+        /// テクスチャの設定を行うメソッドです。
+        /// </summary>
+        private void SettingTexture(TKBitmap bitmap)
+        {
+            // テクスチャを有効化します。
+            GL.Enable(EnableCap.Texture2D);
+
+            // テクスチャIDの作成
+            int texture = GL.GenTexture();
+
+            // テクスチャIDをコレクションに追加します。
+            Textures.Add(texture);
+
+            // 指定したIDのテクスチャを現在のテクスチャとします。 
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            // テクスチャの拡大・縮小時の補間方法の設定をします。
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            // ビットマップをテクスチャに割り当てます。
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bits);
+
+        }
+
+        /// <summary>
+        /// ビットマップの配列を格納します。
+        /// </summary>
+        private byte[] _bits;
 
         #endregion テキスト描画
 
@@ -649,7 +872,7 @@ namespace OpenTkApp1.Views
         /// <returns></returns>
         private double CoordinateYTransformation(double y, double yCenter, int n)
         {
-            return Math.Round((-y * YRange / TkGraphics.CuurentHeight) + YRange / 2 + yCenter, n);
+            return Math.Round((-y * YRange / TkGraphics.CurrentHeight) + YRange / 2 + yCenter, n);
         }
         #endregion 座標変換
 
@@ -699,7 +922,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnMouseLeftButtonDown(object sender, MouseEventArgs e) //Todo: 後で名前をdownに変える
+        public void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
         {
             UIElement el = sender as UIElement;
             if (el != null)
@@ -720,6 +943,9 @@ namespace OpenTkApp1.Views
                 _dragOffsetYMin = YMin;
 
                 el.CaptureMouse();
+
+                Render();
+                
             }
         }
 
@@ -755,6 +981,7 @@ namespace OpenTkApp1.Views
                     SetCurrentValue(XMinProperty, _dragOffsetXMin);
                     SetCurrentValue(YMaxProperty, _dragOffsetYMax);
                     SetCurrentValue(YMinProperty, _dragOffsetYMin);
+                    Render();
                 }
             }
         }
