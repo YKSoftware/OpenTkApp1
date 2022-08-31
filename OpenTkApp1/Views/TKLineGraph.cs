@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -7,6 +8,7 @@ using OpenTK.Mathematics;
 using System.Collections.Generic;
 using OpenTK.Wpf;
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace OpenTkApp1.Views
 {
@@ -271,6 +273,8 @@ namespace OpenTkApp1.Views
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            GL.Enable(EnableCap.DepthTest);
+
             GL.PushMatrix();
             {
                 // 左端から描画するために移動
@@ -281,10 +285,12 @@ namespace OpenTkApp1.Views
                 DrawGraph(DrawingItem.LineColor);
                 // 目盛り線描画
                 DrawScale();
+
                 GL.Translate((XRange / 2), 0, 0);
+                // 重なった時凡例が上になるようにDepthTest解除
+                GL.Disable(EnableCap.DepthTest);
                 // 凡例描画
                 DrawLegend(LegendBitmap);
-                DrawTestText(TestBitmap);
             }
             GL.PopMatrix();
         }
@@ -557,7 +563,7 @@ namespace OpenTkApp1.Views
             float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
             float h = 2 * (float)TkGraphics.CurrentHeight;
             float w = h * r;
-            GL.Translate(-bitmap.Width / 2, -h / 2, 0);
+            GL.Translate(-bitmap.Width / 2, -h / 3, 0);
             if (Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
             GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
@@ -617,12 +623,12 @@ namespace OpenTkApp1.Views
         public void CreateTextBitmap()
         {
             if (DrawingItem.Legend == null) return;
-            CreateLegendBitmap(DrawingItem.Legend, 32, Colors.White, LegendBitmap) ;
+            CreateLegendBitmap(DrawingItem.Legend, 40, Colors.White, LegendBitmap) ;
             CreateTextBitmap("テスト \r\nだよ ", 32, Colors.Aqua, TestBitmap);
         }
 
         /// <summary>
-        /// テキストのビットマップを作成するメソッドです。
+        /// 凡例のビットマップを作成するメソッドです。
         /// </summary>
         /// <param name="str"></param>
         /// <param name="fontSize"></param>
@@ -634,38 +640,48 @@ namespace OpenTkApp1.Views
             // テキストの色定義
             Brush foreground = new SolidColorBrush(color);
             double pixelsPerDip = 96;
+            
+            // 線種1の色を取得します。
+            Color linecolor1 =  Draw2MediaColor((System.Drawing.Color)DrawingItem.LineColor);
 
             // テキストのフォーマット定義
             var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
                 FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
 
-            var vartext = new FormattedText("―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
-                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Aqua), pixelsPerDip);
+            var linetype = new FormattedText("―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(linecolor1), pixelsPerDip);
 
-            var vartext2 = new FormattedText("\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
-                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Orange), pixelsPerDip);
+            var linetpe2 = new FormattedText("\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Orange), pixelsPerDip);
+
+            var linetype3 = new FormattedText("\r\n\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
+               new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.White), pixelsPerDip);
+
+            // 文字と枠線のスペース
+            int space = 10;
 
             // ビットマップのフォーマット定義
             System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
             {
-                int width = (int)Math.Ceiling(text.Width + vartext.Width);
+                int width = (int)Math.Ceiling(text.Width + linetype.Width);
                 int height = (int)Math.Ceiling(text.Height);
                 var dpi = VisualTreeHelper.GetDpi(this);
                 double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
                 double dpiY = dpi.PixelsPerInchY;
-                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
+                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
             var drawingVisual = new DrawingVisual();
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
+                Pen pen = new Pen(foreground, 3);
                 // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                drawingContext.DrawRectangle(Brushes.Black, pen, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
                 // テキストを書く
-                drawingContext.DrawText(text, new Point(vartext.Width, 0));
-                drawingContext.DrawText(vartext, new Point(0, 0));
-                drawingContext.DrawText(vartext2, new Point(0, 0));
-
+                drawingContext.DrawText(text, new Point(linetype.Width + space, 0));
+                drawingContext.DrawText(linetype, new Point(space, 0));
+                drawingContext.DrawText(linetpe2, new Point(space, 0));
+                drawingContext.DrawText(linetype3, new Point(space, 0));
             }
 
             // ビットマップ作成
@@ -689,18 +705,34 @@ namespace OpenTkApp1.Views
                     _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
                 }
             }
-
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture(bitmap);
-
         }
 
+        /// <summary>
+        /// System.Drawing.ColorからSystem.Windows.Media.Colorに変換するメソッドです。
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        static public System.Windows.Media.Color Draw2MediaColor(System.Drawing.Color color)
+        {
+            return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        /// <summary>
+        /// テキストのビットマップを作成します。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        /// <param name="bitmap"></param>
         public void CreateTextBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
         {
             var window = Application.Current.MainWindow;
-
+            
             // テキストの色定義
             Brush foreground = new SolidColorBrush(color);
+
             double pixelsPerDip = 96;
 
             // テキストのフォーマット定義
