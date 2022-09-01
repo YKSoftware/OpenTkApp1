@@ -257,9 +257,11 @@ namespace OpenTkApp1.Views
         /// テクスチャのコレクションを生成します。
         /// </summary>
         List<int> Textures = new List<int>();
-        TKBitmap LegendBitmap = new TKBitmap();
-        TKBitmap TestBitmap = new TKBitmap();
 
+        TKBitmap LegendBitmap = new TKBitmap();
+
+        TKBitmap TestBitmap = new TKBitmap();
+        
         public void Render()
         {
             // 1回目のRenderが走るタイミングがBindingするより早いため
@@ -285,7 +287,7 @@ namespace OpenTkApp1.Views
                 DrawGraph(DrawingItem.LineColor);
                 // 目盛り線描画
                 DrawScale();
-
+                // 原点を中心に戻す。ここで凡例の初期位置を決める。
                 GL.Translate((XRange / 2), 0, 0);
                 // 重なった時凡例が上になるようにDepthTest解除
                 GL.Disable(EnableCap.DepthTest);
@@ -560,13 +562,10 @@ namespace OpenTkApp1.Views
         /// </summary>
         private void DrawLegend(TKBitmap bitmap)
         {
-            float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
-            float h = 2 * (float)TkGraphics.CurrentHeight;
-            float w = h * r;
-            GL.Translate(-bitmap.Width / 2, -h / 3, 0);
             if (Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
             GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
+            GL.Translate(_legendxTranslate, -_legendyTranslate, 0);
 
             DrawString(bitmap);
         }
@@ -614,7 +613,7 @@ namespace OpenTkApp1.Views
             
             SetGraphProjection();
         }
-
+        
         #region テキストビットマップ作成
         /// <summary>
         /// 新たにCreateBitmapをインスタンス生成するメソッドです。
@@ -623,7 +622,7 @@ namespace OpenTkApp1.Views
         public void CreateTextBitmap()
         {
             if (DrawingItem.Legend == null) return;
-            CreateLegendBitmap(DrawingItem.Legend, 40, Colors.White, LegendBitmap) ;
+            CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, LegendBitmap) ;
             CreateTextBitmap("テスト \r\nだよ ", 32, Colors.Aqua, TestBitmap);
         }
 
@@ -671,12 +670,13 @@ namespace OpenTkApp1.Views
                 bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
+            _legendRect = new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight);
             var drawingVisual = new DrawingVisual();
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
                 Pen pen = new Pen(foreground, 3);
                 // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, pen, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                drawingContext.DrawRectangle(Brushes.Black, pen, _legendRect);
                 // テキストを書く
                 drawingContext.DrawText(text, new Point(linetype.Width + space, 0));
                 drawingContext.DrawText(linetype, new Point(space, 0));
@@ -707,6 +707,10 @@ namespace OpenTkApp1.Views
             }
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture(bitmap);
+
+            // 凡例の原点からの距離を導く。
+            this._legendxOffset = TkGraphics.CurrentWidth / 2 ;
+            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height;
         }
 
         /// <summary>
@@ -780,11 +784,10 @@ namespace OpenTkApp1.Views
                     _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
                 }
             }
-
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture(bitmap);
-
         }
+
         #endregion テキストビットマップ作成
 
         /// <summary>
@@ -796,7 +799,7 @@ namespace OpenTkApp1.Views
             GL.MatrixMode(MatrixMode.Projection);
             {
                 float r = (float)TkGraphics.CurrentWidth / (float)TkGraphics.CurrentHeight;
-                float h = 2 * (float)TkGraphics.CurrentHeight;
+                float h = (float)TkGraphics.CurrentHeight;
                 float w = h * r;
                 Matrix4 proj = Matrix4.CreateOrthographic(w, h, 0.01f, 1000.0f);
                 GL.LoadMatrix(ref proj);
@@ -842,12 +845,6 @@ namespace OpenTkApp1.Views
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bits);
 
         }
-
-        /// <summary>
-        /// ビットマップの配列を格納します。
-        /// </summary>
-        private byte[] _bits;
-
         #endregion テキスト描画
 
         #region 座標変換
@@ -895,25 +892,34 @@ namespace OpenTkApp1.Views
             SetCurrentValue(CurrentXPositionProperty, x);
             SetCurrentValue(CurrentYPositionProperty, y);
 
-            if (_isDrag == true)
+            // 軸移動時
+            if (this._isAxisDrag == true)
             {
                 // マウス座標を更新します。 :　描画領域の変化に応じてXMin,YCenterが変化するので、ドラッグ開始時のXMin,YCenterを足してあげます。
-                double _movedx = CoordinateXTransformation(point.X, _dragOffsetXMin, DisplayDisits);
-                double _movedy = CoordinateYTransformation(point.Y, _dragOffsetYCenter, DisplayDisits);
+                double _movedx = CoordinateXTransformation(point.X, this._dragOffsetXMin, this.DisplayDisits);
+                double _movedy = CoordinateYTransformation(point.Y, this._dragOffsetYCenter, this.DisplayDisits);
 
                 // ドラッグ量 MouseMoveイベントは常に走り続けるため、1周期前の座標を現在の座標から引くことで変化量を求めます。
-                double _xTranslate = Math.Round(_movedx - _oldXPosition, DisplayDisits);
-                double _yTranslate = Math.Round(_movedy - _oldYPosition, DisplayDisits);
+                double _xTranslate = Math.Round(_movedx - this._oldXPosition, this.DisplayDisits);
+                double _yTranslate = Math.Round(_movedy - this._oldYPosition, this.DisplayDisits);
 
                 // 前回のマウス座標を更新
                 this._oldXPosition = _movedx;
                 this._oldYPosition = _movedy;
 
-                // プロパティ値更新,  x,yの最大・最小を変化させることで描画領域を移動
-                SetCurrentValue(XMaxProperty, XMax - _xTranslate);
-                SetCurrentValue(XMinProperty, XMin - _xTranslate);
-                SetCurrentValue(YMaxProperty, YMax - _yTranslate);
-                SetCurrentValue(YMinProperty, YMin - _yTranslate);
+                // Viewからプロパティ値更新,  x,yの最大・最小を変化させることで描画領域を移動,
+                SetCurrentValue(XMaxProperty, this.XMax - _xTranslate);
+                SetCurrentValue(XMinProperty, this.XMin - _xTranslate);
+                SetCurrentValue(YMaxProperty, this.YMax - _yTranslate);
+                SetCurrentValue(YMinProperty, this.YMin - _yTranslate);
+            }
+
+            // 凡例移動時
+            if(this._isLegendDrag == true)
+            {
+                // 凡例の移動量を更新
+                this._legendxTranslate = point.X - this._legendDragOffsetPoint.X;
+                this._legendyTranslate = point.Y - this._legendDragOffsetPoint.Y;
             }
         }
 
@@ -924,29 +930,39 @@ namespace OpenTkApp1.Views
         /// <param name="e"></param>
         public void OnMouseLeftButtonDown(object sender, MouseEventArgs e)
         {
-            UIElement el = sender as UIElement;
-            if (el != null)
+            // ドラッグ開始時の座標を取得します。
+            this._dragOffset = e.GetPosition((IInputElement)sender);
+
+            // 前回の移動量を引くことで、移動量の変化を繋げます。
+            this._legendDragOffsetPoint.X =this._dragOffset.X - this._legendxTranslate;
+            this._legendDragOffsetPoint.Y= this._dragOffset.Y - this._legendyTranslate;
+
+            // 凡例の座標を正しい位置で判定できるように座標変換します。
+            Point legendPoint;
+            legendPoint.X = this._dragOffset.X - this._legendxOffset - this._legendxTranslate;
+            legendPoint.Y = this._dragOffset.Y - this._legendyOffset - this._legendyTranslate;
+
+            if (_legendRect.Contains(legendPoint) == true)
             {
-                // ドラッグフラグをtrueにします。
-                _isDrag = true;
-
-                // ドラッグ開始時の座標を取得します。
-                _dragOffset = e.GetPosition(el);
-                _oldXPosition = CoordinateXTransformation(_dragOffset.X, XMin, DisplayDisits);
-                _oldYPosition = CoordinateYTransformation(_dragOffset.Y, YCenter, DisplayDisits);
-
-                // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
-                _dragOffsetXMax = XMax;
-                _dragOffsetXMin = XMin;
-                _dragOffsetYCenter = YCenter;
-                _dragOffsetYMax = YMax;
-                _dragOffsetYMin = YMin;
-
-                el.CaptureMouse();
-
-                Render();
-                
+                System.Diagnostics.Debug.WriteLine("凡例表示の上だよ!");
+                this._isLegendDrag = true;
+                return;
             }
+
+            // ドラッグフラグをtrueにします。
+            this._isAxisDrag = true;
+
+            // ドラッグ開始時の座標をグラフ描画領域の座標に変換します。
+            this._oldXPosition = CoordinateXTransformation(this._dragOffset.X, this.XMin, this.DisplayDisits);
+            this._oldYPosition = CoordinateYTransformation(this._dragOffset.Y, this.YCenter, this.DisplayDisits);
+
+            // ドラッグ開始時のx、ｙの最小・最大、yの中間値を取得します。
+            this._dragOffsetXMax = this.XMax;
+            this._dragOffsetXMin = this.XMin;
+            this._dragOffsetYCenter = this.YCenter;
+            this._dragOffsetYMax = this.YMax;
+            this._dragOffsetYMin = this.YMin;
+
         }
 
         /// <summary>
@@ -956,13 +972,17 @@ namespace OpenTkApp1.Views
         /// <param name="e"></param>
         public void OnMouseLeftButtonUp(object sender, MouseEventArgs e)
         {
-            if (_isDrag == true)
+            if (this._isAxisDrag == true)
             {
                 // ドラッグフラグをfalseにします。
                 UIElement el = sender as UIElement;
                 el.ReleaseMouseCapture();
-                _isDrag = false;
+                this._isAxisDrag = false;
+            }
 
+            if(this._isLegendDrag == true)
+            {
+                this._isLegendDrag = false;
             }
         }
 
@@ -973,25 +993,65 @@ namespace OpenTkApp1.Views
         /// <param name="e"></param>
         public void OnEscKeyDown(object sender, KeyEventArgs e)
         {
-            if (_isDrag == true)
+            if (this._isAxisDrag == true)
             {
                 if (e.Key == Key.Escape)
                 {
-                    SetCurrentValue(XMaxProperty, _dragOffsetXMax);
-                    SetCurrentValue(XMinProperty, _dragOffsetXMin);
-                    SetCurrentValue(YMaxProperty, _dragOffsetYMax);
-                    SetCurrentValue(YMinProperty, _dragOffsetYMin);
+                    SetCurrentValue(XMaxProperty, this._dragOffsetXMax);
+                    SetCurrentValue(XMinProperty, this._dragOffsetXMin);
+                    SetCurrentValue(YMaxProperty, this._dragOffsetYMax);
+                    SetCurrentValue(YMinProperty, this._dragOffsetYMin);
                     Render();
                 }
             }
         }
         #endregion　マウスイベント
 
-        #region マウスイベント用フィールド
+        #region フィールド
         /// <summary>
-        /// 現在のドラッグ状態を表します。
+        /// ビットマップの配列を格納します。
         /// </summary>
-        private bool _isDrag = false;
+        private byte[] _bits;
+
+        /// <summary>
+        /// 凡例を表す四角形を定義します。
+        /// </summary>
+        private Rect _legendRect;
+
+        /// <summary>
+        /// 凡例の初期位置の原点からのx座標の距離を表します。
+        /// </summary>
+        private double _legendxOffset;
+
+        /// <summary>
+        /// 凡例の初期位置の原点からのy座標の距離を表します。
+        /// </summary>
+        private double _legendyOffset;
+
+        /// <summary>
+        /// 現在の凡例のドラッグの状態を表します。
+        /// </summary>
+        private bool _isLegendDrag = false;
+
+        /// <summary>
+        /// 凡例のx座標の移動量を表します。
+        /// </summary>
+        private double _legendxTranslate;
+
+        /// <summary>
+        /// 凡例のy座標の移動量を表します。
+        /// </summary>
+        private double _legendyTranslate;
+
+        /// <summary>
+        /// クリック時の凡例の座標を表します。
+        /// </summary>
+        private Point _legendDragOffsetPoint;
+
+        /// <summary>
+        /// 現在の軸のドラッグ状態を表します。
+        /// </summary>
+        private bool _isAxisDrag = false;
 
         /// <summary>
         /// ドラッグ開始時の座標を表します。
@@ -1033,7 +1093,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         private double _dragOffsetYCenter;
 
-        #endregion マウスイベント用フィールド
+        #endregion フィールド
 
     }
 }
