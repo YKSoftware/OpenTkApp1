@@ -741,6 +741,9 @@ namespace OpenTkApp1.Views
             // 凡例の原点からの距離を導く。
             this._legendxOffset = TkGraphics.CurrentWidth / 2 ;
             this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height;
+            // 凡例の原点(左端)からの距離を導く。
+            this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition() ;
+            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
         }
 
         /// <summary>
