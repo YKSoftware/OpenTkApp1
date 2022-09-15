@@ -287,14 +287,44 @@ namespace OpenTkApp1.Views
                 DrawGraph(DrawingItem.LineColor);
                 // 目盛り線描画
                 DrawScale();
-                // 原点を中心に戻す。ここで凡例の初期位置を決める。
-                GL.Translate((XRange / 2), 0, 0);
+                // 原点を中心に戻す。
+                GL.Translate(XRange /2, 0, 0);
+                // 凡例を右下に配置。
+                GL.Translate(CulcLegengInitialXPosition(), CulcLegendInitialYPosition(), 0);
                 // 重なった時凡例が上になるようにDepthTest解除
                 GL.Disable(EnableCap.DepthTest);
                 // 凡例描画
                 DrawLegend(LegendBitmap);
             }
             GL.PopMatrix();
+        }
+
+        /// <summary>
+        /// 原点から凡例の初期位置までのx座標の移動量を計算するメソッドです。
+        /// Windowのサイズに合わせた、一次関数になります。
+        /// </summary>
+        /// <returns></returns>
+        private double CulcLegengInitialXPosition()
+        {
+            // 変化の割合
+            double r = 0.46;
+            // 切片
+            double intercept = -136;
+            return TkGraphics.CurrentWidth * r + intercept;
+        }
+
+        /// <summary>
+        /// 原点から凡例の初期位置までのy座標の移動量を計算するメソッドです。
+        /// Windowのサイズに合わせた、一次関数になります。
+        /// </summary>
+        /// <returns></returns>
+        private double CulcLegendInitialYPosition()
+        {
+            double r = -0.475;
+
+            double intercept = 2;
+
+            return TkGraphics.CurrentHeight * r + intercept;
         }
 
         #region グラフ描画
@@ -566,7 +596,7 @@ namespace OpenTkApp1.Views
             // 指定したIDのテクスチャを現在のテクスチャとします。
             GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
             GL.Translate(_legendxTranslate, -_legendyTranslate, 0);
-
+            
             DrawString(bitmap);
         }
 
@@ -708,9 +738,19 @@ namespace OpenTkApp1.Views
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture(bitmap);
 
-            // 凡例の原点からの距離を導く。
-            this._legendxOffset = TkGraphics.CurrentWidth / 2 ;
-            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height;
+            // 凡例の原点(左端)からの距離を導く。
+            this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition() ;
+            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
+
+            // Windowのサイズが変更された時に、それに応じて凡例を移動させます。
+            _windowSizeChangedLegendxTranslate = _saveLegendXTranslate * TkGraphics.CurrentWidth / _saveWidth;
+            _windowSizeChangedLegendyTranslate = _saveLegendYTranslate * TkGraphics.CurrentHeight / _saveHeight;
+
+            // Windowサイズ変更を初期サイズから変更していない場合は_windowSizeChangedLegendxTranslateがNaNになる。
+            if(!Double.IsNaN(_windowSizeChangedLegendxTranslate))
+            _legendxTranslate = _windowSizeChangedLegendxTranslate;
+            if(!Double.IsNaN(_windowSizeChangedLegendyTranslate))
+            _legendyTranslate = _windowSizeChangedLegendyTranslate;
         }
 
         /// <summary>
@@ -920,9 +960,14 @@ namespace OpenTkApp1.Views
                 // 凡例の移動量を更新
                 this._legendxTranslate = point.X - this._legendDragOffsetPoint.X;
                 this._legendyTranslate = point.Y - this._legendDragOffsetPoint.Y;
+                // 移動量、Windowサイズを記憶
+                _saveLegendXTranslate = _legendxTranslate;
+                _saveLegendYTranslate = _legendyTranslate;
+                _saveWidth = TkGraphics.CurrentWidth;
+                _saveHeight = TkGraphics.CurrentHeight;
             }
         }
-
+        
         /// <summary>
         /// マウスの左のボタンを押した際に実行されるイベントハンドラです。
         /// </summary>
@@ -1093,6 +1138,24 @@ namespace OpenTkApp1.Views
         /// </summary>
         private double _dragOffsetYCenter;
 
+        /// <summary>
+        /// Windowのサイズが変化した時の、それに応じた凡例の位置のx方向の移動量です。
+        /// </summary>
+        private double _windowSizeChangedLegendxTranslate;
+
+        private double _windowSizeChangedLegendyTranslate;
+        /// <summary>
+        /// Windowのサイズが変化させる前に、凡例の位置を移動させた場合のx方向の移動量を保持しておきます。
+        /// </summary>
+        private double _saveLegendXTranslate;
+
+        private double _saveLegendYTranslate;
+        /// <summary>
+        /// 凡例の位置を移動させた時のウィンドウのサイズを保持しています。
+        /// </summary>
+        private double _saveWidth;
+
+        private double _saveHeight;
         #endregion フィールド
 
     }
