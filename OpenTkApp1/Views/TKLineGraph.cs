@@ -596,7 +596,7 @@ namespace OpenTkApp1.Views
             // 指定したIDのテクスチャを現在のテクスチャとします。
             GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
             GL.Translate(_legendxTranslate, -_legendyTranslate, 0);
-
+            
             DrawString(bitmap);
         }
 
@@ -738,12 +738,16 @@ namespace OpenTkApp1.Views
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture(bitmap);
 
-            // 凡例の原点からの距離を導く。
-            this._legendxOffset = TkGraphics.CurrentWidth / 2 ;
-            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height;
             // 凡例の原点(左端)からの距離を導く。
             this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition() ;
             this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
+
+            // Windowのサイズが変更された時に、それに応じて凡例を移動させます。
+            _windowSizeChangedLegendxTranslate = _saveLegendXTranslate * TkGraphics.CurrentWidth / _saveWidth;
+
+            // Windowサイズ変更を初期サイズから変更していない場合は_windowSizeChangedLegendxTranslateがNaNになる。
+            if(!Double.IsNaN(_windowSizeChangedLegendxTranslate))
+            _legendxTranslate = _windowSizeChangedLegendxTranslate;
         }
 
         /// <summary>
@@ -953,9 +957,12 @@ namespace OpenTkApp1.Views
                 // 凡例の移動量を更新
                 this._legendxTranslate = point.X - this._legendDragOffsetPoint.X;
                 this._legendyTranslate = point.Y - this._legendDragOffsetPoint.Y;
+                // 移動量、Windowサイズを記憶
+                _saveLegendXTranslate = _legendxTranslate;
+                _saveWidth = TkGraphics.CurrentWidth;
             }
         }
-
+        
         /// <summary>
         /// マウスの左のボタンを押した際に実行されるイベントハンドラです。
         /// </summary>
@@ -1125,6 +1132,21 @@ namespace OpenTkApp1.Views
         /// ドラッグ開始時のyの中間値を表します。
         /// </summary>
         private double _dragOffsetYCenter;
+
+        /// <summary>
+        /// Windowのサイズが変化した時の、それに応じた凡例の位置の移動量です。
+        /// </summary>
+        private double _windowSizeChangedLegendxTranslate;
+
+        /// <summary>
+        /// Windowのサイズが変化させる前に、凡例の位置を移動させた場合の移動量を保持しておきます。
+        /// </summary>
+        private double _saveLegendXTranslate;
+
+        /// <summary>
+        /// 凡例の位置を移動させた時のウィンドウのサイズを保持しています。
+        /// </summary>
+        private double _saveWidth;
 
         #endregion フィールド
 
