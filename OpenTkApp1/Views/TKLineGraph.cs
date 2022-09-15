@@ -287,14 +287,44 @@ namespace OpenTkApp1.Views
                 DrawGraph(DrawingItem.LineColor);
                 // 目盛り線描画
                 DrawScale();
-                // 原点を中心に戻す。ここで凡例の初期位置を決める。
-                GL.Translate((XRange / 2), 0, 0);
+                // 原点を中心に戻す。
+                GL.Translate(XRange /2, 0, 0);
+                // 凡例を右下に配置。
+                GL.Translate(CulcLegengInitialXPosition(), CulcLegendInitialYPosition(), 0);
                 // 重なった時凡例が上になるようにDepthTest解除
                 GL.Disable(EnableCap.DepthTest);
                 // 凡例描画
                 DrawLegend(LegendBitmap);
             }
             GL.PopMatrix();
+        }
+
+        /// <summary>
+        /// 原点から凡例の初期位置までのx座標の移動量を計算するメソッドです。
+        /// Windowのサイズに合わせた、一次関数になります。
+        /// </summary>
+        /// <returns></returns>
+        private double CulcLegengInitialXPosition()
+        {
+            // 変化の割合
+            double r = 0.46;
+            // 切片
+            double intercept = -136;
+            return TkGraphics.CurrentWidth * r + intercept;
+        }
+
+        /// <summary>
+        /// 原点から凡例の初期位置までのy座標の移動量を計算するメソッドです。
+        /// Windowのサイズに合わせた、一次関数になります。
+        /// </summary>
+        /// <returns></returns>
+        private double CulcLegendInitialYPosition()
+        {
+            double r = -0.475;
+
+            double intercept = 2;
+
+            return TkGraphics.CurrentHeight * r + intercept;
         }
 
         #region グラフ描画
