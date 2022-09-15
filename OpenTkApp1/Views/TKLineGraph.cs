@@ -744,10 +744,13 @@ namespace OpenTkApp1.Views
 
             // Windowのサイズが変更された時に、それに応じて凡例を移動させます。
             _windowSizeChangedLegendxTranslate = _saveLegendXTranslate * TkGraphics.CurrentWidth / _saveWidth;
+            _windowSizeChangedLegendyTranslate = _saveLegendYTranslate * TkGraphics.CurrentHeight / _saveHeight;
 
             // Windowサイズ変更を初期サイズから変更していない場合は_windowSizeChangedLegendxTranslateがNaNになる。
             if(!Double.IsNaN(_windowSizeChangedLegendxTranslate))
             _legendxTranslate = _windowSizeChangedLegendxTranslate;
+            if(!Double.IsNaN(_windowSizeChangedLegendyTranslate))
+            _legendyTranslate = _windowSizeChangedLegendyTranslate;
         }
 
         /// <summary>
@@ -959,7 +962,9 @@ namespace OpenTkApp1.Views
                 this._legendyTranslate = point.Y - this._legendDragOffsetPoint.Y;
                 // 移動量、Windowサイズを記憶
                 _saveLegendXTranslate = _legendxTranslate;
+                _saveLegendYTranslate = _legendyTranslate;
                 _saveWidth = TkGraphics.CurrentWidth;
+                _saveHeight = TkGraphics.CurrentHeight;
             }
         }
         
@@ -1134,20 +1139,23 @@ namespace OpenTkApp1.Views
         private double _dragOffsetYCenter;
 
         /// <summary>
-        /// Windowのサイズが変化した時の、それに応じた凡例の位置の移動量です。
+        /// Windowのサイズが変化した時の、それに応じた凡例の位置のx方向の移動量です。
         /// </summary>
         private double _windowSizeChangedLegendxTranslate;
 
+        private double _windowSizeChangedLegendyTranslate;
         /// <summary>
-        /// Windowのサイズが変化させる前に、凡例の位置を移動させた場合の移動量を保持しておきます。
+        /// Windowのサイズが変化させる前に、凡例の位置を移動させた場合のx方向の移動量を保持しておきます。
         /// </summary>
         private double _saveLegendXTranslate;
 
+        private double _saveLegendYTranslate;
         /// <summary>
         /// 凡例の位置を移動させた時のウィンドウのサイズを保持しています。
         /// </summary>
         private double _saveWidth;
 
+        private double _saveHeight;
         #endregion フィールド
 
     }
