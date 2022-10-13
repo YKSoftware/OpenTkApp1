@@ -190,13 +190,6 @@ public class MainViewModel : INotifyPropertyChanged
     private Color4 _lineColor = Color4.Aqua;
 
     /// <summary>
-    /// 軸の位置を取得します。
-    /// </summary>
-    public AxisTypes AxisType { get { return _axisType; } }
-
-    private AxisTypes _axisType = AxisTypes.Left;
-
-    /// <summary>
     /// マウスポインタのx座標を取得または設定します。
     /// </summary>
     public double CurrentXPosition

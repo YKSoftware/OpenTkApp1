@@ -55,7 +55,7 @@
 
         <vw:TkGraphics Grid.Column="1" Grid.Row="1">
             <vw:TkGraphics.GraphBase>
-                <vw:TKLineGraph AxisType="{Binding AxisType}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}" 
+                <vw:TKLineGraph XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}" 
                                 YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" CurrentXPosition="{Binding CurrentXPosition}" CurrentYPosition="{Binding CurrentYPosition}">
                     <vw:TKLineGraph.DrawingItem>
                         <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}"  PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" 
