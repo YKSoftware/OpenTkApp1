@@ -109,8 +109,6 @@ public class TkGraphics : GLWpfControl
         GraphBase?.Render();
     }
 
-    
-
     /// <summary>
     /// 投影方法を設定します。
     /// </summary>

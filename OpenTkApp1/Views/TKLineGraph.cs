@@ -186,22 +186,6 @@ namespace OpenTkApp1.Views
         }
         #endregion YRange
 
-        #region AxisType
-        public static readonly DependencyProperty AxisTypeProperty = DependencyProperty.Register("AxisType", typeof(AxisTypes), typeof(TKLineGraph), new PropertyMetadata(AxisTypes.Left, OnAxisTypePropertyChanged));
-
-        public AxisTypes AxisType
-        {
-            get => (AxisTypes)GetValue(AxisTypeProperty);
-            set => SetValue(AxisTypeProperty, value);
-        }
-
-        private static void OnAxisTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as TKLineGraph)?.Render();
-        }
-
-        #endregion AxisType
-
         #region DisplayDisits
         /// <summary>
         /// DisplayDisits依存関係プロパティの定義を表します。
@@ -256,7 +240,7 @@ namespace OpenTkApp1.Views
         /// <summary>
         /// テクスチャのコレクションを生成します。
         /// </summary>
-        List<int> Textures = new List<int>();
+        static List<int> Textures = new List<int>();
 
         TKBitmap LegendBitmap = new TKBitmap();
 
@@ -580,7 +564,7 @@ namespace OpenTkApp1.Views
         {
             if (Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
-            GL.BindTexture(TextureTarget.Texture2D, Textures[1]);
+            GL.BindTexture(TextureTarget.Texture2D, TextureList.Textures[0]);
             GL.Translate(-TkGraphics.CurrentWidth/2 + _cursolxPosition, -_cursolyPosition + TkGraphics.CurrentHeight/2, 0);
             DrawString(bitmap);
             GL.Translate(TkGraphics.CurrentWidth/2 - _cursolxPosition, _cursolyPosition - TkGraphics.CurrentHeight/2, 0);
@@ -627,7 +611,8 @@ namespace OpenTkApp1.Views
         {
             if (DrawingItem?.Legend == null) return;
             CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, LegendBitmap) ;
-            CreateGraphCursolBitmap("null", 1, Colors.Aqua, GraphCursolBitmap);
+            //CreateGraphCursolBitmap("null", 1, Colors.Aqua, GraphCursolBitmap);
+            GraphCursolBitmap.CreateGraphCursolBitmap("str", 24, Colors.Aqua);        
         }
 
         /// <summary>
@@ -749,72 +734,6 @@ namespace OpenTkApp1.Views
             return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
 
-        /// <summary>
-        /// テキストのビットマップを作成します。
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="color"></param>
-        /// <param name="bitmap"></param>
-        public void CreateGraphCursolBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
-        {
-            var window = Application.Current.MainWindow;
-            
-            // テキストの色定義
-            Brush foreground = new SolidColorBrush(color);
-
-            double pixelsPerDip = 96;
-
-            // テキストのフォーマット定義
-            var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
-                FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
-
-            // ビットマップのフォーマット定義
-            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
-            {
-                int width = (int)Math.Ceiling(text.Width);
-                int height = (int)Math.Ceiling(text.Height);
-                var dpi = VisualTreeHelper.GetDpi(this);
-                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
-                double dpiY = dpi.PixelsPerInchY;
-                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
-            }
-
-            var drawingVisual = new DrawingVisual();
-            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
-            {
-                // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
-                // テキストを書く
-                drawingContext.DrawText(text, new Point(0, 0));
-            }
-
-            // ビットマップ作成
-            bmp.Render(drawingVisual);
-
-            // ビットマップの幅、高さ取得
-            bitmap.Width = bmp.PixelWidth;
-            bitmap.Height = bmp.PixelHeight;
-            // stride: 画像の横１列分のデータサイズ = 画像の横幅 * 1画素あたりのbyte(4byte) 
-            int stride = bmp.PixelWidth * 4;
-            // ビットマップ全体のサイズ分の配列を定義
-            byte[] tmpbits = new byte[stride * bmp.PixelHeight];
-            var rectangle = new Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
-            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
-            // ビットマップを上下反転させる。画像空間の座標と、テクスチャ空間の座標が反転しているため。画像空間は左上原点の軸方向が第4事象、テクスチャ空間は左下原点の第1事象。
-            _bits = new byte[stride * bmp.PixelHeight];
-            for (int h = 0; h < bmp.PixelHeight; h++)
-            {
-                for (int w = 0; w < stride; w++)
-                {
-                    _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
-                }
-            }
-            if (Textures.Count == 1)
-                // 作成したビットマップをテクスチャに貼り付ける設定を行います。
-                SettingTexture(bitmap);
-            else CustomTexture(bitmap, 3);
-        }
 
         #endregion テキストビットマップ作成
 
@@ -873,29 +792,7 @@ namespace OpenTkApp1.Views
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bits);
 
         }
-
-        /// <summary>
-        /// 既存テクスチャの編集を行うメソッドです。
-        /// </summary>
-        /// <param name="bitmap"></param>
-        /// <param name="id"></param>
-        private void CustomTexture(TKBitmap bitmap, int id)
-        {
-            // テクスチャを有効化します。
-            GL.Enable(EnableCap.Texture2D);
-
-            // 指定したIDのテクスチャを現在のテクスチャとします。 
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            // テクスチャの拡大・縮小時の補間方法の設定をします。
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            // ビットマップをテクスチャに割り当てます。
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bits);
-            GL.Disable(EnableCap.Texture2D);
-
-        }
+       
         #endregion テキスト描画
 
         #region 座標変換
@@ -971,7 +868,7 @@ namespace OpenTkApp1.Views
 
             string graphCursol = String.Format("x : {0} \r\ny : {1}", x, y);
             // ビッターズを更新する。
-            CreateGraphCursolBitmap(graphCursol, 10, Colors.White, GraphCursolBitmap);
+            GraphCursolBitmap.CreateGraphCursolBitmap(graphCursol, 10, Colors.White);
             
             // Viewの値の変更をViewModelにも伝えてあげる。
             SetCurrentValue(CurrentXPositionProperty, x);
