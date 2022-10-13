@@ -96,7 +96,7 @@ public class TkGraphics : GLWpfControl
         SetProjection();
         _currentWidth = ActualWidth;
         _currentHeight = ActualHeight;
-        GraphBase?.CreateTextBitmap();
+        GraphBase?.BitmapPositionChange();
 
     }
 
@@ -106,7 +106,6 @@ public class TkGraphics : GLWpfControl
     /// <param name="delta">経過時間</param>
     private void OnTkRender(TimeSpan delta)
     {
-        
         GraphBase?.Render();
     }
 
