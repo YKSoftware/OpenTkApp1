@@ -237,11 +237,6 @@ namespace OpenTkApp1.Views
 
         #endregion 依存関係プロパティ定義
 
-        /// <summary>
-        /// テクスチャのコレクションを生成します。
-        /// </summary>
-        static List<int> Textures = new List<int>();
-
         TKBitmap LegendBitmap = new TKBitmap();
 
         TKBitmap GraphCursolBitmap = new TKBitmap();
@@ -275,6 +270,7 @@ namespace OpenTkApp1.Views
                 GL.Translate(XRange / 2, 0, 0);
                 // 重なった時凡例が上になるようにDepthTest解除
                 GL.Disable(EnableCap.DepthTest);
+                // カーソル上に点が存在した時のみ位置表示
                 if(CurrentYPosition == Math.Round(DrawingItem.YData[(int)CurrentXPosition], DisplayDisits))
                 DrawGraphCursolText(GraphCursolBitmap);
                 // 凡例を右下に配置。
@@ -552,9 +548,9 @@ namespace OpenTkApp1.Views
         /// </summary>
         private void DrawLegend(TKBitmap bitmap)
         {
-            if (Textures.Count > 0)
+            if (TextureList.Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
-            GL.BindTexture(TextureTarget.Texture2D, Textures[0]);
+            GL.BindTexture(TextureTarget.Texture2D, TextureList.Textures[0]);
             GL.Translate(_legendxTranslate, -_legendyTranslate, 0);
             
             DrawString(bitmap);
@@ -562,14 +558,14 @@ namespace OpenTkApp1.Views
 
         private void DrawGraphCursolText(TKBitmap bitmap)
         {
-            if (Textures.Count > 0)
+            if (TextureList.Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
-            GL.BindTexture(TextureTarget.Texture2D, TextureList.Textures[0]);
+            GL.BindTexture(TextureTarget.Texture2D, TextureList.Textures[1]);
             GL.Translate(-TkGraphics.CurrentWidth/2 + _cursolxPosition, -_cursolyPosition + TkGraphics.CurrentHeight/2, 0);
             DrawString(bitmap);
             GL.Translate(TkGraphics.CurrentWidth/2 - _cursolxPosition, _cursolyPosition - TkGraphics.CurrentHeight/2, 0);
-
         }
+
         /// <summary>
         /// 文字を描画するメソッドです。
         /// 四角形の上にテキストを書いたビットマップをテクスチャとして貼り付けている。
@@ -610,103 +606,14 @@ namespace OpenTkApp1.Views
         public void CreateTextBitmap()
         {
             if (DrawingItem?.Legend == null) return;
-            CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, LegendBitmap) ;
-            //CreateGraphCursolBitmap("null", 1, Colors.Aqua, GraphCursolBitmap);
-            GraphCursolBitmap.CreateGraphCursolBitmap("str", 24, Colors.Aqua);        
-        }
-
-        /// <summary>
-        /// 凡例のビットマップを作成するメソッドです。
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="color"></param>
-        public void CreateLegendBitmap(string str, double fontSize, Color color, TKBitmap bitmap)
-        {
-            var window = Application.Current.MainWindow;
-
-            // テキストの色定義
-            Brush foreground = new SolidColorBrush(color);
-            double pixelsPerDip = 96;
-            
-            // 線種1の色を取得します。
-            Color linecolor1 =  Draw2MediaColor((System.Drawing.Color)DrawingItem.LineColor);
-
-            // テキストのフォーマット定義
-            var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
-                FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
-
-            var linetype = new FormattedText("―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
-                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(linecolor1), pixelsPerDip);
-
-            var linetpe2 = new FormattedText("\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
-                new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.Orange), pixelsPerDip);
-
-            var linetype3 = new FormattedText("\r\n\r\n―", new System.Globalization.CultureInfo("en-us"), FlowDirection.LeftToRight,
-               new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.UltraBlack, FontStretches.Normal), fontSize, new SolidColorBrush(Colors.White), pixelsPerDip);
-
-            // 文字と枠線のスペース
-            int space = 10;
-
-            // ビットマップのフォーマット定義
-            System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
-            {
-                int width = (int)Math.Ceiling(text.Width + linetype.Width);
-                int height = (int)Math.Ceiling(text.Height);
-                var dpi = VisualTreeHelper.GetDpi(this);
-                double dpiX = dpi.PixelsPerInchX;  //dot per inc 解像度
-                double dpiY = dpi.PixelsPerInchY;
-                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
-            }
-
-            _legendRect = new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight);
-            var drawingVisual = new DrawingVisual();
-            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
-            {
-                Pen pen = new Pen(foreground, 3);
-                // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, pen, _legendRect);
-                // テキストを書く
-                drawingContext.DrawText(text, new Point(linetype.Width + space, 0));
-                drawingContext.DrawText(linetype, new Point(space, 0));
-                drawingContext.DrawText(linetpe2, new Point(space, 0));
-                drawingContext.DrawText(linetype3, new Point(space, 0));
-            }
-
-            // ビットマップ作成
-            bmp.Render(drawingVisual);
-
-            // ビットマップの幅、高さ取得
-            bitmap.Width = bmp.PixelWidth;
-            bitmap.Height = bmp.PixelHeight;
-            // stride: 画像の横１列分のデータサイズ = 画像の横幅 * 1画素あたりのbyte(4byte) 
-            int stride = bmp.PixelWidth * 4;
-            // ビットマップ全体のサイズ分の配列を定義
-            byte[] tmpbits = new byte[stride * bmp.PixelHeight];
-            var rectangle = new Int32Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
-            bmp.CopyPixels(rectangle, tmpbits, stride, 0);
-            // ビットマップを上下反転させる。画像空間の座標と、テクスチャ空間の座標が反転しているため。画像空間は左上原点の軸方向が第4事象、テクスチャ空間は左下原点の第1事象。
-            _bits = new byte[stride * bmp.PixelHeight];
-            for (int h = 0; h < bmp.PixelHeight; h++)
-            {
-                for (int w = 0; w < stride; w++)
-                {
-                    _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
-                }
-            }
-            // 作成したビットマップをテクスチャに貼り付ける設定を行います。
-            SettingTexture(bitmap);
-
+            //CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, LegendBitmap) ;
+            LegendBitmap.CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, DrawingItem.LineColor);
             // 凡例の原点(左端)からの距離を導く。
             this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition();
             this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
-
+            GraphCursolBitmap.CreateGraphCursolBitmap("str", 24, Colors.Aqua);        
         }
 
-        /// <summary>
-        /// ビットマップの座標を変換するメソッドです。
-        /// 画面のサイズが変更された時に呼び出されます。
-        /// </summary>
         public void BitmapPositionChange()
         {
             // 凡例の原点(左端)からの距離を導く。
@@ -722,16 +629,6 @@ namespace OpenTkApp1.Views
             _legendxTranslate = _windowSizeChangedLegendxTranslate;
             if(!Double.IsNaN(_windowSizeChangedLegendyTranslate))
             _legendyTranslate = _windowSizeChangedLegendyTranslate;
-        }
-
-        /// <summary>
-        /// System.Drawing.ColorからSystem.Windows.Media.Colorに変換するメソッドです。
-        /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
-        static public System.Windows.Media.Color Draw2MediaColor(System.Drawing.Color color)
-        {
-            return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
 
 
@@ -765,32 +662,6 @@ namespace OpenTkApp1.Views
                 GL.LoadMatrix(ref proj);
             }
             GL.MatrixMode(MatrixMode.Modelview);
-        }
-
-        /// <summary>
-        /// テクスチャの設定を行うメソッドです。
-        /// </summary>
-        private void SettingTexture(TKBitmap bitmap)
-        {
-            // テクスチャを有効化します。
-            GL.Enable(EnableCap.Texture2D);
-
-            // テクスチャIDの作成
-            int texture = GL.GenTexture();
-
-            // テクスチャIDをコレクションに追加します。
-            Textures.Add(texture);
-
-            // 指定したIDのテクスチャを現在のテクスチャとします。 
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            // テクスチャの拡大・縮小時の補間方法の設定をします。
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            // ビットマップをテクスチャに割り当てます。
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bits);
-
         }
        
         #endregion テキスト描画
@@ -867,8 +738,8 @@ namespace OpenTkApp1.Views
             var y = CoordinateYTransformation(point.Y, YCenter, DisplayDisits);
 
             string graphCursol = String.Format("x : {0} \r\ny : {1}", x, y);
-            // ビッターズを更新する。
-            GraphCursolBitmap.CreateGraphCursolBitmap(graphCursol, 10, Colors.White);
+            // ビットマップを更新する。
+            GraphCursolBitmap.CreateGraphCursolBitmap(graphCursol, 12, Colors.White);
             
             // Viewの値の変更をViewModelにも伝えてあげる。
             SetCurrentValue(CurrentXPositionProperty, x);
@@ -929,7 +800,7 @@ namespace OpenTkApp1.Views
             legendPoint.X = this._dragOffset.X - this._legendxOffset - this._legendxTranslate;
             legendPoint.Y = this._dragOffset.Y - this._legendyOffset - this._legendyTranslate;
 
-            if (_legendRect.Contains(legendPoint) == true)
+            if (LegendBitmap.LegendRect.Contains(legendPoint) == true)
             {
                 System.Diagnostics.Debug.WriteLine("凡例表示の上だよ!");
                 this._isLegendDrag = true;
@@ -995,16 +866,6 @@ namespace OpenTkApp1.Views
         #endregion　マウスイベント
 
         #region フィールド
-        /// <summary>
-        /// ビットマップの配列を格納します。
-        /// </summary>
-        private byte[] _bits;
-
-        /// <summary>
-        /// 凡例を表す四角形を定義します。
-        /// </summary>
-        private Rect _legendRect;
-
         /// <summary>
         /// 凡例の初期位置の原点からのx座標の距離を表します。
         /// </summary>
