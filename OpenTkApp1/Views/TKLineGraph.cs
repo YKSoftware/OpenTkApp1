@@ -799,6 +799,7 @@ namespace OpenTkApp1.Views
                 this.Cursor = Cursors.SizeAll;
                 this._leftGraphCursorTranslate = point.X - this._oldLeftGraphCursorPosition;
                 this._cLeftGraphCursorTranslate = CoordinateXTransformation(point.X - this._oldLeftGraphCursorPosition, 0, this.DisplayDisits);
+                _saveWidth = TkGraphics.CurrentWidth;
             }
 
             // 右グラフカーソル移動時
@@ -807,6 +808,7 @@ namespace OpenTkApp1.Views
                 this.Cursor = Cursors.SizeAll;
                 this._rightGraphCursorTranslate = point.X - this._oldRightGraphCursorPosition;
                 this._cRightGraphCursorTranslate = CoordinateXTransformation(point.X - this._oldRightGraphCursorPosition, 0, this.DisplayDisits);
+                _saveWidth = TkGraphics.CurrentWidth;
             }
 
             // 軸移動時
@@ -843,6 +845,7 @@ namespace OpenTkApp1.Views
                 _saveWidth = TkGraphics.CurrentWidth;
                 _saveHeight = TkGraphics.CurrentHeight;
             }
+
         }
 
         /// <summary>
@@ -874,14 +877,22 @@ namespace OpenTkApp1.Views
             if (this._onLeftGraphCursor == true)
             {
                 this._isLeftGraphCursorDrag = true;
-                this._oldLeftGraphCursorPosition = this._dragOffset.X - this._leftGraphCursorTranslate;
+                // 画面のサイズが変更されていたら、移動量を修正する。
+                if (_saveWidth != 0)
+                    this._leftGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
+                this._oldLeftGraphCursorPosition = this._dragOffset.X - this._leftGraphCursorTranslate ;
                 return;
             }
 
+            //右側のグラフカーソル上でクリックした時
             if (this._onRightGraphCursor == true)
             {
                 this._isRightGraphCursorDrag = true;
+                // 画面のサイズが変更されていたら、移動量を修正する。
+                if (_saveWidth != 0)
+                    this._rightGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
                 this._oldRightGraphCursorPosition = this._dragOffset.X - this._rightGraphCursorTranslate;
+
                 return;
             }
 
