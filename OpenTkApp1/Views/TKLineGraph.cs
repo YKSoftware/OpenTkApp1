@@ -4,11 +4,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Windows.Data;
 using System.Runtime.CompilerServices;
-using System.Windows.Media.Converters;
+
 
 namespace OpenTkApp1.Views
 {
@@ -244,7 +241,10 @@ namespace OpenTkApp1.Views
 
         TkBitmap GraphCursorBitmap = new TkBitmap();
 
-        TkCursor GraphCursor = new TkCursor();
+        TkGraphCursor LeftGraphCursor = new TkGraphCursor();
+
+        TkGraphCursor RightGraphCursor = new TkGraphCursor();
+
        
         public void Render()
         {
@@ -316,18 +316,17 @@ namespace OpenTkApp1.Views
         {
             GL.Color4(Color4.Yellow);
 
-            GraphCursor.LeftPosition = XRange / 3 + _cLeftGraphCursorTranslate;
-            GraphCursor.RightPosition = 2 * XRange / 3 + _cRightGraphCursorTranslate;
-            GraphCursor.Height = YRange / 2;
+            this.LeftGraphCursor.XPosition = XRange / 3 + _cLeftGraphCursorTranslate;
+            this.RightGraphCursor.XPosition = 2 * XRange / 3 + _cRightGraphCursorTranslate;
+            this.LeftGraphCursor.Height = YRange / 2;
+            this.RightGraphCursor.Height = YRange / 2;
             
-
             GL.Begin(PrimitiveType.Lines);
             {
-                GL.Vertex2(GraphCursor.LeftPosition , GraphCursor.Height);
-                GL.Vertex2(GraphCursor.LeftPosition, -GraphCursor.Height);
-                GL.Vertex2(GraphCursor.RightPosition, GraphCursor.Height);
-                GL.Vertex2(GraphCursor.RightPosition, -GraphCursor.Height);
-
+                GL.Vertex2(this.LeftGraphCursor.XPosition , this.LeftGraphCursor.Height);
+                GL.Vertex2(this.LeftGraphCursor.XPosition, -this.LeftGraphCursor.Height);
+                GL.Vertex2(this.RightGraphCursor.XPosition, this.RightGraphCursor.Height);
+                GL.Vertex2(this.RightGraphCursor.XPosition, -this.RightGraphCursor.Height);
             }
             GL.End();
         }
@@ -775,26 +774,26 @@ namespace OpenTkApp1.Views
             SetCurrentValue(CurrentYPositionProperty, y);
 
             // マウスカーソルが左側のグラフカーソル上にある時
-            if ( (GraphCursor.LeftPosition + XMin - 1 <= x) && (x <= GraphCursor.LeftPosition + XMin + 1))
+            if ( (LeftGraphCursor.XPosition + XMin - 1 <= x) && (x <= LeftGraphCursor.XPosition + XMin + 1))
             {
                 this.Cursor = Cursors.SizeAll;
-                this._onLeftGraphCursor = true;
+                LeftGraphCursor.OnCursor = true;
             }
             // マウスカーソルが右側のグラフカーソル上にある時
-            else if ( (GraphCursor.RightPosition + XMin - 1 <= x) && (x <= GraphCursor.RightPosition + XMin + 1))
+            else if ( ( this.RightGraphCursor.XPosition+ XMin - 1 <= x) && (x <= this.RightGraphCursor.XPosition + XMin + 1))
             {
                 this.Cursor = Cursors.SizeAll;
-                this._onRightGraphCursor = true;
+                this.RightGraphCursor.OnCursor = true;
             }
             else
             {
                 this.Cursor = Cursors.Arrow;
-                this._onLeftGraphCursor = false;
-                this._onRightGraphCursor = false;
+                this.LeftGraphCursor.OnCursor = false;
+                this.RightGraphCursor.OnCursor = false;
             }
 
             // 左グラフカーソル移動時
-            if (this._isLeftGraphCursorDrag == true)
+            if (this.LeftGraphCursor.IsDrag == true)
             {
                 this.Cursor = Cursors.SizeAll;
                 this._leftGraphCursorTranslate = point.X - this._oldLeftGraphCursorPosition;
@@ -803,7 +802,7 @@ namespace OpenTkApp1.Views
             }
 
             // 右グラフカーソル移動時
-            if (this._isRightGraphCursorDrag == true)
+            if (this.RightGraphCursor.IsDrag == true)
             {
                 this.Cursor = Cursors.SizeAll;
                 this._rightGraphCursorTranslate = point.X - this._oldRightGraphCursorPosition;
@@ -874,9 +873,9 @@ namespace OpenTkApp1.Views
             }
 
             // 左側のグラフカーソル上でクリックした時
-            if (this._onLeftGraphCursor == true)
+            if (this.LeftGraphCursor.OnCursor == true)
             {
-                this._isLeftGraphCursorDrag = true;
+                this.LeftGraphCursor.IsDrag = true;
                 // 画面のサイズが変更されていたら、移動量を修正する。
                 if (_saveWidth != 0)
                     this._leftGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
@@ -885,9 +884,9 @@ namespace OpenTkApp1.Views
             }
 
             //右側のグラフカーソル上でクリックした時
-            if (this._onRightGraphCursor == true)
+            if (this.RightGraphCursor.OnCursor == true)
             {
-                this._isRightGraphCursorDrag = true;
+                this.RightGraphCursor.IsDrag = true;
                 // 画面のサイズが変更されていたら、移動量を修正する。
                 if (_saveWidth != 0)
                     this._rightGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
@@ -932,14 +931,14 @@ namespace OpenTkApp1.Views
                 this._isLegendDrag = false;
             }
 
-            if (this._isLeftGraphCursorDrag == true)
+            if (this.LeftGraphCursor.IsDrag == true)
             {
-                this._isLeftGraphCursorDrag = false;
+                this.LeftGraphCursor.IsDrag = false;
             }
 
-            if (this._isRightGraphCursorDrag == true)
+            if (this.RightGraphCursor.IsDrag  == true)
             {
-                this._isRightGraphCursorDrag = false;
+                this.RightGraphCursor.IsDrag = false;
             }
         }
 
@@ -1041,26 +1040,6 @@ namespace OpenTkApp1.Views
         /// クリック時の凡例の座標を表します。
         /// </summary>
         private Point _legendDragOffsetPoint;
-
-        /// <summary>
-        /// マウスカーソルが左側のグラフカーソル上にあるかを表します。
-        /// </summary>
-        private bool _onLeftGraphCursor = false;
-
-        /// <summary>
-        /// マウスカーソルが右側のグラフカーソル上にあるかを表します。
-        /// </summary>
-        private bool _onRightGraphCursor = false;
-
-        /// <summary>
-        /// 左側のグラフカーソルのドラッグ状態を表します。
-        /// </summary>
-        private bool _isLeftGraphCursorDrag = false;
-
-        /// <summary>
-        /// 右側のグラフカーソルのドラッグ状態を表します。
-        /// </summary>
-        private bool _isRightGraphCursorDrag = false;
 
         /// <summary>
         /// 現在の軸のドラッグ状態を表します。
