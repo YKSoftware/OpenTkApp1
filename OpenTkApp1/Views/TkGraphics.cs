@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Markup;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;

@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
 using OpenTkApp1.Views;
+//using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenTkApp1.ViewModels;
 
@@ -220,6 +221,14 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     private string _legend = "生値\r\nフィルタ出力";
+
+    public Cursor MouseCursor
+    {
+        get { return _mouseCursor; }
+        set { SetProperty(ref this._mouseCursor, value); }
+    }
+
+    private Cursor _mouseCursor = Cursors.Arrow;
 
     #region INotifyPropertyChanged の実装
 

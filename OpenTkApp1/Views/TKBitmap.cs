@@ -9,7 +9,7 @@ namespace OpenTkApp1.Views
     /// <summary>
     /// グラフに表示するテクスチャの元となる、ビットマップの作成に関するクラスです。
     /// </summary>
-    public class TKBitmap
+    public class TkBitmap
     {
         /// <summary>
         /// 凡例のビットマップを作成するメソッドです。
@@ -101,7 +101,7 @@ namespace OpenTkApp1.Views
         /// <param name="str"></param>
         /// <param name="fontSize"></param>
         /// <param name="color"></param>
-        public void CreateGraphCursolBitmap(string str, double fontSize, Color color)
+        public void CreateGraphCursorBitmap(string str, double fontSize, Color color)
         {
             var window = Application.Current.MainWindow;
 
