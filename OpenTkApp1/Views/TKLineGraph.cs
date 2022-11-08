@@ -6,9 +6,12 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using System.Runtime.CompilerServices;
 
-
 namespace OpenTkApp1.Views
 {
+    /// <summary>
+    /// Window上の座標は原点が左上、OpenTK上の座標は中央が原点の初期位置。
+    /// 描画はOpenTKで定義した、描画領域の座標を扱うが、マウスイベントはWindow上の座標を扱う。
+    /// </summary>
     public class TKLineGraph : FrameworkElement, ITkGraphBase
     {
         #region 依存関係プロパティ定義
@@ -239,15 +242,18 @@ namespace OpenTkApp1.Views
 
         TkBitmap LegendBitmap = new TkBitmap();
 
+        TkBitmap GraphDataBitmap = new TkBitmap();
+
         TkBitmap GraphCursorBitmap = new TkBitmap();
 
         TkGraphCursor LeftGraphCursor = new TkGraphCursor();
 
         TkGraphCursor RightGraphCursor = new TkGraphCursor();
 
-       
         public void Render()
         {
+            SetGraphProjection();
+
             // 1回目のRenderが走るタイミングがBindingするより早いため
             if (DrawingItem?.XData is null) return;
             if (DrawingItem.YData is null) return;
@@ -278,15 +284,30 @@ namespace OpenTkApp1.Views
                 GL.Disable(EnableCap.DepthTest);
                 // カーソル上に点が存在した時のみ位置表示
                 //if((0 < CurrentXPosition) && (CurrentXPosition < DrawingItem.XData.Length) && (Math.Round(CurrentYPosition,0) == Math.Round(DrawingItem.YData[(int)CurrentXPosition], 0)))
-                DrawGraphCursorText(GraphCursorBitmap);
-                // 凡例を右下に配置。
-                GL.Translate(CulcLegengInitialXPosition(), CulcLegendInitialYPosition(), 0);
-                
-                // 凡例描画
-                DrawLegend(LegendBitmap);
                 
             }
             GL.PopMatrix();
+
+            // テキスト描画
+            SetTextProjection();
+
+            GL.PushMatrix();
+            {
+                DrawGraphDataText(GraphDataBitmap);
+                // 左端から描画するために移動
+                GL.Translate(-(TkGraphics.CurrentWidth / 2), (TkGraphics.CurrentHeight)/3, 0);
+                DrawGraphCursorText(GraphCursorBitmap);
+
+            }
+            GL.PopMatrix();
+
+            GL.PushMatrix();
+            {
+                GL.Translate((TkGraphics.CurrentWidth / 5), -5 * (TkGraphics.CurrentHeight) / 12, 0);
+                DrawLegend(LegendBitmap);
+            }
+            GL.PopMatrix();
+
         }
 
         #region グラフ描画
@@ -327,8 +348,13 @@ namespace OpenTkApp1.Views
                 GL.Vertex2(this.LeftGraphCursor.XPosition, -this.LeftGraphCursor.Height);
                 GL.Vertex2(this.RightGraphCursor.XPosition, this.RightGraphCursor.Height);
                 GL.Vertex2(this.RightGraphCursor.XPosition, -this.RightGraphCursor.Height);
+
             }
             GL.End();
+            GraphCursorBitmap.CreateGraphCursorBitmap("10", 16, Colors.Yellow);
+           
+            
+            
         }
 
         /// <summary>
@@ -584,7 +610,7 @@ namespace OpenTkApp1.Views
             DrawString(bitmap);
         }
 
-        private void DrawGraphCursorText(TkBitmap bitmap)
+        private void DrawGraphDataText(TkBitmap bitmap)
         {
             if (TextureList.Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
@@ -593,6 +619,7 @@ namespace OpenTkApp1.Views
             DrawString(bitmap);
             GL.Translate(TkGraphics.CurrentWidth/2 - _beforeCoordinatexPosition, _beforeCoordinateyPosition - TkGraphics.CurrentHeight/2, 0);
         }
+
 
         /// <summary>
         /// 文字を描画するメソッドです。
@@ -634,31 +661,29 @@ namespace OpenTkApp1.Views
         public void CreateTextBitmap()
         {
             if (DrawingItem?.Legend == null) return;
-            //CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, LegendBitmap) ;
             LegendBitmap.CreateLegendBitmap(DrawingItem.Legend, 20, Colors.White, DrawingItem.LineColor);
-            // 凡例の原点(左端)からの距離を導く。
-            this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition();
-            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
-            GraphCursorBitmap.CreateGraphCursorBitmap("str", 24, Colors.Aqua);        
+            // 凡例の原点(左上)からの距離を導く。
+            this._legendxOffset = 7 * TkGraphics.CurrentWidth / 10 ;
+            this._legendyOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.LegendRect.Height; 
+            GraphDataBitmap.CreateGraphDataBitmap("str", 24, Colors.Aqua);        
         }
 
         public void BitmapPositionChange()
         {
-            // 凡例の原点(左端)からの距離を導く。
-            this._legendxOffset = TkGraphics.CurrentWidth / 2 + CulcLegengInitialXPosition() ;
-            this._legendyOffset = TkGraphics.CurrentHeight / 2 - LegendBitmap.Height - CulcLegendInitialYPosition();
+            // 凡例の原点(左上)からの距離を導く。
+            this._legendxOffset = 7 * TkGraphics.CurrentWidth / 10 ;
+            this._legendyOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.LegendRect.Height ;
 
-            // Windowのサイズが変更された時に、それに応じて凡例を移動させます。
+            //// Windowのサイズが変更された時に、それに応じて凡例を移動させます。
             _windowSizeChangedLegendxTranslate = _saveLegendXTranslate * TkGraphics.CurrentWidth / _saveWidth;
             _windowSizeChangedLegendyTranslate = _saveLegendYTranslate * TkGraphics.CurrentHeight / _saveHeight;
 
             // Windowサイズ変更を初期サイズから変更していない場合は_windowSizeChangedLegendxTranslateがNaNになる。
-            if(!Double.IsNaN(_windowSizeChangedLegendxTranslate))
-            _legendxTranslate = _windowSizeChangedLegendxTranslate;
-            if(!Double.IsNaN(_windowSizeChangedLegendyTranslate))
-            _legendyTranslate = _windowSizeChangedLegendyTranslate;
+            if (!Double.IsNaN(_windowSizeChangedLegendxTranslate))
+                _legendxTranslate = _windowSizeChangedLegendxTranslate;
+            if (!Double.IsNaN(_windowSizeChangedLegendyTranslate))
+                _legendyTranslate = _windowSizeChangedLegendyTranslate;
         }
-
 
         #endregion テキストビットマップ作成
 
@@ -719,33 +744,6 @@ namespace OpenTkApp1.Views
             return Math.Round((-y * YRange / TkGraphics.CurrentHeight) + YRange / 2 + yCenter, n);
         }
 
-        /// <summary>
-        /// 原点から凡例の初期位置までのx座標の移動量を計算するメソッドです。
-        /// Windowのサイズに合わせた、一次関数になります。
-        /// </summary>
-        /// <returns></returns>
-        private double CulcLegengInitialXPosition()
-        {
-            // 変化の割合
-            double r = 0.46;
-            // 切片
-            double intercept = -136;
-            return TkGraphics.CurrentWidth * r + intercept;
-        }
-
-        /// <summary>
-        /// 原点から凡例の初期位置までのy座標の移動量を計算するメソッドです。
-        /// Windowのサイズに合わせた、一次関数になります。
-        /// </summary>
-        /// <returns></returns>
-        private double CulcLegendInitialYPosition()
-        {
-            double r = -0.475;
-
-            double intercept = 2;
-
-            return TkGraphics.CurrentHeight * r + intercept;
-        }
         #endregion 座標変換
 
         #region マウスイベント
@@ -767,7 +765,7 @@ namespace OpenTkApp1.Views
 
             string graphCursor = String.Format("x : {0} \r\ny : {1}", x, y);
             // ビットマップを更新する。
-            GraphCursorBitmap.CreateGraphCursorBitmap(graphCursor, 18, Colors.White);
+            GraphDataBitmap.CreateGraphDataBitmap(graphCursor, 18, Colors.White);
             
             // Viewの値の変更をViewModelにも伝えてあげる。
             SetCurrentValue(CurrentXPositionProperty, x);
