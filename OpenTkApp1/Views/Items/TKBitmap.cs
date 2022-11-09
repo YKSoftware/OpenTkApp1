@@ -1,4 +1,5 @@
 ﻿using System;
+//using System.Drawing;
 using System.Windows;
 using System.Windows.Media;
 using OpenTK.Graphics.OpenGL;
@@ -11,6 +12,10 @@ namespace OpenTkApp1.Views
     /// </summary>
     public class TkBitmap
     {
+        double pixelsPerDip = 96;
+        double dpiX = 96;  //dot per inc 解像度
+        double dpiY = 96;
+
         /// <summary>
         /// 凡例のビットマップを作成するメソッドです。
         /// </summary>
@@ -18,14 +23,13 @@ namespace OpenTkApp1.Views
         /// <param name="fontSize"></param>
         /// <param name="color"></param>
         /// <param name="lineColor"></param>
-        public void CreateLegendBitmap(string str, double fontSize, Color color, Color4 lineColor)
+        public void CreateLegend(string str, double fontSize, Color color, Color4 lineColor)
         {
             var window = Application.Current.MainWindow;
 
             // テキストの色定義
             Brush foreground = new SolidColorBrush(color);
-            double pixelsPerDip = 96;
-
+            
             // 線種1の色を取得します。
             Color linecolor1 = Draw2MediaColor((System.Drawing.Color)lineColor);
 
@@ -50,18 +54,16 @@ namespace OpenTkApp1.Views
             {
                 int width = (int)Math.Ceiling(text.Width + linetype.Width);
                 int height = (int)Math.Ceiling(text.Height);
-                double dpiX = 96;  //dot per inc 解像度
-                double dpiY = 96;
                 bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
-            this.LegendRect = new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight);
+            this.BitmapRect = new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight);
             var drawingVisual = new DrawingVisual();
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
                 Pen pen = new Pen(foreground, 3);
                 // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, pen, this.LegendRect);
+                drawingContext.DrawRectangle(Brushes.Black, pen, this.BitmapRect);
                 // テキストを書く
                 drawingContext.DrawText(text, new Point(linetype.Width + space, 0));
                 drawingContext.DrawText(linetype, new Point(space, 0));
@@ -92,7 +94,22 @@ namespace OpenTkApp1.Views
             }
             // 作成したビットマップをテクスチャに貼り付ける設定を行います。
             SettingTexture();
+        }
 
+        /// <summary>
+        /// グラフデータのビットマップを作成するメソッドです。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        public void CreateGraphData(string str, double fontSize, Color textColor, Color frameColor)
+        {
+            CreateBitmap(str,fontSize, textColor, frameColor);
+
+            if (TextureList.Textures.Count == 1)
+                // 作成したビットマップをテクスチャに貼り付ける設定を行います。
+                SettingTexture();
+            else CustomTexture(3);
         }
 
         /// <summary>
@@ -101,36 +118,56 @@ namespace OpenTkApp1.Views
         /// <param name="str"></param>
         /// <param name="fontSize"></param>
         /// <param name="color"></param>
-        public void CreateGraphCursorBitmap(string str, double fontSize, Color color)
+        public void CreateGraphCursor(string str, double fontSize, Color textColor, Color frameColor)
+        {
+            CreateBitmap(str,fontSize, textColor, frameColor);
+
+            if (TextureList.Textures.Count == 2)
+                // 作成したビットマップをテクスチャに貼り付ける設定を行います。
+                SettingTexture();
+            else CustomTexture(4);
+        }
+
+        /// <summary>
+        /// 与えられた引数に対して、ビットマップを作成します。
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="color"></param>
+        private void CreateBitmap(string str, double fontSize, Color color, Color frameColor)
         {
             var window = Application.Current.MainWindow;
 
             // テキストの色定義
             Brush foreground = new SolidColorBrush(color);
 
-            double pixelsPerDip = 96;
+            // 枠線の色定義
+            Brush frame = new SolidColorBrush(frameColor);
 
             // テキストのフォーマット定義
             var text = new FormattedText(str, new System.Globalization.CultureInfo("en-us"),
                 FlowDirection.LeftToRight, new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), fontSize, foreground, pixelsPerDip);
+
+            // 文字と枠線のスペース
+            int space = 10;
 
             // ビットマップのフォーマット定義
             System.Windows.Media.Imaging.RenderTargetBitmap bmp = null;
             {
                 int width = (int)Math.Ceiling(text.Width);
                 int height = (int)Math.Ceiling(text.Height);
-                double dpiX = 96;  //dot per inc 解像度
-                double dpiY = 96;
-                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width, height, dpiX, dpiY, PixelFormats.Pbgra32);
+                bmp = new System.Windows.Media.Imaging.RenderTargetBitmap(width + space * 2, height, dpiX, dpiY, PixelFormats.Pbgra32);
             }
 
+            this.BitmapRect = new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight);
             var drawingVisual = new DrawingVisual();
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
+                Pen pen = new Pen(frame, 3);
                 // テキストを書く下地を作る
-                drawingContext.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, bmp.PixelWidth, bmp.PixelHeight));
+                drawingContext.DrawRectangle(Brushes.Black, pen, this.BitmapRect);
                 // テキストを書く
-                drawingContext.DrawText(text, new Point(0, 0));
+                drawingContext.DrawText(text, new Point(space, -2));
             }
 
             // ビットマップ作成
@@ -154,14 +191,10 @@ namespace OpenTkApp1.Views
                     _bits[h * stride + w] = tmpbits[(bmp.PixelHeight - 1 - h) * stride + w];
                 }
             }
-            if (TextureList.Textures.Count == 1)
-                // 作成したビットマップをテクスチャに貼り付ける設定を行います。
-                SettingTexture();
-            else CustomTexture(3);
         }
 
         /// <summary>
-        /// テクスチャの設定を行うメソッドです。。
+        /// テクスチャの設定を行うメソッドです。
         /// </summary>
         private void SettingTexture()
         {
@@ -229,13 +262,20 @@ namespace OpenTkApp1.Views
         public int Height { get; set; }
 
         /// <summary>
-        /// 凡例の枠組みの四角形を取得、設定します。
+        /// ビットマップの下地の四角形を取得、設定します。
         /// </summary>
-        public Rect LegendRect { get; set; }
+        public Rect BitmapRect { get; set; }
 
         /// <summary>
         /// ビットマップの配列を格納します。
         /// </summary>
-        private byte[] _bits;
+        private byte[]? _bits;
+
+        /// <summary>
+        /// マウスカーソルがビットマップ上にあるかどうかを取得、設定します。
+        /// </summary>
+        public bool OnCursor { get; set; }
+
+
     }
 }

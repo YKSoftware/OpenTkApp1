@@ -36,7 +36,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 600;
+    private double _settingXMax = 900;
 
     /// <summary>
     /// 初めに設定するx座標の最小値を取得または設定します。
@@ -50,7 +50,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingYMax { get { return _settingYMax; } }
 
-    private double _settingYMax = 60;
+    private double _settingYMax = 100;
 
     /// <summary>
     /// 初めに設定y座標の最小値を取得または設定します。
@@ -182,6 +182,20 @@ public class MainViewModel : INotifyPropertyChanged
     public bool IsPlot { get { return _isPlot; } }
 
     private bool _isPlot = false;
+
+    /// <summary>
+    /// グラフカーソルの有無を取得します。
+    /// </summary>
+    public bool IsGraphCursor { get { return _isGraphCursor; } }
+
+    private bool _isGraphCursor = true;
+
+    /// <summary>
+    /// グラフの線の色を取得します。
+    /// </summary>
+    public Color4 GraphCursorColor { get { return _graphCursorColor; } }
+
+    private Color4 _graphCursorColor = Color4.Yellow;
 
     /// <summary>
     /// グラフの線の色を取得します。

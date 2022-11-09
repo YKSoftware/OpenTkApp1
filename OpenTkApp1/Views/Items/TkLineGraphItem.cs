@@ -284,6 +284,54 @@ public class TkLineGraphItem : FrameworkElement, ITkGraphicsItem
 
     #endregion IsPlot
 
+    #region IsGraphCursor
+    /// <summary>
+    /// IsPlot 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty IsGraphCursorProperty = DependencyProperty.Register("IsGraphCursor", typeof(bool), typeof(TkLineGraphItem), new PropertyMetadata(false, OnIsGraphCursorPropertyChanged));
+
+    public bool IsGraphCursor
+    {
+        get => (bool)GetValue(IsGraphCursorProperty);
+        set => SetValue(IsGraphCursorProperty, value);
+    }
+
+    /// <summary>
+    /// IsPlot プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
+    private static void OnIsGraphCursorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TKLineGraph)?.Render();
+    }
+
+    #endregion IsGraphCursor
+
+    #region GraphCursorColor
+    /// <summary>
+    /// LineColor 依存関係プロパティの定義を表します。
+    /// </summary>
+    public static readonly DependencyProperty GraphCursorColorProperty = DependencyProperty.Register("GraphCursorColor", typeof(Color4), typeof(TkLineGraphItem), new PropertyMetadata(Color4.White, OnGraphCursorColorPropertyChanged));
+
+    public Color4 GraphCursorColor
+    {
+        get => (Color4)GetValue(GraphCursorColorProperty);
+        set => SetValue(GraphCursorColorProperty, value);
+    }
+
+    /// <summary>
+    /// LineColor プロパティ変更イベントハンドラ
+    /// </summary>
+    /// <param name="d">イベント発行元</param>
+    /// <param name="e">イベント引数</param>
+    private static void OnGraphCursorColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        (d as TKLineGraph)?.Render();
+    }
+
+    #endregion GraphCursorColor
+
     #region LineColor
     /// <summary>
     /// LineColor 依存関係プロパティの定義を表します。
