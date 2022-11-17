@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
-using OpenTkApp1.Views;
+using OpenTkApp1.Views.Items;
 //using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenTkApp1.ViewModels;
@@ -57,7 +57,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingYMin { get { return _settingYMin; } }
 
-    private double _settingYMin = -60;
+    private double _settingYMin = -100;
 
     /// <summary>
     /// x座標の目盛り幅を取得します。
@@ -94,7 +94,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// <summary>
     /// 現在のy座標の目盛り幅を取得します。
     /// </summary>
-    public double YScale { get; } = 30.0;
+    public double YScale { get; } = 25.0;
 
     /// <summary>
     /// 現在の範囲のy座標の最小値を取得または設定します。

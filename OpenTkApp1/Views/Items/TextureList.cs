@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTkApp1.Views
+namespace OpenTkApp1.Views.Items
 {
     /// <summary>
     /// テクスチャのコレクションを格納するクラスです。

@@ -5,6 +5,7 @@ using System.Windows.Media;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using System.Runtime.CompilerServices;
+using OpenTkApp1.Views.Items;
 
 namespace OpenTkApp1.Views
 {
@@ -240,15 +241,18 @@ namespace OpenTkApp1.Views
 
         #endregion 依存関係プロパティ定義
 
-        TkBitmap LegendBitmap = new TkBitmap();
-
+        // 新しいインスタンスを生成します。
+        TkBitmap LegendBitmap = new TkBitmap()
+        {
+            IsDrag = false,
+        };
         TkBitmap GraphDataBitmap = new TkBitmap();
-
         TkBitmap GraphCursorBitmap = new TkBitmap();
 
         TkGraphCursor LeftGraphCursor = new TkGraphCursor();
-
         TkGraphCursor RightGraphCursor = new TkGraphCursor();
+        TkGraphCursor TopGraphCursor = new TkGraphCursor();
+        TkGraphCursor BottomGraphCursor = new TkGraphCursor();
 
         public void Render()
         {
@@ -345,6 +349,8 @@ namespace OpenTkApp1.Views
             this.RightGraphCursor.XPosition = 2 * XRange / 3 + _cRightGraphCursorTranslate;
             this.LeftGraphCursor.Height = YRange / 2;
             this.RightGraphCursor.Height = YRange / 2;
+            this.TopGraphCursor.Height = YRange / 4;
+            this.BottomGraphCursor.Height = -YRange / 4;
             
             GL.Begin(PrimitiveType.Lines);
             {
@@ -352,12 +358,17 @@ namespace OpenTkApp1.Views
                 GL.Vertex2(this.LeftGraphCursor.XPosition, -this.LeftGraphCursor.Height);
                 GL.Vertex2(this.RightGraphCursor.XPosition, this.RightGraphCursor.Height);
                 GL.Vertex2(this.RightGraphCursor.XPosition, -this.RightGraphCursor.Height);
+                GL.Vertex2(0, this.TopGraphCursor.Height);
+                GL.Vertex2(XRange, this.TopGraphCursor.Height);
+                GL.Vertex2(0, this.BottomGraphCursor.Height);
+                GL.Vertex2(XRange, this.BottomGraphCursor.Height);
             }
             GL.End();
 
-            int pp = (int)Math.Abs(this.RightGraphCursor.XPosition - this.LeftGraphCursor.XPosition);
+            int ppx = (int)Math.Abs(this.RightGraphCursor.XPosition - this.LeftGraphCursor.XPosition);
+            int ppy = (int)Math.Abs(this.TopGraphCursor.Height - this.BottomGraphCursor.Height);
 
-            GraphCursorBitmap.CreateGraphCursor( "p-p(x) : " + pp.ToString() + "\r\np-p(y) : ", 18, Colors.Yellow, Colors.White);
+            GraphCursorBitmap.CreateGraphCursor( "p-p(x) : " + ppx.ToString() + "\r\np-p(y) : " + ppy.ToString(), 18, Colors.Yellow, Colors.White);
            
         }
 
@@ -609,7 +620,7 @@ namespace OpenTkApp1.Views
             if (TextureList.Textures.Count > 0)
             // 指定したIDのテクスチャを現在のテクスチャとします。
             GL.BindTexture(TextureTarget.Texture2D, TextureList.Textures[0]);
-            GL.Translate(_legendxTranslate, -_legendyTranslate, 0);
+            GL.Translate(LegendBitmap.XTranslate, - LegendBitmap.YTranslate, 0);
             
             DrawString(bitmap);
         }
@@ -673,16 +684,16 @@ namespace OpenTkApp1.Views
             if (DrawingItem?.Legend == null) return;
             LegendBitmap.CreateLegend(DrawingItem.Legend, 20, Colors.White, DrawingItem.LineColor);
             // 凡例の原点(左上)からの距離を導く。
-            this._legendxOffset = 7 * TkGraphics.CurrentWidth / 10 ;
-            this._legendyOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.BitmapRect.Height; 
+            this.LegendBitmap.XOffset = 7 * TkGraphics.CurrentWidth / 10 ;
+            this.LegendBitmap.YOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.BitmapRect.Height; 
             GraphDataBitmap.CreateGraphData("str", 24, Colors.Aqua, Colors.Black);        
         }
 
         public void BitmapPositionChange()
         {
             // 凡例の原点(左上)からの距離を導く。
-            this._legendxOffset = 7 * TkGraphics.CurrentWidth / 10 ;
-            this._legendyOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.BitmapRect.Height ;
+            this.LegendBitmap.XOffset = 7 * TkGraphics.CurrentWidth / 10 ;
+            this.LegendBitmap.YOffset = 11 * TkGraphics.CurrentHeight / 12 - LegendBitmap.BitmapRect.Height ;
 
             //// Windowのサイズが変更された時に、それに応じて凡例を移動させます。
             _windowSizeChangedLegendxTranslate = _saveLegendXTranslate * TkGraphics.CurrentWidth / _saveWidth;
@@ -690,9 +701,9 @@ namespace OpenTkApp1.Views
 
             // Windowサイズ変更を初期サイズから変更していない場合は_windowSizeChangedLegendxTranslateがNaNになる。
             if (!Double.IsNaN(_windowSizeChangedLegendxTranslate))
-                _legendxTranslate = _windowSizeChangedLegendxTranslate;
+                LegendBitmap.XTranslate = _windowSizeChangedLegendxTranslate;
             if (!Double.IsNaN(_windowSizeChangedLegendyTranslate))
-                _legendyTranslate = _windowSizeChangedLegendyTranslate;
+                LegendBitmap.YTranslate = _windowSizeChangedLegendyTranslate;
         }
 
         #endregion テキストビットマップ作成
@@ -784,23 +795,35 @@ namespace OpenTkApp1.Views
 
             // 凡例の座標を正しい位置で判定できるように座標変換します。
             Point legendPoint;
-            legendPoint.X = point.X - this._legendxOffset - this._legendxTranslate;
-            legendPoint.Y = point.Y - this._legendyOffset - this._legendyTranslate;
+            legendPoint.X = point.X - this.LegendBitmap.XOffset - this.LegendBitmap.XTranslate;
+            legendPoint.Y = point.Y - this.LegendBitmap.YOffset - this.LegendBitmap.YTranslate;
 
-            // マウスカーソルが左側のグラフカーソル上にある時
+            // マウスカーソルが左側のx軸グラフカーソル上にある時
             if(( LeftGraphCursor.XPosition + XMin - 1 <= x) && (x <= LeftGraphCursor.XPosition + XMin + 1))
             {
                 this.Cursor = Cursors.SizeAll;
                 LeftGraphCursor.OnCursor = true;
             }
-            // マウスカーソルが右側のグラフカーソル上にある時
+            // マウスカーソルが右側のx軸グラフカーソル上にある時
             else if(( this.RightGraphCursor.XPosition+ XMin - 1 <= x) && (x <= this.RightGraphCursor.XPosition + XMin + 1))
             {
                 this.Cursor = Cursors.SizeAll;
                 this.RightGraphCursor.OnCursor = true;
             }
+            // マウスカーソルが上側のy軸グラフカーソル上にある時
+            else if ((this.TopGraphCursor.Height + YCenter - 1 <= y) && (y <= this.TopGraphCursor.Height + YCenter + 1))
+            {
+                this.Cursor = Cursors.SizeAll;
+                this.TopGraphCursor.OnCursor = true;
+            }
+            // マウスカーソルが上側のy軸グラフカーソル上にある時
+            else if ((this.BottomGraphCursor.Height + YCenter - 1 <= y) && (y <= this.BottomGraphCursor.Height + YCenter + 1))
+            {
+                this.Cursor = Cursors.SizeAll;
+                this.BottomGraphCursor.OnCursor = true;
+            }
             // マウスカーソルが凡例の上にある時
-            else if( LegendBitmap.BitmapRect.Contains(legendPoint) == true)
+            else if ( LegendBitmap.BitmapRect.Contains(legendPoint) == true)
             {
                 this.Cursor = Cursors.SizeAll;
                 this.LegendBitmap.OnCursor = true;
@@ -810,6 +833,8 @@ namespace OpenTkApp1.Views
                 this.Cursor = Cursors.Arrow;
                 this.LeftGraphCursor.OnCursor = false;
                 this.RightGraphCursor.OnCursor = false;
+                this.TopGraphCursor.OnCursor = false;
+                this.BottomGraphCursor.OnCursor = false;
                 this.LegendBitmap.OnCursor = false;
             }
 
@@ -817,8 +842,8 @@ namespace OpenTkApp1.Views
             if (this.LeftGraphCursor.IsDrag == true)
             {
                 this.Cursor = Cursors.SizeAll;
-                this._leftGraphCursorTranslate = point.X - this._oldLeftGraphCursorPosition;
-                this._cLeftGraphCursorTranslate = CoordinateXTransformation(point.X - this._oldLeftGraphCursorPosition, 0, this.DisplayDisits);
+                this.LeftGraphCursor.Movement = point.X - this.LeftGraphCursor.OldPosition;
+                this._cLeftGraphCursorTranslate = CoordinateXTransformation(point.X - this.LeftGraphCursor.OldPosition, 0, this.DisplayDisits);
                 _saveWidth = TkGraphics.CurrentWidth;
             }
 
@@ -826,8 +851,8 @@ namespace OpenTkApp1.Views
             if (this.RightGraphCursor.IsDrag == true)
             {
                 this.Cursor = Cursors.SizeAll;
-                this._rightGraphCursorTranslate = point.X - this._oldRightGraphCursorPosition;
-                this._cRightGraphCursorTranslate = CoordinateXTransformation(point.X - this._oldRightGraphCursorPosition, 0, this.DisplayDisits);
+                this.RightGraphCursor.Movement = point.X - this.RightGraphCursor.OldPosition;
+                this._cRightGraphCursorTranslate = CoordinateXTransformation(point.X - this.RightGraphCursor.OldPosition, 0, this.DisplayDisits);
                 _saveWidth = TkGraphics.CurrentWidth;
             }
 
@@ -854,14 +879,14 @@ namespace OpenTkApp1.Views
             }
 
             // 凡例移動時
-            if(this._isLegendDrag == true)
+            if(this.LegendBitmap.IsDrag == true)
             {
                 // 凡例の移動量を更新
-                this._legendxTranslate = point.X - this._legendDragOffsetPoint.X;
-                this._legendyTranslate = point.Y - this._legendDragOffsetPoint.Y;
+                this.LegendBitmap.XTranslate = point.X - this._legendDragOffsetPoint.X;
+                this.LegendBitmap.YTranslate = point.Y - this._legendDragOffsetPoint.Y;
                 // 移動量、Windowサイズを記憶
-                _saveLegendXTranslate = _legendxTranslate;
-                _saveLegendYTranslate = _legendyTranslate;
+                _saveLegendXTranslate = LegendBitmap.XTranslate;
+                _saveLegendYTranslate = LegendBitmap.YTranslate;
                 _saveWidth = TkGraphics.CurrentWidth;
                 _saveHeight = TkGraphics.CurrentHeight;
             }
@@ -879,13 +904,13 @@ namespace OpenTkApp1.Views
             this._dragOffset = e.GetPosition((IInputElement)sender);
 
             // 前回の移動量を引くことで、移動量の変化を繋げます。
-            this._legendDragOffsetPoint.X =this._dragOffset.X - this._legendxTranslate;
-            this._legendDragOffsetPoint.Y= this._dragOffset.Y - this._legendyTranslate;
+            this._legendDragOffsetPoint.X =this._dragOffset.X - this.LegendBitmap.XTranslate;
+            this._legendDragOffsetPoint.Y= this._dragOffset.Y - this.LegendBitmap.YTranslate;
 
             // 凡例上でクリックした時
             if ( this.LegendBitmap.OnCursor == true)
             {
-                this._isLegendDrag = true;
+                this.LegendBitmap.IsDrag = true;
                 return;
             }
 
@@ -895,8 +920,8 @@ namespace OpenTkApp1.Views
                 this.LeftGraphCursor.IsDrag = true;
                 // 画面のサイズが変更されていたら、移動量を修正する。
                 if (_saveWidth != 0)
-                    this._leftGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
-                this._oldLeftGraphCursorPosition = this._dragOffset.X - this._leftGraphCursorTranslate ;
+                    this.LeftGraphCursor.Movement *= (TkGraphics.CurrentWidth / _saveWidth);
+                this.LeftGraphCursor.OldPosition = this._dragOffset.X - this.LeftGraphCursor.Movement;
                 return;
             }
 
@@ -906,8 +931,8 @@ namespace OpenTkApp1.Views
                 this.RightGraphCursor.IsDrag = true;
                 // 画面のサイズが変更されていたら、移動量を修正する。
                 if (_saveWidth != 0)
-                    this._rightGraphCursorTranslate *= (TkGraphics.CurrentWidth / _saveWidth);
-                this._oldRightGraphCursorPosition = this._dragOffset.X - this._rightGraphCursorTranslate;
+                    this.RightGraphCursor.Movement *= (TkGraphics.CurrentWidth / _saveWidth);
+                this.RightGraphCursor.OldPosition = this._dragOffset.X - this.RightGraphCursor.Movement;
 
                 return;
             }
@@ -943,8 +968,8 @@ namespace OpenTkApp1.Views
                 this._isAxisDrag = false;
             }
 
-            if (this._isLegendDrag == true)
-                this._isLegendDrag = false;
+            if (this.LegendBitmap.IsDrag == true)
+                this.LegendBitmap.IsDrag = false;
            
             if (this.LeftGraphCursor.IsDrag == true)
                 this.LeftGraphCursor.IsDrag = false;
@@ -993,26 +1018,6 @@ namespace OpenTkApp1.Views
         #region フィールド
 
         /// <summary>
-        /// ドラッグ移動させる前の左側のグラフカーソルの位置を表します。
-        /// </summary>
-        private double _oldLeftGraphCursorPosition;
-
-        /// <summary>
-        /// ドラッグを移動させる前の右側のグラフカーソルの位置を表します。
-        /// </summary>
-        private double _oldRightGraphCursorPosition;
-
-        /// <summary>
-        /// window座標上での左側のグラフカーソルの移動量を表します。
-        /// </summary>
-        private double _leftGraphCursorTranslate;
-
-        /// <summary>
-        /// window座標上での右側のグラフカーソルの移動量を表します。
-        /// </summary>
-        private double _rightGraphCursorTranslate;
-
-        /// <summary>
         /// window座標から変換済みの左側のグラフカーソルの移動量を表します。
         /// </summary>
         private double _cLeftGraphCursorTranslate;
@@ -1021,31 +1026,6 @@ namespace OpenTkApp1.Views
         /// window座標から変換済みの右側のグラフカーソルの移動量を表します。
         /// </summary>
         private double _cRightGraphCursorTranslate;
-
-        /// <summary>
-        /// 凡例の初期位置の原点からのx座標の距離を表します。
-        /// </summary>
-        private double _legendxOffset;
-
-        /// <summary>
-        /// 凡例の初期位置の原点からのy座標の距離を表します。
-        /// </summary>
-        private double _legendyOffset;
-
-        /// <summary>
-        /// 現在の凡例のドラッグの状態を表します。
-        /// </summary>
-        private bool _isLegendDrag = false;
-
-        /// <summary>
-        /// 凡例のx座標の移動量を表します。
-        /// </summary>
-        private double _legendxTranslate;
-
-        /// <summary>
-        /// 凡例のy座標の移動量を表します。
-        /// </summary>
-        private double _legendyTranslate;
 
         /// <summary>
         /// クリック時の凡例の座標を表します。

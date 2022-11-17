@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTkApp1.Views.Items;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace OpenTkApp1.Views
 {
-    public class TkGraphCursor
+    /// <summary>
+    /// グラフカーソルに関するクラスです。
+    /// </summary>
+    public class TkGraphCursor : ItemPosition
     {
-
         /// <summary>
         /// カーソルの高さを取得、設定します。
         /// </summary>
@@ -20,13 +23,14 @@ namespace OpenTkApp1.Views
         public double XPosition { get; set; }
 
         /// <summary>
-        /// マウスカーソルがグラフカーソル上にあるかどうかを取得、設定します。
+        /// カーソルの移動する前の位置を取得、設定します。
         /// </summary>
-        public bool OnCursor { get; set; }
+        public double OldPosition { get; set; }
 
         /// <summary>
-        /// グラフカーソルがドラッグ中かどうかを取得、設定します。
+        /// カーソルの移動量を取得、設定します。
         /// </summary>
-        public bool IsDrag { get; set; }
+        public double Movement { get; set; }
+
     }
 }

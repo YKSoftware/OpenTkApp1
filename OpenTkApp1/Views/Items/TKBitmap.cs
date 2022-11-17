@@ -4,13 +4,14 @@ using System.Windows;
 using System.Windows.Media;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using OpenTkApp1.Views.Items;
 
 namespace OpenTkApp1.Views
 {
     /// <summary>
     /// グラフに表示するテクスチャの元となる、ビットマップの作成に関するクラスです。
     /// </summary>
-    public class TkBitmap
+    public class TkBitmap : ItemPosition
     {
         double pixelsPerDip = 96;
         double dpiX = 96;  //dot per inc 解像度
@@ -271,11 +272,7 @@ namespace OpenTkApp1.Views
         /// </summary>
         private byte[]? _bits;
 
-        /// <summary>
-        /// マウスカーソルがビットマップ上にあるかどうかを取得、設定します。
-        /// </summary>
-        public bool OnCursor { get; set; }
-
+        
 
     }
 }
