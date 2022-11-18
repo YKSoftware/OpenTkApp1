@@ -30,7 +30,12 @@ namespace OpenTkApp1.Views
         /// <summary>
         /// カーソルの移動量を取得、設定します。
         /// </summary>
-        public double Movement { get; set; }
+        public double Translate { get; set; }
+
+        /// <summary>
+        /// window座標から変換済みのグラフカーソルの移動量を取得、設定します。
+        /// </summary>
+        public double CorrdinateTranslate { get; set; }
 
     }
 }
