@@ -350,8 +350,8 @@ namespace OpenTkApp1.Views
             this.RightGraphCursor.XPosition = 2 * XRange / 3 + RightGraphCursor.CorrdinateTranslate;
             this.LeftGraphCursor.Height = YRange / 2;
             this.RightGraphCursor.Height = YRange / 2;
-            this.TopGraphCursor.Height = YRange / 4;
-            this.BottomGraphCursor.Height = -YRange / 4;
+            this.TopGraphCursor.Height = YRange / 4 + TopGraphCursor.CorrdinateTranslate;
+            this.BottomGraphCursor.Height = -YRange / 4 + BottomGraphCursor.CorrdinateTranslate;
             
             GL.Begin(PrimitiveType.Lines);
             {
@@ -799,7 +799,7 @@ namespace OpenTkApp1.Views
 
             MouseCurosorCheck(point.X, point.Y);
 
-            CursorTranslate(point.X);
+            CursorTranslate(point.X, point.Y);
 
             AxisTranslate(point.X, point.Y);
 
@@ -853,14 +853,14 @@ namespace OpenTkApp1.Views
         /// グラフカーソルの移動量を決定するメソッドです。
         /// </summary>
         /// <param name="x"></param>
-        private void CursorTranslate(double xpoint)
+        private void CursorTranslate(double xpoint, double ypoint)
         {
             // 左グラフカーソル移動時
             if (this.LeftGraphCursor.IsDrag == true)
             {
                 this.Cursor = Cursors.SizeAll;
                 this.LeftGraphCursor.Translate = xpoint - this.LeftGraphCursor.OldPosition;
-                this.LeftGraphCursor.CorrdinateTranslate = CoordinateXTransformation(xpoint - this.LeftGraphCursor.OldPosition, 0, this.DisplayDisits);
+                this.LeftGraphCursor.CorrdinateTranslate = CoordinateXTransformation(this.LeftGraphCursor.Translate, 0, this.DisplayDisits);
                 _saveWidth = TkGraphics.CurrentWidth;
             }
 
@@ -869,8 +869,26 @@ namespace OpenTkApp1.Views
             {
                 this.Cursor = Cursors.SizeAll;
                 this.RightGraphCursor.Translate = xpoint - this.RightGraphCursor.OldPosition;
-                this.RightGraphCursor.CorrdinateTranslate = CoordinateXTransformation(xpoint - this.RightGraphCursor.OldPosition, 0, this.DisplayDisits);
+                this.RightGraphCursor.CorrdinateTranslate = CoordinateXTransformation(this.RightGraphCursor.Translate, 0, this.DisplayDisits);
                 _saveWidth = TkGraphics.CurrentWidth;
+            }
+
+            // 上グラフカーソル移動時
+            if (this.TopGraphCursor.IsDrag == true)
+            {
+                this.Cursor = Cursors.SizeAll;
+                this.TopGraphCursor.Translate = ypoint - this.TopGraphCursor.OldPosition;
+                this.TopGraphCursor.CorrdinateTranslate = CoordinateYTransformation(ypoint - this.TopGraphCursor.OldPosition,  0, this.DisplayDisits) - YRange / 2;
+                _saveHeight = TkGraphics.CurrentHeight;
+            }
+
+            // 下グラフカーソル移動時
+            if (this.BottomGraphCursor.IsDrag == true)
+            {
+                this.Cursor = Cursors.SizeAll;
+                this.BottomGraphCursor.Translate = ypoint - this.BottomGraphCursor.OldPosition;
+                this.BottomGraphCursor.CorrdinateTranslate = CoordinateYTransformation(ypoint - this.BottomGraphCursor.OldPosition, 0, this.DisplayDisits) - YRange / 2;
+                _saveHeight = TkGraphics.CurrentHeight;
             }
         }
 
@@ -964,6 +982,30 @@ namespace OpenTkApp1.Views
                 return;
             }
 
+            //上側のグラフカーソル上でクリックした時
+            if (this.TopGraphCursor.OnCursor == true)
+            {
+                this.TopGraphCursor.IsDrag = true;
+                // 画面のサイズが変更されていたら、移動量を修正する。
+                if (_saveHeight != 0)
+                    this.TopGraphCursor.Translate *= (TkGraphics.CurrentHeight / _saveHeight);
+                this.TopGraphCursor.OldPosition = this._dragOffset.Y - this.TopGraphCursor.Translate;
+
+                return;
+            }
+
+            //下側のグラフカーソル上でクリックした時
+            if (this.BottomGraphCursor.OnCursor == true)
+            {
+                this.BottomGraphCursor.IsDrag = true;
+                // 画面のサイズが変更されていたら、移動量を修正する。
+                if (_saveHeight != 0)
+                    this.BottomGraphCursor.Translate *= (TkGraphics.CurrentHeight / _saveHeight);
+                this.BottomGraphCursor.OldPosition = this._dragOffset.Y - this.BottomGraphCursor.Translate;
+
+                return;
+            }
+
             // 上記のいずれでもドラッグフラグをtrueにします。
             this._isAxisDrag = true;
 
@@ -986,7 +1028,6 @@ namespace OpenTkApp1.Views
         {
             if (this._isAxisDrag == true)
             {
-                // ドラッグフラグをfalseにします。
                 //UIElement? el = sender as UIElement;
                 //el?.ReleaseMouseCapture();
                 this._isAxisDrag = false;
@@ -1000,6 +1041,12 @@ namespace OpenTkApp1.Views
 
             if (this.RightGraphCursor.IsDrag == true)
                 this.RightGraphCursor.IsDrag = false;
+
+            if (this.TopGraphCursor.IsDrag == true)
+                this.TopGraphCursor.IsDrag = false;
+
+            if (this.BottomGraphCursor.IsDrag == true)
+                this.BottomGraphCursor.IsDrag = false;
         }
 
         /// <summary>
