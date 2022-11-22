@@ -5,7 +5,8 @@ using System.Linq;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
-using OpenTkApp1.Views;
+using OpenTkApp1.Views.Items;
+//using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace OpenTkApp1.ViewModels;
 
@@ -35,7 +36,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingXMax { get { return _settingXMax; } }
 
-    private double _settingXMax = 600;
+    private double _settingXMax = 900;
 
     /// <summary>
     /// 初めに設定するx座標の最小値を取得または設定します。
@@ -49,14 +50,14 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public double SettingYMax { get { return _settingYMax; } }
 
-    private double _settingYMax = 60;
+    private double _settingYMax = 100;
 
     /// <summary>
     /// 初めに設定y座標の最小値を取得または設定します。
     /// </summary>
     public double SettingYMin { get { return _settingYMin; } }
 
-    private double _settingYMin = -60;
+    private double _settingYMin = -100;
 
     /// <summary>
     /// x座標の目盛り幅を取得します。
@@ -93,7 +94,7 @@ public class MainViewModel : INotifyPropertyChanged
     /// <summary>
     /// 現在のy座標の目盛り幅を取得します。
     /// </summary>
-    public double YScale { get; } = 30.0;
+    public double YScale { get; } = 25.0;
 
     /// <summary>
     /// 現在の範囲のy座標の最小値を取得または設定します。
@@ -183,18 +184,25 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _isPlot = false;
 
     /// <summary>
+    /// グラフカーソルの有無を取得します。
+    /// </summary>
+    public bool IsGraphCursor { get { return _isGraphCursor; } }
+
+    private bool _isGraphCursor = true;
+
+    /// <summary>
+    /// グラフの線の色を取得します。
+    /// </summary>
+    public Color4 GraphCursorColor { get { return _graphCursorColor; } }
+
+    private Color4 _graphCursorColor = Color4.Yellow;
+
+    /// <summary>
     /// グラフの線の色を取得します。
     /// </summary>
     public Color4 LineColor { get { return _lineColor; } }
 
     private Color4 _lineColor = Color4.Aqua;
-
-    /// <summary>
-    /// 軸の位置を取得します。
-    /// </summary>
-    public AxisTypes AxisType { get { return _axisType; } }
-
-    private AxisTypes _axisType = AxisTypes.Left;
 
     /// <summary>
     /// マウスポインタのx座標を取得または設定します。
@@ -227,6 +235,14 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     private string _legend = "生値\r\nフィルタ出力";
+
+    public Cursor MouseCursor
+    {
+        get { return _mouseCursor; }
+        set { SetProperty(ref this._mouseCursor, value); }
+    }
+
+    private Cursor _mouseCursor = Cursors.Arrow;
 
     #region INotifyPropertyChanged の実装
 

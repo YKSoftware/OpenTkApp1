@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Markup;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -96,7 +97,7 @@ public class TkGraphics : GLWpfControl
         SetProjection();
         _currentWidth = ActualWidth;
         _currentHeight = ActualHeight;
-        GraphBase?.CreateTextBitmap();
+        GraphBase?.BitmapPositionChange();
 
     }
 
@@ -106,11 +107,8 @@ public class TkGraphics : GLWpfControl
     /// <param name="delta">経過時間</param>
     private void OnTkRender(TimeSpan delta)
     {
-        
         GraphBase?.Render();
     }
-
-    
 
     /// <summary>
     /// 投影方法を設定します。

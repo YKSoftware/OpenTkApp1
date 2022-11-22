@@ -1,9 +1,9 @@
-﻿namespace OpenTkApp1.Views
+﻿namespace OpenTkApp1.Views.Items
 {
     /// <summary>
     /// マーカー種別を表します。
     /// </summary>
-    public enum MarkerTypes 
+    public enum MarkerTypes
     {
         /// <summary>
         /// 円を表します。

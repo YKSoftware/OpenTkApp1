@@ -1,4 +1,6 @@
 using OpenTK.Mathematics;
+using OpenTkApp1.Views.Items;
+using System.Windows;
 
 namespace OpenTkApp1.Views;
 /// <summary>
@@ -19,6 +21,8 @@ public interface ITkGraphicsItem
     public MarkerTypes PlotType { get; set; }
     public Color4 PlotColor { get; set; }
     public bool IsPlot { get; set; }
+    public bool IsGraphCursor { get; set; }
+    public Color4 GraphCursorColor { get; set; }
     public Color4 LineColor { get; set; }
     public string Legend { get; set; }
 }

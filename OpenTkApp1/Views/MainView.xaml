@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vw="clr-namespace:OpenTkApp1.Views"
         mc:Ignorable="d"
-        Title="{Binding Title, Mode=OneTime}" Height="450" Width="650">
+        Title="{Binding Title, Mode=OneTime}" Height="450" Width="650" >
 
     <Grid Background="Black">
         <Grid.RowDefinitions>
@@ -53,13 +53,15 @@
         <TextBlock Text="{Binding CurrentXPosition, StringFormat=x：{0}}" Grid.Column="0" Grid.Row="0" Height="25" Width="47" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
         <TextBlock Text="{Binding CurrentYPosition, StringFormat=y：{0}}" Grid.Column="0" Grid.Row="0" Height="15" Width="47" VerticalAlignment="Bottom" HorizontalAlignment="Center" Foreground="White" />
 
-        <vw:TkGraphics Grid.Column="1" Grid.Row="1">
+        <vw:TkGraphics Grid.Column="1" Grid.Row="1" Cursor="{Binding MouseCursor}" >
             <vw:TkGraphics.GraphBase>
-                <vw:TKLineGraph AxisType="{Binding AxisType}" XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}" 
-                                YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" CurrentXPosition="{Binding CurrentXPosition}" CurrentYPosition="{Binding CurrentYPosition}">
+                <vw:TKLineGraph XScale="{Binding XScale}" YScale="{Binding YScale}" XMax="{Binding XMax}" XMin="{Binding XMin}" YMax="{Binding YMax}" YMin="{Binding YMin}" 
+                                YCenter="{Binding YCenter}" XRange="{Binding XRange}" YRange="{Binding YRange}" CurrentXPosition="{Binding CurrentXPosition}" CurrentYPosition="{Binding CurrentYPosition}"
+                                >
                     <vw:TKLineGraph.DrawingItem>
                         <vw:TkLineGraphItem XData="{Binding XData}" YData="{Binding YData}"  PlotSize="{Binding PlotSize}" PlotType="{Binding PlotType}" 
-                                            PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" LineColor="{Binding LineColor}" Legend="{Binding Legend}"/>
+                                            PlotColor="{Binding PlotColor}" IsPlot="{Binding IsPlot}" LineColor="{Binding LineColor}" Legend="{Binding Legend}" 
+                                            IsGraphCursor="{Binding IsGraphCursor}" GraphCursorColor="{Binding GraphCursorColor}"/>
                     </vw:TKLineGraph.DrawingItem>
                 </vw:TKLineGraph>
             </vw:TkGraphics.GraphBase>

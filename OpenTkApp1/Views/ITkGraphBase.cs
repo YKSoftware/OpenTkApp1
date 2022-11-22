@@ -11,6 +11,7 @@ namespace OpenTkApp1.Views
         public double YRange { get; set; }
 
         void Render();
+        void BitmapPositionChange();
         void CreateTextBitmap();
         void OnMouseMove(object sender, MouseEventArgs e);
         void OnMouseLeftButtonDown(object sender, MouseEventArgs e);
